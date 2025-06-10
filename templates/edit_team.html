@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Edit Team</h2>
+<form method="post">
+  <div class="mb-3">
+    <label for="name" class="form-label">Team Name</label>
+    <input type="text" name="name" class="form-control" value="{{ team.teamName }}" required />
+  </div>
+  <div class="mb-3">
+    <label for="season" class="form-label">Season</label>
+    <input type="text" name="season" class="form-control" value="{{ team.season }}" required />
+  </div>
+
+  <div class="mb-3">
+    <label for="coaches" class="form-label">Coaches</label>
+    <select name="coaches" class="form-select" multiple size="5">
+      {% for coach in coaches %}
+        <option value="{{ coach.id }}" {% if coach in team.coaches %}selected{% endif %}>
+          {{ coach.name }}
+        </option>
+      {% endfor %}
+    </select>
+    <small class="form-text text-muted">Hold Ctrl (Cmd on Mac) to select multiple.</small>
+  </div>
+
+  <div class="mb-3">
+    <label for="players" class="form-label">Players</label>
+    <select name="players" class="form-select" multiple size="5">
+      {% for player in players %}
+        <option value="{{ player.id }}" {% if player in team.players %}selected{% endif %}>
+          {{ player.name }}
+        </option>
+      {% endfor %}
+    </select>
+    <small class="form-text text-muted">Hold Ctrl (Cmd on Mac) to select multiple.</small>
+  </div>
+
+  <button type="submit" class="btn btn-primary">Save</button>
+  <a href="{{ url_for('list_teams') }}" class="btn btn-secondary">Cancel</a>
+</form>
+{% endblock %}
