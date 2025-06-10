@@ -20,8 +20,7 @@ team_coach = db.Table('team_coach',
 
 class Player(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    first_name = db.Column(db.String(64), nullable=False)
-    last_name = db.Column(db.String(64), nullable=False)
+    name = db.Column(db.String(64), nullable=False)
     date_of_birth = db.Column(db.Date, nullable=False)
     jersey_number = db.Column(db.Integer, nullable=False)
     parents = db.relationship('Parent', secondary=parent_player, back_populates='players')
@@ -29,16 +28,14 @@ class Player(db.Model):
 
 class Parent(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    first_name = db.Column(db.String(64), nullable=False)
-    last_name = db.Column(db.String(64), nullable=False)
+    name = db.Column(db.String(64), nullable=False)
     email = db.Column(db.String(120))
     phone = db.Column(db.String(30))
     players = db.relationship('Player', secondary=parent_player, back_populates='parents')
 
 class Coach(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    first_name = db.Column(db.String(64), nullable=False)
-    last_name = db.Column(db.String(64), nullable=False)
+    name = db.Column(db.String(64), nullable=False)
     email = db.Column(db.String(120))
     phone = db.Column(db.String(30))
     teams = db.relationship('Team', secondary=team_coach, back_populates='coaches')
