@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for
 from datetime import datetime
 from config import Config
-from models import db, Player, Parent, Coach, Team
+from models import db, Players, Parents, Coaches, Teams
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -14,21 +14,21 @@ with app.app_context():
 @app.route('/')
 def welcome():
     current_season = "2025"  # or dynamic if you want
-    teams = Team.query.filter_by(season=current_season).all()
+    teams = Teams.query.filter_by(season=current_season).all()
     return render_template('welcome.html', teams=teams)
 
 # -- Players --
 
 @app.route('/players')
 def list_players():
-    players = Player.query.all()
+    players = Players.query.all()
     return render_template('players.html', players=players)
 
 @app.route('/player/add', methods=['GET', 'POST'])
 def add_player():
     if request.method == 'POST':
         dob = datetime.strptime(request.form['date_of_birth'], '%Y-%m-%d').date()
-        player = Player(
+        player = Players(
             name=request.form['name'],
             last_name=request.form['last_name'],
             date_of_birth=dob,
@@ -41,7 +41,7 @@ def add_player():
 
 @app.route('/player/<int:player_id>/edit', methods=['GET', 'POST'])
 def edit_player(player_id):
-    player = Player.query.get_or_404(player_id)
+    player = Players.query.get_or_404(player_id)
     if request.method == 'POST':
         player.name = request.form['name']
         player.date_of_birth = datetime.strptime(request.form['date_of_birth'], '%Y-%m-%d').date()
@@ -54,13 +54,13 @@ def edit_player(player_id):
 
 @app.route('/parents')
 def list_parents():
-    parents = Parent.query.all()
+    parents = Parents.query.all()
     return render_template('parents.html', parents=parents)
 
 @app.route('/parent/add', methods=['GET', 'POST'])
 def add_parent():
     if request.method == 'POST':
-        parent = Parent(
+        parent = Parents(
             name=request.form['name'],
             email=request.form['email'],
             phone=request.form['phone']
@@ -72,8 +72,8 @@ def add_parent():
 
 @app.route('/parent/<int:parent_id>/edit', methods=['GET', 'POST'])
 def edit_parent(parent_id):
-    parent = Parent.query.get_or_404(parent_id)
-    players = Player.query.all()
+    parent = Parents.query.get_or_404(parent_id)
+    players = Players.query.all()
     if request.method == 'POST':
         parent.name = request.form['name']
         parent.email = request.form['email']
@@ -83,7 +83,7 @@ def edit_parent(parent_id):
         # Add selected children
         child_ids = request.form.getlist('children')
         for cid in child_ids:
-            player = Player.query.get(int(cid))
+            player = Players.query.get(int(cid))
             if player:
                 parent.players.append(player)
         db.session.commit()
@@ -94,13 +94,13 @@ def edit_parent(parent_id):
 
 @app.route('/coaches')
 def list_coaches():
-    coaches = Coach.query.all()
+    coaches = Coaches.query.all()
     return render_template('coaches.html', coaches=coaches)
 
 @app.route('/coach/add', methods=['GET', 'POST'])
 def add_coach():
     if request.method == 'POST':
-        coach = Coach(
+        coach = Coaches(
             name=request.form['name'],
             email=request.form['email'],
             phone=request.form['phone']
@@ -112,7 +112,7 @@ def add_coach():
 
 @app.route('/coach/<int:coach_id>/edit', methods=['GET', 'POST'])
 def edit_coach(coach_id):
-    coach = Coach.query.get_or_404(coach_id)
+    coach = Coaches.query.get_or_404(coach_id)
     if request.method == 'POST':
         coach.name = request.form['name']
         coach.email = request.form['email']
@@ -125,13 +125,13 @@ def edit_coach(coach_id):
 
 @app.route('/teams')
 def list_teams():
-    teams = Team.query.all()
+    teams = Teams.query.all()
     return render_template('teams.html', teams=teams)
 
 @app.route('/team/add', methods=['GET', 'POST'])
 def add_team():
-    coaches = Coach.query.all()
-    players = Player.query.all()
+    coaches = Coaches.query.all()
+    players = Players.query.all()
     if request.method == 'POST':
         team = Team(
             teamName=request.form['teamName'],
@@ -140,13 +140,13 @@ def add_team():
         # Add coaches
         coach_ids = request.form.getlist('coaches')
         for cid in coach_ids:
-            coach = Coach.query.get(int(cid))
+            coach = Coaches.query.get(int(cid))
             if coach:
                 team.coaches.append(coach)
         # Add players
         player_ids = request.form.getlist('players')
         for pid in player_ids:
-            player = Player.query.get(int(pid))
+            player = Players.query.get(int(pid))
             if player:
                 team.players.append(player)
         db.session.add(team)
@@ -156,9 +156,9 @@ def add_team():
 
 @app.route('/team/<int:team_id>/edit', methods=['GET', 'POST'])
 def edit_team(team_id):
-    team = Team.query.get_or_404(team_id)
-    coaches = Coach.query.all()
-    players = Player.query.all()
+    team = Teams.query.get_or_404(team_id)
+    coaches = Coaches.query.all()
+    players = Players.query.all()
     if request.method == 'POST':
         team.teamName = request.form['teamName']
         team.season = request.form['season']
@@ -166,14 +166,14 @@ def edit_team(team_id):
         team.coaches.clear()
         coach_ids = request.form.getlist('coaches')
         for cid in coach_ids:
-            coach = Coach.query.get(int(cid))
+            coach = Coaches.query.get(int(cid))
             if coach:
                 team.coaches.append(coach)
         # Update players
         team.players.clear()
         player_ids = request.form.getlist('players')
         for pid in player_ids:
-            player = Player.query.get(int(pid))
+            player = Players.query.get(int(pid))
             if player:
                 team.players.append(player)
         db.session.commit()

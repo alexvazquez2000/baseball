@@ -3,46 +3,47 @@ from flask_sqlalchemy import SQLAlchemy
 db = SQLAlchemy()
 
 # Association tables for many-to-many relationships
-parent_player = db.Table('parent_player',
-    db.Column('parent_id', db.Integer, db.ForeignKey('parent.id'), primary_key=True),
-    db.Column('player_id', db.Integer, db.ForeignKey('player.id'), primary_key=True)
+#TODO:  it should be players_parents
+players_parents = db.Table('players_parents',
+    db.Column('parents_id', db.Integer, db.ForeignKey('parents.id'), primary_key=True),
+    db.Column('players_id', db.Integer, db.ForeignKey('players.id'), primary_key=True)
 )
 
-team_player = db.Table('team_player',
-    db.Column('team_id', db.Integer, db.ForeignKey('team.id'), primary_key=True),
-    db.Column('player_id', db.Integer, db.ForeignKey('player.id'), primary_key=True)
+teams_players = db.Table('teams_players',
+    db.Column('teams_id', db.Integer, db.ForeignKey('teams.id'), primary_key=True),
+    db.Column('players_id', db.Integer, db.ForeignKey('players.id'), primary_key=True)
 )
 
-team_coach = db.Table('team_coach',
-    db.Column('team_id', db.Integer, db.ForeignKey('team.id'), primary_key=True),
-    db.Column('coach_id', db.Integer, db.ForeignKey('coach.id'), primary_key=True)
+teams_coaches = db.Table('teams_coaches',
+    db.Column('teams_id', db.Integer, db.ForeignKey('teams.id'), primary_key=True),
+    db.Column('coaches_id', db.Integer, db.ForeignKey('coaches.id'), primary_key=True)
 )
 
-class Player(db.Model):
+class Players(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), nullable=False)
     date_of_birth = db.Column(db.Date, nullable=False)
     jersey_number = db.Column(db.Integer, nullable=False)
-    parents = db.relationship('Parent', secondary=parent_player, back_populates='players')
-    teams = db.relationship('Team', secondary=team_player, back_populates='players')
+    parents = db.relationship('Parents', secondary=players_parents, back_populates='players')
+    teams = db.relationship('Teams', secondary=teams_players, back_populates='players')
 
-class Parent(db.Model):
+class Parents(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), nullable=False)
     email = db.Column(db.String(120))
     phone = db.Column(db.String(30))
-    players = db.relationship('Player', secondary=parent_player, back_populates='parents')
+    players = db.relationship('Players', secondary=players_parents, back_populates='parents')
 
-class Coach(db.Model):
+class Coaches(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), nullable=False)
     email = db.Column(db.String(120))
     phone = db.Column(db.String(30))
-    teams = db.relationship('Team', secondary=team_coach, back_populates='coaches')
+    teams = db.relationship('Teams', secondary=teams_coaches, back_populates='coaches')
 
-class Team(db.Model):
+class Teams(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     teamName = db.Column(db.String(100), nullable=False)
     season = db.Column(db.String(20), nullable=False)
-    coaches = db.relationship('Coach', secondary=team_coach, back_populates='teams')
-    players = db.relationship('Player', secondary=team_player, back_populates='teams')
+    coaches = db.relationship('Coaches', secondary=teams_coaches, back_populates='teams')
+    players = db.relationship('Players', secondary=teams_players, back_populates='teams')
