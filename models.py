@@ -3,7 +3,6 @@ from flask_sqlalchemy import SQLAlchemy
 db = SQLAlchemy()
 
 # Association tables for many-to-many relationships
-#TODO:  it should be players_parents
 players_parents = db.Table('players_parents',
     db.Column('parents_id', db.Integer, db.ForeignKey('parents.id'), primary_key=True),
     db.Column('players_id', db.Integer, db.ForeignKey('players.id'), primary_key=True)
