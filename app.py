@@ -7,13 +7,14 @@ app = Flask(__name__)
 app.config.from_object(Config)
 db.init_app(app)
 
-with app.app_context():
-    db.create_all()
+##To create DB
+#with app.app_context():
+#    db.create_all()
 
 # -- Welcome page: show teams in current season (e.g. "2025") --
 @app.route('/')
 def welcome():
-    current_season = "2025"  # or dynamic if you want
+    current_season = "2025-Spring"  # or dynamic if you want
     teams = Teams.query.filter_by(season=current_season).all()
     return render_template('welcome.html', teams=teams)
 
