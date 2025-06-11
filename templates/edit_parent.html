@@ -7,10 +7,6 @@
     <input type="text" name="name" class="form-control" value="{{ parent.name }}" required />
   </div>
   <div class="mb-3">
-    <label for="last_name" class="form-label">Last Name</label>
-    <input type="text" name="last_name" class="form-control" value="{{ parent.last_name }}" required />
-  </div>
-  <div class="mb-3">
     <label for="email" class="form-label">Email</label>
     <input type="email" name="email" class="form-control" value="{{ parent.email or '' }}" />
   </div>
@@ -21,7 +17,7 @@
   <div class="mb-3">
     <label for="children" class="form-label">Children (Players)</label>
     <select name="children" class="form-select" multiple size="5">
-      {% for player in players %}
+      {% for player in parent.players %}
         <option value="{{ player.id }}" {% if player in parent.players %}selected{% endif %}>
           {{ player.name }}
         </option>
