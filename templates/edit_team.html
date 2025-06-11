@@ -4,7 +4,7 @@
 <form method="post">
   <div class="mb-3">
     <label for="name" class="form-label">Team Name</label>
-    <input type="text" name="name" class="form-control" value="{{ team.teamName }}" required />
+    <input type="text" name="teamName" class="form-control" value="{{ team.teamName }}" required />
   </div>
   <div class="mb-3">
     <label for="season" class="form-label">Season</label>
@@ -14,7 +14,7 @@
   <div class="mb-3">
     <label for="coaches" class="form-label">Coaches</label>
     <select name="coaches" class="form-select" multiple size="5">
-      {% for coach in coaches %}
+      {% for coach in team.coaches %}
         <option value="{{ coach.id }}" {% if coach in team.coaches %}selected{% endif %}>
           {{ coach.name }}
         </option>
@@ -26,7 +26,7 @@
   <div class="mb-3">
     <label for="players" class="form-label">Players</label>
     <select name="players" class="form-select" multiple size="5">
-      {% for player in players %}
+      {% for player in team.players %}
         <option value="{{ player.id }}" {% if player in team.players %}selected{% endif %}>
           {{ player.name }}
         </option>
