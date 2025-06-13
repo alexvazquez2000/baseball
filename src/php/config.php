@@ -15,12 +15,7 @@ spl_autoload_register(function ($className) {
     }
 });
 
-echo "\n'{$_SERVER["SCRIPT_NAME"]}'";
 switch ($_SERVER["SCRIPT_NAME"]) {
-		case "/about.php":
-			$CURRENT_PAGE = "About"; 
-			$PAGE_TITLE = "About Us";
-			break;
 		case "/baseball/add_player.php":
 			$CURRENT_PAGE = "Add Player";
 			$PAGE_TITLE = "Add Player";
@@ -50,10 +45,48 @@ switch ($_SERVER["SCRIPT_NAME"]) {
 			$stmt->execute([$_GET['id']]);
 			$player = $stmt->fetch();
 			break;
+		case "/baseball/add_parent.php":
+			$CURRENT_PAGE = "Add Parent";
+			$PAGE_TITLE = "Add Parent";
+			if ($_SERVER["REQUEST_METHOD"] == "POST") {
+				$stmt = $pdo->prepare("INSERT INTO parents (name, email, phone) VALUES (?, ?, ?)");
+				$stmt->execute([$_POST['name'], $_POST['email'], $_POST['phone']]);
+				header("Location: list_parents.php");
+			}
+			break;
+		case "/baseball/list_parents.php":
+			$CURRENT_PAGE = "Parents";
+			$PAGE_TITLE = "Parents";
+			$stmt = $pdo->query("SELECT * FROM parents");
+			$parents = $stmt->fetchAll(PDO::FETCH_CLASS, "PParent");
+			break;
+		case "/baseball/edit_parent.php":
+			$CURRENT_PAGE = "Edit Parent";
+			$PAGE_TITLE = "Edit Parent";
+			if ($_SERVER["REQUEST_METHOD"] == "POST") {
+				$stmt = $pdo->prepare("UPDATE parents SET name=?, email=?, phone=? WHERE id=?");
+				$stmt->execute([$_POST['name'], $_POST['email'], $_POST['phone'], $_POST['id']]);
+				header("Location: list_parents.php");
+				exit();
+			}
+			$stmt = $pdo->prepare("SELECT * FROM parents WHERE id=?");
+			$stmt->setFetchMode(PDO::FETCH_CLASS, "PParent");
+			$stmt->execute([$_GET['id']]);
+			$parent = $stmt->fetch();
+			
+			$stmt = $pdo->prepare("SELECT p.id, p.name, p.date_of_birth, p.jersey_number FROM players as p LEFT JOIN players_parents ON players_parents.players_id=p.id WHERE players_parents.parents_id=?");
+			$stmt->setFetchMode(PDO::FETCH_CLASS, "Player");
+			$stmt->execute([$_GET['id']]);
+			$players = $stmt->fetchAll(PDO::FETCH_CLASS, "Player");
+			break;
 		default:
 			$CURRENT_PAGE = "Index";
 			$PAGE_TITLE = "Welcome to my homepage!";
 	}
 
+	// Always ensure to close prepared statements and database connections when done.
+	$stmt = null;
+	// we closed the connection
+	$pdo = null;
 
 ?>

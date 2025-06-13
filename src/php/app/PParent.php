@@ -1,6 +1,6 @@
 <?php
 
-class Player {
+class PParent {
 	public $id;
 	public $name;
 	public $email;

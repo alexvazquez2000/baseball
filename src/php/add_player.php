@@ -18,7 +18,7 @@ include 'templates/header.php';
     <input type="number" name="jersey_number" class="form-control" required />
   </div>
   <button type="submit" class="btn btn-primary">Add Player</button>
-  <a href="{{ url_for('list_players') }}" class="btn btn-secondary">Cancel</a>
+  <a href="list_players.php" class="btn btn-secondary">Cancel</a>
 </form>
 
 <?php include 'templates/footer.php'; ?>
