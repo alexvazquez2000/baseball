@@ -5,7 +5,7 @@
 <table class="table table-striped">
   <thead>
     <tr>
-      <th>Name</th>
+      <th>Team Name</th>
       <th>Season</th>
       <th>Coaches</th>
       <th>Players</th>
@@ -15,7 +15,7 @@
   <tbody>
     {% for team in teams %}
     <tr>
-      <td>{{ team.teamName }}</td>
+      <td>{% if team.logo != "": %}{{team.logo}}{% endif %}{{ team.teamName }}</td>
       <td>{{ team.season }}</td>
       <td>
         {% for coach in team.coaches %}

@@ -35,7 +35,8 @@
     <small class="form-text text-muted">Hold Ctrl (Cmd on Mac) to select multiple.</small>
   </div>
 
-  <button type="submit" class="btn btn-primary">Save</button>
+  <input type="submit" name="save" id="save" value="Save" class="btn btn-primary">
+  <input type="submit" name="copy" id="copy" value="Copy" class="btn btn-secondary">
   <a href="{{ url_for('list_teams') }}" class="btn btn-secondary">Cancel</a>
 </form>
 {% endblock %}

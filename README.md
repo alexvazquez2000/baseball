@@ -17,7 +17,7 @@ Add a page to show/edit the list of coaches. Keep name, email and phone for each
 Add a welcome page with a list of the teams in the current season. On the welcome page add a buttons to show the parents or edit the teams.
 A parent can have multiple children, and a child can have multiple parents.
 A player can be on multiple teams.
-Create pages for add a player, a parent, and coach. 
+Create pages to add a player, a parent, and coach. 
 Create the html template files needed to support the app.
 Create the app.py file.
 
