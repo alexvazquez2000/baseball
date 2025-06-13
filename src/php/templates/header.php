@@ -14,6 +14,7 @@
             <ul class="navbar-nav me-auto">
                 <li class="nav-item"><a class="nav-link" href="list_players.php">Players</a></li>
                 <li class="nav-item"><a class="nav-link" href="list_parents.php">Parents</a></li>
+				<li class="nav-item"><a class="nav-link" href="list_coaches.php">Coaches</a></li>
                 <li class="nav-item"><a class="nav-link" href="edit_teams.php">Teams</a></li>
                 <li class="nav-item"><a class="nav-link" href="upload_logo.php">Upload Logo</a></li>
             </ul>

@@ -1,6 +1,6 @@
 <?php
 
-class Player {
+class Coach {
 	public $id;
 	public $name;
 	public $email;

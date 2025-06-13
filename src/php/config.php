@@ -45,6 +45,7 @@ switch ($_SERVER["SCRIPT_NAME"]) {
 			$stmt->execute([$_GET['id']]);
 			$player = $stmt->fetch();
 			break;
+
 		case "/baseball/add_parent.php":
 			$CURRENT_PAGE = "Add Parent";
 			$PAGE_TITLE = "Add Parent";
@@ -75,10 +76,46 @@ switch ($_SERVER["SCRIPT_NAME"]) {
 			$parent = $stmt->fetch();
 			
 			$stmt = $pdo->prepare("SELECT p.id, p.name, p.date_of_birth, p.jersey_number FROM players as p LEFT JOIN players_parents ON players_parents.players_id=p.id WHERE players_parents.parents_id=?");
-			$stmt->setFetchMode(PDO::FETCH_CLASS, "Player");
+			#$stmt->setFetchMode(PDO::FETCH_CLASS, "Player");
 			$stmt->execute([$_GET['id']]);
 			$players = $stmt->fetchAll(PDO::FETCH_CLASS, "Player");
 			break;
+
+		case "/baseball/add_coach.php":
+			$CURRENT_PAGE = "Add Coach";
+			$PAGE_TITLE = "Add Coach";
+			if ($_SERVER["REQUEST_METHOD"] == "POST") {
+				$stmt = $pdo->prepare("INSERT INTO coaches (name, email, phone) VALUES (?, ?, ?)");
+				$stmt->execute([$_POST['name'], $_POST['email'], $_POST['phone']]);
+				header("Location: list_coaches.php");
+			}
+			break;
+		case "/baseball/list_coaches.php":
+			$CURRENT_PAGE = "Coaches";
+			$PAGE_TITLE = "Coaches";
+			$stmt = $pdo->query("SELECT * FROM coaches");
+			$coaches = $stmt->fetchAll(PDO::FETCH_CLASS, "Coach");
+			break;
+		case "/baseball/edit_coach.php":
+			$CURRENT_PAGE = "Edit Coach";
+			$PAGE_TITLE = "Edit Coach";
+			if ($_SERVER["REQUEST_METHOD"] == "POST") {
+				$stmt = $pdo->prepare("UPDATE coaches SET name=?, email=?, phone=? WHERE id=?");
+				$stmt->execute([$_POST['name'], $_POST['email'], $_POST['phone'], $_POST['id']]);
+				header("Location: list_coaches.php");
+				exit();
+			}
+			$stmt = $pdo->prepare("SELECT * FROM coaches WHERE id=?");
+			$stmt->setFetchMode(PDO::FETCH_CLASS, "Coach");
+			$stmt->execute([$_GET['id']]);
+			$coach = $stmt->fetch();
+			
+			#$stmt = $pdo->prepare("SELECT p.id, p.name, p.date_of_birth, p.jersey_number FROM players as p LEFT JOIN players_parents ON players_parents.players_id=p.id WHERE players_parents.parents_id=?");
+			#$stmt->setFetchMode(PDO::FETCH_CLASS, "Player");
+			#$stmt->execute([$_GET['id']]);
+			#$teams = $stmt->fetchAll(PDO::FETCH_CLASS, "Team");
+			break;
+
 		default:
 			$CURRENT_PAGE = "Index";
 			$PAGE_TITLE = "Welcome to my homepage!";

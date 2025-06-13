@@ -1,17 +1,22 @@
 <?php include 'config.php';
 include 'templates/header.php';
-
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $stmt = $pdo->prepare("INSERT INTO coaches (name, email, phone) VALUES (?, ?, ?)");
-    $stmt->execute([$_POST['name'], $_POST['email'], $_POST['phone']]);
-    header("Location: edit_teams.php");
-}
 ?>
+<h2>Add Coach</h2>
 <form method="post">
-    Name: <input type="text" name="name"><br>
-    Email: <input type="email" name="email"><br>
-    Phone: <input type="text" name="phone"><br>
-    <input type="submit" value="Add Coach">
+  <div class="mb-3">
+    <label for="name" class="form-label">Name</label>
+    <input type="text" name="name" class="form-control" required />
+  </div>
+  <div class="mb-3">
+    <label for="email" class="form-label">Email</label>
+    <input type="email" name="email" class="form-control" />
+  </div>
+  <div class="mb-3">
+    <label for="phone" class="form-label">Phone</label>
+    <input type="text" name="phone" class="form-control" />
+  </div>
+  <button type="submit" class="btn btn-primary">Add Coach</button>
+  <a href="{{ url_for('list_coaches') }}" class="btn btn-secondary">Cancel</a>
 </form>
 
 <?php include 'templates/footer.php'; ?>
