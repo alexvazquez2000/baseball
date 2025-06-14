@@ -5,7 +5,9 @@
 <h1>Parents</h1>
 <br>
 <a href="add_parent.php" class="btn btn-success mb-2">Add Parent</a>
-<table class="table table-striped">
+<br>
+<input type="text" id="search" onkeyup="filterByName()" placeholder="Search for names..">
+<table class="table table-striped" id="filteredTable">
   <thead>
     <tr>
       <th>Name</th>
