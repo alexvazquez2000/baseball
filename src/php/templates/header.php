@@ -12,31 +12,18 @@
   <div class="container-fluid">
   <a class="navbar-brand" href="index.php">Baseball League</a>
   <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-        data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
-        aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-          <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="#">Home</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="list_players.php">Players</a>
-          </li>
-		  <li class="nav-item">
-		    <a class="nav-link" href="list_parents.php">Parents</a>
-		  </li>
-		  <li class="nav-item">
-		    <a class="nav-link" href="list_coaches.php">Coaches</a>
-		  </li>
-		  <li class="nav-item">
-		    <a class="nav-link" href="edit_teams.php">Teams</a>
-		  </li>
-		  <li class="nav-item">
-		    <a class="nav-link" href="upload_logo.php">Upload Logo</a>
-		  </li>
-        </ul>
+   data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup"
+    aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+   </button>
+      <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+	    <div class="navbar-nav">
+          <a class="nav-link active" aria-current="page" href="list_players.php">Players</a>
+	      <a class="nav-link" href="list_parents.php">Parents</a>
+	      <a class="nav-link" href="list_coaches.php">Coaches</a>
+	      <a class="nav-link" href="edit_teams.php">Teams</a>
+	      <a class="nav-link" href="upload_logo.php">Upload Logo</a>
+		  </div>
       </div>
     </div>
   </nav>
