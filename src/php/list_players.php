@@ -4,6 +4,7 @@ include 'templates/header.php';
 ?>
 
 <h1>Players</h1>
+<br>
 <a href="add_player.php" class="btn btn-success mb-2">Add Player</a>
 <table class="table table-striped">
   <thead>

@@ -109,16 +109,28 @@ switch ($_SERVER["SCRIPT_NAME"]) {
 			$stmt->setFetchMode(PDO::FETCH_CLASS, "Coach");
 			$stmt->execute([$_GET['id']]);
 			$coach = $stmt->fetch();
-			
 			#$stmt = $pdo->prepare("SELECT p.id, p.name, p.date_of_birth, p.jersey_number FROM players as p LEFT JOIN players_parents ON players_parents.players_id=p.id WHERE players_parents.parents_id=?");
 			#$stmt->setFetchMode(PDO::FETCH_CLASS, "Player");
 			#$stmt->execute([$_GET['id']]);
 			#$teams = $stmt->fetchAll(PDO::FETCH_CLASS, "Team");
 			break;
 
+			case "/baseball/list_teams.php":
+				$CURRENT_PAGE = "Teams";
+				$PAGE_TITLE = "Teams";
+				$season = $_GET['season'] ?? "2025-Spring";
+				$stmt = $pdo->prepare("SELECT * FROM teams WHERE season=?");
+				$stmt->execute([$season]);
+				$coaches = $stmt->fetchAll(PDO::FETCH_CLASS, "Team");
+				break;
+
+			case "/baseball/index.php":
+				break;
+
 		default:
 			$CURRENT_PAGE = "Index";
 			$PAGE_TITLE = "Welcome to my homepage!";
+			header("Location: index.php");
 	}
 
 	// Always ensure to close prepared statements and database connections when done.

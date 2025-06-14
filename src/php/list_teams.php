@@ -1,13 +1,10 @@
 <?php
 include 'config.php';
-$season = $_GET['season'] ?? date('Y');
-$stmt = $pdo->prepare("SELECT * FROM teams WHERE season=?");
-$stmt->execute([$season]);
-$teams = $stmt->fetchAll();
 include 'templates/header.php';
 ?>
 
-<h2>Teams for Season <?= htmlspecialchars($season) ?></h2>
+<h1>Teams for Season <?= htmlspecialchars($season) ?></h1>
+<br>
 <form method="get" class="mb-3">
     <label for="season">Season:</label>
     <input type="text" name="season" value="<?= htmlspecialchars($season) ?>">

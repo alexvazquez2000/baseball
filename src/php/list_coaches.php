@@ -1,9 +1,9 @@
 <?php include 'config.php'; ?>
 <?php include 'templates/header.php'; ?>
+
 <h1>Coaches</h1>
-
+<br>
 <a href="add_coach.php" class="btn btn-success mb-2">Add Coach</a>
-
 <table class="table table-striped">
   <thead>
     <tr>

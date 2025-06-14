@@ -1,11 +1,10 @@
 <?php include 'config.php'; ?>
-<?php include 'templates/header.php'; ?>
-<h1>Parents</h1>
-<ul>
-</ul>
-<h2>Parents</h2>
-<a href="add_parent.php" class="btn btn-success mb-2">Add Parent</a>
+<?php include 'templates/header.php';
+?>
 
+<h1>Parents</h1>
+<br>
+<a href="add_parent.php" class="btn btn-success mb-2">Add Parent</a>
 <table class="table table-striped">
   <thead>
     <tr>
