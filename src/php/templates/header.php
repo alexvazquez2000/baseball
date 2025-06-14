@@ -7,16 +7,37 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
+<!-- https://getbootstrap.com/docs/5.3/components/navbar/ -->
+<nav class="navbar navbar-expand-lg bg-body-tertiary">
+  <div class="container-fluid">
+  <a class="navbar-brand" href="index.php">Baseball League</a>
+  <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+        data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+        aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="#">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="list_players.php">Players</a>
+          </li>
+		  <li class="nav-item">
+		    <a class="nav-link" href="list_parents.php">Parents</a>
+		  </li>
+		  <li class="nav-item">
+		    <a class="nav-link" href="list_coaches.php">Coaches</a>
+		  </li>
+		  <li class="nav-item">
+		    <a class="nav-link" href="edit_teams.php">Teams</a>
+		  </li>
+		  <li class="nav-item">
+		    <a class="nav-link" href="upload_logo.php">Upload Logo</a>
+		  </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
 <div class="container mt-4">
-    <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
-        <a class="navbar-brand" href="index.php">Baseball League</a>
-        <div class="collapse navbar-collapse">
-            <ul class="navbar-nav me-auto">
-                <li class="nav-item"><a class="nav-link" href="list_players.php">Players</a></li>
-                <li class="nav-item"><a class="nav-link" href="list_parents.php">Parents</a></li>
-				<li class="nav-item"><a class="nav-link" href="list_coaches.php">Coaches</a></li>
-                <li class="nav-item"><a class="nav-link" href="edit_teams.php">Teams</a></li>
-                <li class="nav-item"><a class="nav-link" href="upload_logo.php">Upload Logo</a></li>
-            </ul>
-        </div>
-    </nav>
