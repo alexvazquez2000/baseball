@@ -10,9 +10,9 @@
 <table class="table table-striped" id="filteredTable">
   <thead>
     <tr>
-      <th>Name</th>
-      <th>Email</th>
-      <th>Phone</th>
+      <th onclick="sortTable(0)">Name</th>
+      <th onclick="sortTable(1)">Email</th>
+      <th onclick="sortTable(2)">Phone</th>
       <th>Edit</th>
     </tr>
   </thead>

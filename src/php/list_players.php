@@ -11,9 +11,9 @@ include 'templates/header.php';
 <table class="table table-striped" id="filteredTable">
   <thead>
     <tr>
-      <th>Name</th>
-      <th>DOB</th>
-      <th>Jersey Number</th>
+      <th onclick="sortTable(0)">Name</th>
+      <th onclick="sortTable(1)">DOB</th>
+      <th onclick="sortTable(2)">Jersey Number</th>
       <th>Edit</th>
     </tr>
   </thead>
