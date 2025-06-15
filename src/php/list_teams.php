@@ -16,28 +16,8 @@ include 'templates/header.php';
     <div class="col-md-6">
         <div class="card mb-3">
             <div class="card-body">
-                <h5 class="card-title"><?= htmlspecialchars($team['name']) ?> (<?= $team['season'] ?>)</h5>
-                <p class="card-text">Logo: <?= htmlspecialchars($team['logo']) ?></p>
-                <h6>Players:</h6>
-                <ul>
-                <?php
-                $ps = $pdo->prepare("SELECT p.name FROM players p JOIN team_players tp ON p.id = tp.player_id WHERE tp.team_id=?");
-                $ps->execute([$team['id']]);
-                foreach ($ps as $player) {
-                    echo "<li>" . htmlspecialchars($player['name']) . "</li>";
-                }
-                ?>
-                </ul>
-                <h6>Coaches:</h6>
-                <ul>
-                <?php
-                $cs = $pdo->prepare("SELECT c.name FROM coaches c JOIN team_coaches tc ON c.id = tc.coach_id WHERE tc.team_id=?");
-                $cs->execute([$team['id']]);
-                foreach ($cs as $coach) {
-                    echo "<li>" . htmlspecialchars($coach['name']) . "</li>";
-                }
-                ?>
-                </ul>
+                <h5 class="card-title"><?= htmlspecialchars($team->teamName) ?> <?= $team->season ?></h5>
+                <p class="card-text">Logo: <?= htmlspecialchars($team->logo) ?></p>
             </div>
         </div>
     </div>

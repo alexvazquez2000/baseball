@@ -8,15 +8,15 @@ include 'templates/header.php';
 	<input type="hidden" name="id" value="<?= $parent->id ?>">
   <div class="mb-3">
     <label for="name" class="form-label">Name</label>
-    <input type="text" name="name" class="form-control" value="<?= $parent->name ?>" required />
+    <input type="text" name="name" class="form-control" value="<?= htmlspecialchars($parent->name) ?>" required />
   </div>
   <div class="mb-3">
     <label for="email" class="form-label">Email</label>
-    <input type="email" name="email" class="form-control" value="<?= $parent->email ?>" />
+    <input type="email" name="email" class="form-control" value="<?= htmlspecialchars($parent->email) ?>" />
   </div>
   <div class="mb-3">
     <label for="phone" class="form-label">Phone</label>
-    <input type="text" name="phone" class="form-control" value="<?= $parent->phone ?>" />
+    <input type="text" name="phone" class="form-control" value="<?= htmlspecialchars($parent->phone) ?>" />
   </div>
   <button type="submit" class="btn btn-primary">Save</button>
   <a href="list_parents.php" class="btn btn-secondary">Cancel</a>
@@ -36,6 +36,7 @@ include 'templates/header.php';
 <?php
   if (!empty($players)) {
     foreach ($players as $player) {
+		#TODO: html escape
       echo "<tr><td>{$player->name}</td>\n<td>{$player->date_of_birth}</td>\n";
       echo "<td>{$player->jersey_number}</td>\n";
       echo "<td><a href=\"edit_player.php?id={$player->id}\" class=\"btn btn-sm btn-primary\">Edit</a></td>\n</tr>\n";
