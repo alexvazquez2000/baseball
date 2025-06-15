@@ -22,7 +22,7 @@ include 'templates/header.php';
   <a href="list_parents.php" class="btn btn-secondary">Cancel</a>
 </form>
 
-<h2>List players (children) (TODO: add support to add/delete children)</h2>
+<h2>List players (children)</h2>
 <table class="table table-striped">
   <thead>
     <tr>

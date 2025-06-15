@@ -21,7 +21,7 @@
       foreach ($coaches as $coach) {
         echo "<tr><td>{$coach->name}</td>\n";
         echo "<td>{$coach->email}</td>\n";
-        echo "<td>{$coach->phone}</td>\n";
+        echo "<td><a href=\"tel:{$coach->phone}\">{$coach->phone}</a></td>\n";
         echo "<td><a href=\"edit_coach.php?id={$coach->id}\" class=\"btn btn-sm btn-primary\">Edit</a></td>\n</tr>\n";
       }
     } else {

@@ -22,7 +22,7 @@
       foreach ($parents as $parent) {
         echo "<tr><td>{$parent->name}</td>\n";
         echo "<td>{$parent->email}</td>\n";
-        echo "<td>{$parent->phone}</td>\n";
+        echo "<td><a href=\"tel:{$parent->phone}\">{$parent->phone}</a></td>\n";
         echo "<td><a href=\"edit_parent.php?id={$parent->id}\" class=\"btn btn-sm btn-primary\">Edit</a></td>\n</tr>\n";
       }
     } else {
