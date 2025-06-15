@@ -16,6 +16,10 @@ spl_autoload_register(function ($className) {
 });
 
 switch ($_SERVER["SCRIPT_NAME"]) {
+
+		###################################################################
+		#  Players
+		###################################################################
 		case "/baseball/add_player.php":
 			$CURRENT_PAGE = "Add Player";
 			$PAGE_TITLE = "Add Player";
@@ -46,6 +50,9 @@ switch ($_SERVER["SCRIPT_NAME"]) {
 			$player = $stmt->fetch();
 			break;
 
+		###################################################################
+		#  Parents
+		###################################################################
 		case "/baseball/add_parent.php":
 			$CURRENT_PAGE = "Add Parent";
 			$PAGE_TITLE = "Add Parent";
@@ -81,6 +88,10 @@ switch ($_SERVER["SCRIPT_NAME"]) {
 			$players = $stmt->fetchAll(PDO::FETCH_CLASS, "Player");
 			break;
 
+
+		###################################################################
+		#  Coaches
+		###################################################################
 		case "/baseball/add_coach.php":
 			$CURRENT_PAGE = "Add Coach";
 			$PAGE_TITLE = "Add Coach";
@@ -115,14 +126,18 @@ switch ($_SERVER["SCRIPT_NAME"]) {
 			#$teams = $stmt->fetchAll(PDO::FETCH_CLASS, "Team");
 			break;
 
-			case "/baseball/list_teams.php":
-				$CURRENT_PAGE = "Teams";
-				$PAGE_TITLE = "Teams";
-				$season = $_GET['season'] ?? "2025-Spring";
-				$stmt = $pdo->prepare("SELECT * FROM teams WHERE season=?");
-				$stmt->execute([$season]);
-				$coaches = $stmt->fetchAll(PDO::FETCH_CLASS, "Team");
-				break;
+		###################################################################
+		#  Parents
+		###################################################################
+
+		case "/baseball/list_teams.php":
+			$CURRENT_PAGE = "Teams";
+			$PAGE_TITLE = "Teams";
+			$season = $_GET['season'] ?? "2025-Spring";
+			$stmt = $pdo->prepare("SELECT * FROM teams WHERE season=?");
+			$stmt->execute([$season]);
+			$teams = $stmt->fetchAll(PDO::FETCH_CLASS, "Team");
+			break;
 
 			case "/baseball/index.php":
 				break;
