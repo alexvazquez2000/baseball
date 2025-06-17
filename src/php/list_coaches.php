@@ -3,7 +3,7 @@
 
 <h1>Coaches</h1>
 <br>
-<a href="add_coach.php" class="btn btn-success mb-2">Add Coach</a>
+<a href="edit_coach.php" class="btn btn-success mb-2">Add Coach</a>
 <br>
 <input type="text" id="search" onkeyup="filterByName()" placeholder="Search for names..">
 <table class="table table-striped" id="filteredTable">
