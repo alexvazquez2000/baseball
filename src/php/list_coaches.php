@@ -19,10 +19,14 @@
   <?php
     if (!empty($coaches)) {
       foreach ($coaches as $coach) {
-        echo "<tr><td>{$coach->name}</td>\n";
+        echo "<tr>";
+        echo "<td><img src=\"uploads/{$coach->photo}\" width=\"80\"></td>";
+        echo "<td>{$coach->name}</td>\n";
         echo "<td>{$coach->email}</td>\n";
         echo "<td><a href=\"tel:{$coach->phone}\">{$coach->phone}</a></td>\n";
-        echo "<td><a href=\"edit_coach.php?id={$coach->id}\" class=\"btn btn-sm btn-primary\">Edit</a></td>\n</tr>\n";
+        echo "<td><a href=\"edit_coach.php?id={$coach->id}\" class=\"btn btn-sm btn-primary\">Edit</a></td>";
+        echo "<td><a href=\"delete.php?id={$coach->id}\" class=\"btn btn-sm\" onclick=\"return confirm('Are you sure?')\">Delete</a></td>";
+        echo "\n</tr>\n";
       }
     } else {
       echo "<tr><td colspan=\"4\">No coaches found.</td></tr>\n";

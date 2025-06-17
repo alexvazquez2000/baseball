@@ -96,8 +96,9 @@ switch ($_SERVER["SCRIPT_NAME"]) {
 			$CURRENT_PAGE = "Add Coach";
 			$PAGE_TITLE = "Add Coach";
 			if ($_SERVER["REQUEST_METHOD"] == "POST") {
-				$stmt = $pdo->prepare("INSERT INTO coaches (name, email, phone) VALUES (?, ?, ?)");
-				$stmt->execute([$_POST['name'], $_POST['email'], $_POST['phone']]);
+			    $photo = $_POST['photo_filename'] ?? '';
+				$stmt = $pdo->prepare("INSERT INTO coaches (name, email, phone, photo) VALUES (?, ?, ?, ?)");
+				$stmt->execute([$_POST['name'], $_POST['email'], $_POST['phone'], $photo]);
 				header("Location: list_coaches.php");
 			}
 			break;
@@ -111,8 +112,9 @@ switch ($_SERVER["SCRIPT_NAME"]) {
 			$CURRENT_PAGE = "Edit Coach";
 			$PAGE_TITLE = "Edit Coach";
 			if ($_SERVER["REQUEST_METHOD"] == "POST") {
-				$stmt = $pdo->prepare("UPDATE coaches SET name=?, email=?, phone=? WHERE id=?");
-				$stmt->execute([$_POST['name'], $_POST['email'], $_POST['phone'], $_POST['id']]);
+			    $photo = $_POST['photo_filename'] ?? '';
+				$stmt = $pdo->prepare("UPDATE coaches SET name=?, email=?, phone=?, photo=? WHERE id=?");
+				$stmt->execute([$_POST['name'], $_POST['email'], $_POST['phone'], substr($photo, 0, 255), $_POST['id']]);
 				header("Location: list_coaches.php");
 				exit();
 			}
@@ -125,7 +127,21 @@ switch ($_SERVER["SCRIPT_NAME"]) {
 			#$stmt->execute([$_GET['id']]);
 			#$teams = $stmt->fetchAll(PDO::FETCH_CLASS, "Team");
 			break;
-
+		case "/baseball/delete_coach.php":
+		    $CURRENT_PAGE = "Delete Coach";
+		    $PAGE_TITLE = "Delete Coach";
+		    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+		        
+		        $id = $_GET['id'];
+		        $stmt = $conn->prepare("DELETE FROM coaches WHERE id=?");
+		        $stmt->bind_param('i', $id);
+		        $stmt->execute();
+		        //TODO: need to add a confirmation - add a message into the top of list_coaches
+		    }
+		    header("Location: list_coaches.php");
+		    break;
+		    
+			
 		###################################################################
 		#  Parents
 		###################################################################
