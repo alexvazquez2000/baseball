@@ -1,4 +1,5 @@
 <?php
 $filename = uniqid() . '.jpg';
-file_put_contents("uploads/$filename", file_get_contents($_FILES['photo']['tmp_name']));
+#handle both camera blobs and file uploads
+move_uploaded_file($_FILES['photo']['tmp_name'], "uploads/$filename");
 echo $filename;

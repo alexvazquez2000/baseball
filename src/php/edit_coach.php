@@ -18,14 +18,24 @@ include 'templates/header.php';
     <label for="phone" class="form-label">Phone</label>
     <input type="text" name="phone" class="form-control" value="<?= htmlspecialchars($coach->phone) ?>" />
   </div>
+  
   <div>
-    <video id="video" width="200" autoplay></video>
-    <button type="button" onclick="takePhoto()">Take Photo</button>
-    <canvas id="canvas" style="display:none;"></canvas>
+    <video id="video" width="200" autoplay style="display: none;"></video>
+    <canvas id="canvas" style="display: none;"></canvas>
+
+    <button type="button" id="captureBtn">Start Camera / Take Photo</button><br>
+
+    <!-- Fallback upload -->
+    <div id="fallback-upload" style="margin-top: 10px;">
+        <label>If camera is unavailable, upload a photo:</label><br>
+        <input type="file" id="fileUpload" accept="image/*">
+    </div>
+
     <input type="hidden" name="photo_filename" id="photo_filename" value="<?= $coach->photo ?>">
     <br>
     <img id="preview" src="uploads/<?= $coach->photo ?>" width="100" style="<?= $coach->photo ? '' : 'display:none;' ?>">
   </div>
+  
   <button type="submit" class="btn btn-primary">Save</button>
   <a href="list_coaches.php" class="btn btn-secondary">Cancel</a>
 </form>
