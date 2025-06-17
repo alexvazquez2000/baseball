@@ -22,6 +22,7 @@ switch ($_SERVER["SCRIPT_NAME"]) {
     # ##################################################################
     case "/baseball/add_player.php":
         $CURRENT_PAGE = "Add Player";
+        #Title is the H1 at top of the page
         $PAGE_TITLE = "Add Player";
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt = $pdo->prepare("INSERT INTO players (name, date_of_birth, jersey_number) VALUES (?, ?, ?)");
@@ -35,12 +36,14 @@ switch ($_SERVER["SCRIPT_NAME"]) {
         break;
     case "/baseball/list_players.php":
         $CURRENT_PAGE = "Players";
+        #Title is the H1 at top of the page
         $PAGE_TITLE = "Players";
         $stmt = $pdo->query("SELECT * FROM players");
         $players = $stmt->fetchAll(PDO::FETCH_CLASS, "Player");
         break;
     case "/baseball/edit_player.php":
         $CURRENT_PAGE = "Edit Player";
+        #Title is the H1 at top of the page
         $PAGE_TITLE = "Edit Player";
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt = $pdo->prepare("UPDATE players SET name=?, date_of_birth=?, jersey_number=? WHERE id=?");
@@ -66,6 +69,7 @@ switch ($_SERVER["SCRIPT_NAME"]) {
     # ##################################################################
     case "/baseball/add_parent.php":
         $CURRENT_PAGE = "Add Parent";
+        #Title is the H1 at top of the page
         $PAGE_TITLE = "Add Parent";
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt = $pdo->prepare("INSERT INTO parents (name, email, phone) VALUES (?, ?, ?)");
@@ -79,12 +83,14 @@ switch ($_SERVER["SCRIPT_NAME"]) {
         break;
     case "/baseball/list_parents.php":
         $CURRENT_PAGE = "Parents";
+        #Title is the H1 at top of the page
         $PAGE_TITLE = "Parents";
         $stmt = $pdo->query("SELECT * FROM parents");
         $parents = $stmt->fetchAll(PDO::FETCH_CLASS, "PParent");
         break;
     case "/baseball/edit_parent.php":
         $CURRENT_PAGE = "Edit Parent";
+        #Title is the H1 at top of the page
         $PAGE_TITLE = "Edit Parent";
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt = $pdo->prepare("UPDATE parents SET name=?, email=?, phone=? WHERE id=?");
@@ -115,49 +121,59 @@ switch ($_SERVER["SCRIPT_NAME"]) {
     # ##################################################################
     # Coaches
     # ##################################################################
-    case "/baseball/add_coach.php":
-        $CURRENT_PAGE = "Add Coach";
-        $PAGE_TITLE = "Add Coach";
-        if ($_SERVER["REQUEST_METHOD"] == "POST") {
-            $photo = $_POST['photo_filename'] ?? '';
-            $stmt = $pdo->prepare("INSERT INTO coaches (name, email, phone, photo) VALUES (?, ?, ?, ?)");
-            $stmt->execute([
-                $_POST['name'],
-                $_POST['email'],
-                $_POST['phone'],
-                $photo
-            ]);
-            header("Location: list_coaches.php");
-        }
-        break;
     case "/baseball/list_coaches.php":
         $CURRENT_PAGE = "Coaches";
+        #Title is the H1 at top of the page
         $PAGE_TITLE = "Coaches";
         $stmt = $pdo->query("SELECT * FROM coaches");
         $coaches = $stmt->fetchAll(PDO::FETCH_CLASS, "Coach");
         break;
     case "/baseball/edit_coach.php":
-        $CURRENT_PAGE = "Edit Coach";
-        $PAGE_TITLE = "Edit Coach";
-        if ($_SERVER["REQUEST_METHOD"] == "POST") {
-            $photo = $_POST['photo_filename'] ?? '';
-            $stmt = $pdo->prepare("UPDATE coaches SET name=?, email=?, phone=?, photo=? WHERE id=?");
-            $stmt->execute([
-                $_POST['name'],
-                $_POST['email'],
-                $_POST['phone'],
-                substr($photo, 0, 255),
-                $_POST['id']
-            ]);
-            header("Location: list_coaches.php");
-            exit();
+        $id = $_GET['id'] ?? '';
+        $first_name = $last_name = $phone = $email = $photo = '';
+        if ($id) {
+            $CURRENT_PAGE = "Edit Coach";
+            #Title is the H1 at top of the page
+            $PAGE_TITLE = "Edit Coach";
+            $stmt = $pdo->prepare("SELECT * FROM coaches WHERE id=?");
+            $stmt->setFetchMode(PDO::FETCH_CLASS, "Coach");
+            $stmt->execute([ $id ]);
+            $coach = $stmt->fetch();
+        } else {
+            $CURRENT_PAGE = "Add Coach";
+            #Title is the H1 at top of the page
+            $PAGE_TITLE = "Add Coach";
+            $coach = new Coach();
+            $coach->id = "";
         }
-        $stmt = $pdo->prepare("SELECT * FROM coaches WHERE id=?");
-        $stmt->setFetchMode(PDO::FETCH_CLASS, "Coach");
-        $stmt->execute([
-            $_GET['id']
-        ]);
-        $coach = $stmt->fetch();
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            $id = $_POST['id'];
+            $name = $_POST['name'];
+            $phone = $_POST['phone'];
+            $email = $_POST['email'];
+            $photo = $_POST['photo_filename'] ?? '';
+            if ($id) {
+                $stmt = $pdo->prepare("UPDATE coaches SET name=?, email=?, phone=?, photo=? WHERE id=?");
+                $stmt->execute([
+                    $name,
+                    $email,
+                    $phone,
+                    $photo,
+                    $id
+                ]);
+                header("Location: list_coaches.php");
+            } else {
+                $photo = $_POST['photo_filename'] ?? '';
+                $stmt = $pdo->prepare("INSERT INTO coaches (name, email, phone, photo) VALUES (?, ?, ?, ?)");
+                $stmt->execute([
+                    $name,
+                    $email,
+                    $phone,
+                    $photo
+                ]);
+                header("Location: list_coaches.php");
+            }
+        }
         # $stmt = $pdo->prepare("SELECT p.id, p.name, p.date_of_birth, p.jersey_number FROM players as p LEFT JOIN players_parents ON players_parents.players_id=p.id WHERE players_parents.parents_id=?");
         # $stmt->setFetchMode(PDO::FETCH_CLASS, "Player");
         # $stmt->execute([$_GET['id']]);
