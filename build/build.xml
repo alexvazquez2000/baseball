@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE project>
+
+<project basedir=".." default="localPhpDeploy" name="BaseBall">
+	<!-- run the ant timestamp task -->
+	<tstamp/>
+	<echo message="today returned = '${TODAY}'" />
+	<echo message="tstamp returned = '${TSTAMP}'" />
+	<echo message="dstamp returned = '${DSTAMP}'" />
+	
+	<property name="sourceDir" location="src/php" />
+	<property name="targetLocalDir" location="/xampp/htdocs/baseball" />
+
+	<target name="localPhpDeploy">
+		<mkdir dir="${targetLocalDir}"/>
+		<copy includeemptydirs="false" todir="${targetLocalDir}">
+			<fileset dir="${sourceDir}" excludes="**/*.gitignore, **/*.java"/>
+		</copy>
+	</target>
+
+	
+</project>
