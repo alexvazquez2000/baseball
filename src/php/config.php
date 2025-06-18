@@ -17,6 +17,20 @@ spl_autoload_register(function ($className) {
 
 switch ($_SERVER["SCRIPT_NAME"]) {
 
+    case "/baseball/gethints.php":
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            $q = $_POST['playerNameStartsWith'];
+            $stmt = $pdo->prepare("SELECT id, name, date_of_birth, jersey_number FROM players WHERE name LIKE ?");
+            $stmt->setFetchMode(PDO::FETCH_CLASS, "Player");
+            // Bind the value with wildcards
+            $stmt->bindValue(1, $q.'%', PDO::PARAM_STR);
+            $stmt->execute(); // Execute the statement
+            $players = $stmt->fetchAll();
+        } else {
+            $players = '';
+        }
+        break;
+
     # ##################################################################
     # Players
     # ##################################################################
@@ -190,8 +204,8 @@ switch ($_SERVER["SCRIPT_NAME"]) {
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             $id = $_GET['id'];
-            $stmt = $conn->prepare("DELETE FROM coaches WHERE id=?");
-            $stmt->bind_param('i', $id);
+            $stmt = $conn->prepare("DELETE FROM coaches WHERE id = :id");
+            $stmt->bind_param('id', $id, PDO::PARAM_INT);
             $stmt->execute();
             // TODO: need to add a confirmation - add a message into the top of list_coaches
         }
