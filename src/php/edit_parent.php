@@ -3,7 +3,7 @@ include 'config.php';
 include 'templates/header.php';
 ?>
 
-<h2>Edit Parent</h2>
+<h1><?= htmlspecialchars($PAGE_TITLE) ?></h1>
 <form method="post">
 	<input type="hidden" name="id" value="<?= $parent->id ?>">
   <div class="mb-3">

@@ -67,20 +67,6 @@ switch ($_SERVER["SCRIPT_NAME"]) {
     # ##################################################################
     # Parents
     # ##################################################################
-    case "/baseball/add_parent.php":
-        $CURRENT_PAGE = "Add Parent";
-        #Title is the H1 at top of the page
-        $PAGE_TITLE = "Add Parent";
-        if ($_SERVER["REQUEST_METHOD"] == "POST") {
-            $stmt = $pdo->prepare("INSERT INTO parents (name, email, phone) VALUES (?, ?, ?)");
-            $stmt->execute([
-                $_POST['name'],
-                $_POST['email'],
-                $_POST['phone']
-            ]);
-            header("Location: list_parents.php");
-        }
-        break;
     case "/baseball/list_parents.php":
         $CURRENT_PAGE = "Parents";
         #Title is the H1 at top of the page
@@ -89,33 +75,52 @@ switch ($_SERVER["SCRIPT_NAME"]) {
         $parents = $stmt->fetchAll(PDO::FETCH_CLASS, "PParent");
         break;
     case "/baseball/edit_parent.php":
-        $CURRENT_PAGE = "Edit Parent";
-        #Title is the H1 at top of the page
-        $PAGE_TITLE = "Edit Parent";
-        if ($_SERVER["REQUEST_METHOD"] == "POST") {
-            $stmt = $pdo->prepare("UPDATE parents SET name=?, email=?, phone=? WHERE id=?");
-            $stmt->execute([
-                $_POST['name'],
-                $_POST['email'],
-                $_POST['phone'],
-                $_POST['id']
-            ]);
-            header("Location: list_parents.php");
-            exit();
+        $id = $_GET['id'] ?? '';
+        $first_name = $last_name = $phone = $email = $photo = '';
+        if ($id) {
+            $CURRENT_PAGE = "Edit Parent";
+            #Title is the H1 at top of the page
+            $PAGE_TITLE = "Edit Parent";
+            $stmt = $pdo->prepare("SELECT * FROM parents WHERE id=?");
+            $stmt->setFetchMode(PDO::FETCH_CLASS, "PParent");
+            $stmt->execute([  $id ]);
+            $parent = $stmt->fetch();
+            //also find the children/players
+            $stmt = $pdo->prepare("SELECT p.id, p.name, p.date_of_birth, p.jersey_number FROM players as p LEFT JOIN players_parents ON players_parents.players_id=p.id WHERE players_parents.parents_id=?");
+            # $stmt->setFetchMode(PDO::FETCH_CLASS, "Player");
+            $stmt->execute([ $id ]);
+            $players = $stmt->fetchAll(PDO::FETCH_CLASS, "Player");
+        } else {
+            $CURRENT_PAGE = "Add Parent";
+            #Title is the H1 at top of the page
+            $PAGE_TITLE = "Add Parent";
+            $parent = new PParent();
+            $parent->id = "";
         }
-        $stmt = $pdo->prepare("SELECT * FROM parents WHERE id=?");
-        $stmt->setFetchMode(PDO::FETCH_CLASS, "PParent");
-        $stmt->execute([
-            $_GET['id']
-        ]);
-        $parent = $stmt->fetch();
-
-        $stmt = $pdo->prepare("SELECT p.id, p.name, p.date_of_birth, p.jersey_number FROM players as p LEFT JOIN players_parents ON players_parents.players_id=p.id WHERE players_parents.parents_id=?");
-        # $stmt->setFetchMode(PDO::FETCH_CLASS, "Player");
-        $stmt->execute([
-            $_GET['id']
-        ]);
-        $players = $stmt->fetchAll(PDO::FETCH_CLASS, "Player");
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            $id = $_POST['id'];
+            $name = $_POST['name'];
+            $phone = $_POST['phone'];
+            $email = $_POST['email'];
+            if ($id) {
+                $stmt = $pdo->prepare("UPDATE parents SET name=?, email=?, phone=? WHERE id=?");
+                $stmt->execute([
+                    $name,
+                    $email,
+                    $phone,
+                    $id
+                ]);
+                header("Location: list_parents.php");
+            } else {
+                $stmt = $pdo->prepare("INSERT INTO parents (name, email, phone) VALUES (?, ?, ?)");
+                $stmt->execute([
+                    $name,
+                    $email,
+                    $phone
+                ]);
+                header("Location: list_parents.php");
+            }
+        }
         break;
 
     # ##################################################################
