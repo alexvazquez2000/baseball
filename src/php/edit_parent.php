@@ -54,11 +54,12 @@ include 'templates/header.php';
   <input type="text" id="fname" name="fname" onkeyup="showHint(this.value)" placeholder="Search for names..">
 </form>
 <p><span id="txtHint"></span></p>
-
+TODO: these are not yet being saved
 <a href="list_parents.php">Back</a>
 
 <script>
-var childrenPlayers = [ ]; //29 is Andres Rios
+//track new children
+var childrenPlayers = [ ];
 
 function addPlayer(id, childName, childDOB, jersey) {
 	
