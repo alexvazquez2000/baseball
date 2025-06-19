@@ -2,12 +2,14 @@
 {% block content %}
 <h2>Players</h2>
 <a href="{{ url_for('add_player') }}" class="btn btn-success mb-2">Add Player</a>
-<table class="table table-striped">
+<br>
+<input type="text" id="search" onkeyup="filterByName(0)" placeholder="Search for names..">
+<table class="table table-striped" id="filteredTable">
   <thead>
     <tr>
-      <th>Name</th>
-      <th>DOB</th>
-      <th>Jersey Number</th>
+      <th onclick="sortTable(0)">Name</th>
+      <th onclick="sortTable(1)">DOB</th>
+      <th onclick="sortTable(2)">Jersey Number</th>
       <th>Edit</th>
     </tr>
   </thead>
