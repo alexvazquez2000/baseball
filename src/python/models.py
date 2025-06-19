@@ -35,9 +35,10 @@ class Parents(db.Model):
 
 class Coaches(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64), nullable=False)
-    email = db.Column(db.String(120))
-    phone = db.Column(db.String(30))
+    name = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(100))
+    phone = db.Column(db.String(20))
+    photo = db.Column(db.String(255))
     teams = db.relationship('Teams', secondary=teams_coaches, back_populates='coaches')
 
 class Teams(db.Model):
