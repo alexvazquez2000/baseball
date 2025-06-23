@@ -1,6 +1,5 @@
-/docker-compose.yml
-/config.py
 /__pycache__/
 /build/
 /uploads/
 /venv/
+.env
