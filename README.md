@@ -7,6 +7,9 @@
 # create venv environment
 
 	python -m venv venv
+	#on windows use:
+	venv\Scripts\activate
+	#or on linux/Mac use:
 	. venv/Scripts/activate
 	pip list  #that showed an almost empty list
 	#install the requirements
