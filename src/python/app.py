@@ -1,9 +1,13 @@
-from flask import Flask, render_template, request, redirect, url_for, send_from_directory
+from flask import Flask, render_template, request, redirect, url_for, send_from_directory, make_response
 from datetime import datetime
 from config import Config
 from models import db, Players, Parents, Coaches, Teams
 import os
 from werkzeug.utils import secure_filename
+
+#for PDF
+#from flask import make_response
+from fpdf import FPDF
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -184,6 +188,27 @@ def edit_team(team_id):
         db.session.commit()
         return redirect(url_for('list_teams'))
     return render_template('edit_team.html', team=team, coaches=coaches, players=players)
+
+# -- Experimental section
+@app.route('/generate-pdf')
+def generate_pdf():
+	# https://py-pdf.github.io/fpdf2/Tutorial.html#tuto-1-minimal-example
+    #Create a PDF object
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_font("Helvetica", size=12)
+    # Add content to the PDF
+    pdf.cell(text="Hello from Flask and fpdf2!")
+    pdf.ln(10) # Line break
+    pdf.cell(text="This is a dynamically generated PDF.")
+    # PDF is ready
+    # for usage on flask https://py-pdf.github.io/fpdf2/UsageInWebAPI.html
+    # Create a Flask response and Output the PDF as bytes
+    response = make_response(bytes(pdf.output()))
+    # Set appropriate headers for PDF
+    response.headers["Content-Type"] = "application/pdf"
+    response.headers["Content-Disposition"] = "inline; filename=generated_document.pdf" 
+    return response
 
 # -- Extra navigation links on welcome page --
 
