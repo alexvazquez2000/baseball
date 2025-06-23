@@ -16,6 +16,19 @@
 	pip list
 
 
+# Run locally with python
+
+	python app.py
+
+# Run locally with gunicorn - but not on windows
+
+	gunicorn app:app
+	# Note that this gives an error: ModuleNotFoundError: No module named 'fcntl'
+	# because gunicorn can not run on Windows. Could try using portalocker or waitress on Windows, instead of gunicorn
+
+
+
+# Initial requirements
 create a python website using flask for a baseball league for children.
 Use mysql/maria DB. Keep the database connection settings on a config file.
 Create separate files for each class.
