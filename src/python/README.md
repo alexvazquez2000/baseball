@@ -4,6 +4,17 @@
 
 	pip install -r requirements.txt
 
+# create venv environment
+
+	python -m venv venv
+	. venv/Scripts/activate
+	pip list  #that showed an almost empty list
+	#install the requirements
+	pip install -r requirements.txt
+	pip freeze > requirements.txt
+	#now list shows about 20 packages
+	pip list
+
 
 create a python website using flask for a baseball league for children.
 Use mysql/maria DB. Keep the database connection settings on a config file.
