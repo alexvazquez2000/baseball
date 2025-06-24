@@ -33,31 +33,36 @@ def list_players():
     players = Players.query.all()
     return render_template('players.html', players=players)
 
-@app.route('/player/add', methods=['GET', 'POST'])
-def add_player():
+@app.route('/player', methods=['GET', 'POST'])
+def edit_player():
+    player = {}
+    player_id = request.args.get('player_id')
     if request.method == 'POST':
-        dob = datetime.strptime(request.form['date_of_birth'], '%Y-%m-%d').date()
-        player = Players(
-            name=request.form['name'],
-            last_name=request.form['last_name'],
-            date_of_birth=dob,
-            jersey_number=int(request.form['jersey_number'])
-        )
-        db.session.add(player)
+        #get the ID from the post data if present
+        player_id = request.form['id'] 
+        if player_id:
+            #update existing entry
+            player = Players.query.get_or_404(player_id)
+            player.name = request.form['name']
+            player.date_of_birth = datetime.strptime(request.form['date_of_birth'], '%Y-%m-%d').date()
+            player.jersey_number = int(request.form['jersey_number'])
+        else :
+            #add new player / player_id is empty
+            dob = datetime.strptime(request.form['date_of_birth'], '%Y-%m-%d').date()
+            player = Players(
+                name=request.form['name'],
+                date_of_birth=dob,
+                jersey_number=int(request.form['jersey_number'])
+            )
+            db.session.add(player)
         db.session.commit()
         return redirect(url_for('list_players'))
-    return render_template('add_player.html')
 
-@app.route('/player/<int:player_id>/edit', methods=['GET', 'POST'])
-def edit_player(player_id):
-    player = Players.query.get_or_404(player_id)
-    if request.method == 'POST':
-        player.name = request.form['name']
-        player.date_of_birth = datetime.strptime(request.form['date_of_birth'], '%Y-%m-%d').date()
-        player.jersey_number = int(request.form['jersey_number'])
-        db.session.commit()
-        return redirect(url_for('list_players'))
-    return render_template('edit_player.html', player=player)
+    dob = ''
+    if player_id :
+        player = Players.query.get_or_404(player_id)
+        dob = player.date_of_birth.strftime('%Y-%m-%d')
+    return render_template('edit_player.html', player=player, dob=dob)
 
 # -- Parents --
 

@@ -2,19 +2,48 @@
 {% block content %}
 <h2>Edit Player</h2>
 <form method="post">
+  <input type="hidden" name="id" value="{{ player.id or '' }}">
   <div class="mb-3">
     <label for="name" class="form-label">Name</label>
-    <input type="text" name="name" class="form-control" value="{{ player.name }}" required />
+    <input type="text" name="name" class="form-control" value="{{ player.name or '' }}" required />
   </div>
   <div class="mb-3">
     <label for="date_of_birth" class="form-label">Date of Birth</label>
-    <input type="date" name="date_of_birth" class="form-control" value="{{ player.date_of_birth.strftime('%Y-%m-%d') }}" required />
+    <input type="date" name="date_of_birth" class="form-control" value="{{ dob }}" required />
   </div>
   <div class="mb-3">
-    <label for="jersey_number" class="form-label">Jersey Number</label>
-    <input type="number" name="jersey_number" class="form-control" value="{{ player.jersey_number }}" required />
+    <label for="jersey_number" class="form-label">Jersey Number (0 if unknown)</label>
+    <!-- zero is false, so it is not shown- if 0 is needed remove the OR '' -->
+    <input type="number" name="jersey_number" class="form-control" value="{{ player.jersey_number or ''}}" required />
   </div>
   <button type="submit" class="btn btn-primary">Save</button>
   <a href="{{ url_for('list_players') }}" class="btn btn-secondary">Cancel</a>
 </form>
+
+{% if player.id %}
+<table class="table table-striped" id="filteredTable">
+  <thead>
+    <tr>
+      <th >Parent Name</th>
+      <th >Email</th>
+      <th >Phone</th>
+      <th>Edit</th>
+    </tr>
+  </thead>
+  <tbody>
+{% for parent in player.parents %}
+    <tr>
+      <td>{{ parent.name }}</td>
+      <td>{{ parent.email or "" }}</td>
+      <td>{{ parent.phone or "" }}</td>
+      <td><a href="{{ url_for('edit_parent', parent_id=parent.id) }}" class="btn btn-sm btn-primary">Edit</a></td>
+    </tr>
+
+{% else %}
+    <tr><td colspan="4">No parents found.</td></tr>
+{% endfor %}
+  </tbody>
+</table>
+{% endif %}
+
 {% endblock %}

@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
 <h2>Players</h2>
-<a href="{{ url_for('add_player') }}" class="btn btn-success mb-2">Add Player</a>
+<a href="{{ url_for('edit_player') }}" class="btn btn-success mb-2">Add Player</a>
 <br>
 <input type="text" id="search" onkeyup="filterByName(0)" placeholder="Search for names..">
 <table class="table table-striped" id="filteredTable">
@@ -17,7 +17,7 @@
     {% for player in players %}
     <tr>
       <td>{{ player.name }}</td>
-      <td>{{ player.date_of_birth.strftime('%Y-%m-%d') }}</td>
+      <td>{{ player.date_of_birth.strftime('%m-%d-%Y') }}</td>
       <td>{{ player.jersey_number }}</td>
       <td><a href="{{ url_for('edit_player', player_id=player.id) }}" class="btn btn-sm btn-primary">Edit</a></td>
     </tr>
