@@ -106,28 +106,34 @@ def list_coaches():
     coaches = Coaches.query.all()
     return render_template('coaches.html', coaches=coaches)
 
-@app.route('/coach/add', methods=['GET', 'POST'])
-def add_coach():
+@app.route('/coach', methods=['GET', 'POST'])
+def edit_coach():
+    coach = {}
+    coach_id = request.args.get('id')
     if request.method == 'POST':
-        coach = Coaches(
-            name=request.form['name'],
-            email=request.form['email'],
-            phone=request.form['phone']
-        )
-        db.session.add(coach)
+        #get the coach ID from the post data if present
+        coach_id = request.form['id'] 
+        if coach_id:
+            #update existing entry
+            coach = Coaches.query.get_or_404(coach_id)
+            coach.name = request.form['name']
+            coach.email = request.form['email']
+            coach.phone = request.form['phone']
+            coach.photo = request.form['photo_filename']
+        else :
+            #add new coach / coach_id is empty
+            coach = Coaches(
+                name=request.form['name'],
+                email=request.form['email'],
+                phone=request.form['phone'],
+                photo=request.form['photo_filename']
+            )
+            db.session.add(coach)
         db.session.commit()
         return redirect(url_for('list_coaches'))
-    return render_template('add_coach.html')
 
-@app.route('/coach/<int:coach_id>/edit', methods=['GET', 'POST'])
-def edit_coach(coach_id):
-    coach = Coaches.query.get_or_404(coach_id)
-    if request.method == 'POST':
-        coach.name = request.form['name']
-        coach.email = request.form['email']
-        coach.phone = request.form['phone']
-        db.session.commit()
-        return redirect(url_for('list_coaches'))
+    if coach_id :
+        coach = Coaches.query.get_or_404(coach_id)
     return render_template('edit_coach.html', coach=coach)
 
 # -- Teams --
@@ -220,10 +226,18 @@ def parents_page():
 def teams_page():
     return redirect(url_for('list_teams'))
 
+@app.route('/upload_photo', methods=['POST'])
+def upload_photo():
+    photo = request.files['photo']
+    filename = secure_filename(f"{str(int.from_bytes(os.urandom(6), 'big'))}.jpg")
+    path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    photo.save(path)
+    return filename
+
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 if __name__ == '__main__':
-    #app.run(host='0.0.0.0', debug=True)
-    app.run()
+    app.run(host='0.0.0.0', debug=True)
+    #app.run()

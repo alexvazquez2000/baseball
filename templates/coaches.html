@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
 <h2>Coaches</h2>
-<a href="{{ url_for('add_coach') }}" class="btn btn-success mb-2">Add Coach</a>
+<a href="{{ url_for('edit_coach') }}" class="btn btn-success mb-2">Add Coach</a>
 <br>
 <input type="text" id="search" onkeyup="filterByName(1)" placeholder="Search for names..">
 <table class="table table-striped" id="filteredTable">
@@ -22,7 +22,7 @@
       <td>{{ coach.email or "" }}</td>
       <td>{{ coach.phone or "" }}</td>
       <td>
-        <a href="{{ url_for('edit_coach', coach_id=coach.id) }}" class="btn btn-sm btn-primary">Edit</a>
+        <a href="{{ url_for('edit_coach', id=coach.id) }}" class="btn btn-sm btn-primary">Edit</a>
       </td>
     </tr>
     {% else %}
