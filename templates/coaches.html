@@ -22,8 +22,7 @@
       <td>{{ coach.email or "" }}</td>
       <td>{{ coach.phone or "" }}</td>
       <td>
-        <a href="{{ url_for('edit_coach', coach_id=coach.id) }}" class="btn btn-sm btn-primary">Edit</a> |
-        <a href="{{ url_for('edit_coach', coach_id=coach.id) }}" class="btn btn-sm btn-primary">Delete</a>
+        <a href="{{ url_for('edit_coach', coach_id=coach.id) }}" class="btn btn-sm btn-primary">Edit</a>
       </td>
     </tr>
     {% else %}
