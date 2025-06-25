@@ -4,7 +4,9 @@ from config import Config
 from models import db, Players, Parents, Coaches, Teams
 import os
 from werkzeug.utils import secure_filename
-
+from flask_wtf.csrf import CSRFProtect
+from flask import jsonify
+#Local imports
 from base_calendar import BaseCalendar
 
 #for PDF
@@ -16,6 +18,9 @@ app.config.from_object(Config)
 app.config['UPLOAD_FOLDER'] = 'uploads'
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 db.init_app(app)
+
+#csrf is being used only on the ajax calls
+csrf = CSRFProtect(app)
 
 ##To create DB
 #with app.app_context():
@@ -116,7 +121,7 @@ def search_parents():
     q = request.args.get("q", "")
     results = []
     if q:
-        results = Parent.query.filter(Parent.name.ilike(f"%{q}%")).all()
+        results = Parents.query.filter(Parents.name.ilike(f"%{q}%")).all()
     data = [{"id": p.id, "name": p.name, "phone": p.phone} for p in results]
     return jsonify(data)
 
@@ -124,7 +129,7 @@ def search_parents():
 def add_parent_ajax(player_id):
     parent_id = request.json.get("parent_id")
     player = Players.query.get(player_id)
-    parent = Parent.query.get(parent_id)
+    parent = Parents.query.get(parent_id)
 
     if parent and player and parent not in player.parents:
         player.parents.append(parent)
