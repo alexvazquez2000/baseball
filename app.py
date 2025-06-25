@@ -68,6 +68,7 @@ def edit_player():
         dob = player.date_of_birth.strftime('%Y-%m-%d')
     return render_template('edit_player.html', player=player, dob=dob)
 
+
 # -- Parents --
 
 @app.route('/parents')
@@ -107,6 +108,42 @@ def edit_parent(parent_id):
         db.session.commit()
         return redirect(url_for('list_parents'))
     return render_template('edit_parent.html', parent=parent, players=players)
+
+#Ajax
+@app.route("/parents/search")
+def search_parents():
+    """Search parents by name, returns JSON."""
+    q = request.args.get("q", "")
+    results = []
+    if q:
+        results = Parent.query.filter(Parent.name.ilike(f"%{q}%")).all()
+    data = [{"id": p.id, "name": p.name, "phone": p.phone} for p in results]
+    return jsonify(data)
+
+@app.route("/player/<int:player_id>/add_parent_ajax", methods=["POST"])
+def add_parent_ajax(player_id):
+    parent_id = request.json.get("parent_id")
+    player = Players.query.get(player_id)
+    parent = Parent.query.get(parent_id)
+
+    if parent and player and parent not in player.parents:
+        player.parents.append(parent)
+        db.session.commit()
+        return jsonify({"success": True})
+    return jsonify({"success": False}), 400
+
+#Ajax
+@app.route("/player/<int:player_id>/remove_parent_ajax", methods=["POST"])
+def remove_parent_ajax(player_id):
+    parent_id = request.json.get("parent_id")
+    player = Players.query.get(player_id)
+    parent = Parents.query.get(parent_id)
+
+    if parent and player and parent in player.parents:
+        player.parents.remove(parent)
+        db.session.commit()
+        return jsonify({"success": True})
+    return jsonify({"success": False}), 400
 
 # -- Coaches --
 
