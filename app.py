@@ -63,12 +63,10 @@ def edit_player():
         return redirect(url_for('list_players'))
 
     dob = ''
-    baseball_age = ''
     if player_id :
         player = Players.query.get_or_404(player_id)
         dob = player.date_of_birth.strftime('%Y-%m-%d')
-        baseball_age = BaseCalendar.baseball_age(dob, "2025-05-01")
-    return render_template('edit_player.html', player=player, dob=dob, baseball_age=baseball_age)
+    return render_template('edit_player.html', player=player, dob=dob)
 
 # -- Parents --
 
