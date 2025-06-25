@@ -49,4 +49,4 @@ class BaseCalendar:
 ## would print:
 ##     Age: 24 years, 4 months, 1 days.
 
-print(BaseCalendar.baseball_age("2000-05-01", "2025-05-01"))
+#print(BaseCalendar.baseball_age("2000-05-01", "2025-05-01"))
