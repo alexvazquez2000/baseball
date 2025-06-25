@@ -5,6 +5,8 @@ from models import db, Players, Parents, Coaches, Teams
 import os
 from werkzeug.utils import secure_filename
 
+from base_calendar import BaseCalendar
+
 #for PDF
 #from flask import make_response
 from fpdf import FPDF
@@ -26,8 +28,10 @@ def welcome():
     teams = Teams.query.filter_by(season=current_season).all()
     return render_template('welcome.html', teams=teams)
 
-# -- Players --
+# -- Ajax --
 
+
+# -- Players --
 @app.route('/players')
 def list_players():
     players = Players.query.all()
@@ -59,10 +63,12 @@ def edit_player():
         return redirect(url_for('list_players'))
 
     dob = ''
+    baseball_age = ''
     if player_id :
         player = Players.query.get_or_404(player_id)
         dob = player.date_of_birth.strftime('%Y-%m-%d')
-    return render_template('edit_player.html', player=player, dob=dob)
+        baseball_age = BaseCalendar.baseball_age(dob, "2025-05-01")
+    return render_template('edit_player.html', player=player, dob=dob, baseball_age=baseball_age)
 
 # -- Parents --
 
