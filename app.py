@@ -8,6 +8,7 @@ from flask_wtf.csrf import CSRFProtect
 from flask import jsonify
 #Local imports
 from base_calendar import BaseCalendar
+from thumbnail import Thumbnail
 
 #for PDF
 #from flask import make_response
@@ -164,8 +165,10 @@ def edit_coach():
     if request.method == 'POST':
         # Handle uploaded or captured photo
         photo_data = None
+        thumbnail_data = None
         if "photo" in request.files and request.files["photo"].filename:
             photo_data = request.files["photo"].read()
+            thumbnail_data = Thumbnail.create_thumbnail(photo_data)
 
         #get the coach ID from the post data if present
         coach_id = request.form['id'] 
@@ -178,13 +181,15 @@ def edit_coach():
             if photo_data:
                 # Only overwrite if new photo uploaded
                 coach.photo = photo_data
+                coach.thumbnail=thumbnail_data
         else :
             #add new coach / coach_id is empty
             coach = Coaches(
                 name=request.form['name'],
                 email=request.form['email'],
                 phone=request.form['phone'],
-                photo=photo_data
+                photo=photo_data,
+                thumbnail=thumbnail_data
             )
             db.session.add(coach)
         db.session.commit()
@@ -196,14 +201,14 @@ def edit_coach():
 
 @app.route("/photo/<int:coach_id>")
 def get_photo(coach_id):
-    coach = Coaches.query.get(coach_id)
+    coach = Coaches.query.get_or_404(coach_id)
     if coach and coach.photo:
         return Response(coach.photo, mimetype="image/jpeg")
     return '', 404
 
 @app.route("/photo/thumbnail/<int:coach_id>")
 def get_thumbnail(coach_id):
-    coach = Coaches.query.get(coach_id)
+    coach = Coaches.query.get_or_404(coach_id)
     if coach and coach.thumbnail:
         return Response(coach.thumbnail, mimetype="image/jpeg")
     return '', 404
