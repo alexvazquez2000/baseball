@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, send_from_directory, make_response
+from flask import Flask, render_template, request, redirect, url_for, send_from_directory, make_response, Response
 from datetime import datetime
 from config import Config
 from models import db, Players, Parents, Coaches, Teams
@@ -162,6 +162,11 @@ def edit_coach():
     coach = {}
     coach_id = request.args.get('id')
     if request.method == 'POST':
+        # Handle uploaded or captured photo
+        photo_data = None
+        if "photo" in request.files and request.files["photo"].filename:
+            photo_data = request.files["photo"].read()
+
         #get the coach ID from the post data if present
         coach_id = request.form['id'] 
         if coach_id:
@@ -170,14 +175,16 @@ def edit_coach():
             coach.name = request.form['name']
             coach.email = request.form['email']
             coach.phone = request.form['phone']
-            coach.photo = request.form['photo_filename']
+            if photo_data:
+                # Only overwrite if new photo uploaded
+                coach.photo = photo_data
         else :
             #add new coach / coach_id is empty
             coach = Coaches(
                 name=request.form['name'],
                 email=request.form['email'],
                 phone=request.form['phone'],
-                photo=request.form['photo_filename']
+                photo=photo_data
             )
             db.session.add(coach)
         db.session.commit()
@@ -186,6 +193,20 @@ def edit_coach():
     if coach_id :
         coach = Coaches.query.get_or_404(coach_id)
     return render_template('edit_coach.html', coach=coach)
+
+@app.route("/photo/<int:coach_id>")
+def get_photo(coach_id):
+    coach = Coaches.query.get(coach_id)
+    if coach and coach.photo:
+        return Response(coach.photo, mimetype="image/jpeg")
+    return '', 404
+
+@app.route("/photo/thumbnail/<int:coach_id>")
+def get_thumbnail(coach_id):
+    coach = Coaches.query.get(coach_id)
+    if coach and coach.thumbnail:
+        return Response(coach.thumbnail, mimetype="image/jpeg")
+    return '', 404
 
 # -- Teams --
 

@@ -17,7 +17,8 @@
   <tbody>
     {% for coach in coaches %}
     <tr>
-      <td>{% if coach.photo %}<img src="{{ url_for('uploaded_file', filename=coach.photo) }}" width="80">{% endif %}</td>
+    <!-- TODO: thumbnails will be 128x128 is width=80 correct?-->
+      <td>{% if coach.photo %}<img src="{{ url_for('get_photo', coach_id=coach.id) }}" width="80">{% endif %}</td>
       <td>{{ coach.name }}</td>
       <td>{{ coach.email or "" }}</td>
       <td>{{ coach.phone or "" }}</td>

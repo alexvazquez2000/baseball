@@ -38,7 +38,8 @@ class Coaches(db.Model):
     name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(100))
     phone = db.Column(db.String(20))
-    photo = db.Column(db.String(255))
+    photo = db.Column(db.LargeBinary)
+    thumbnail = db.Column(db.LargeBinary)
     teams = db.relationship('Teams', secondary=teams_coaches, back_populates='coaches')
 
 class Teams(db.Model):
