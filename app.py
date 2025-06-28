@@ -7,7 +7,6 @@ from werkzeug.utils import secure_filename
 from flask_wtf.csrf import CSRFProtect
 from flask import jsonify
 #Local imports
-from base_calendar import BaseCalendar
 from thumbnail import Thumbnail
 
 #for PDF
