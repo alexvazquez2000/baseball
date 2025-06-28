@@ -11,12 +11,40 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light mb-3">
   <div class="container">
     <a class="navbar-brand" href="{{ url_for('welcome') }}">Baseball League</a>
-    <div>
-      <a href="{{ url_for('list_players') }}" class="btn btn-outline-primary btn-sm me-1">Players</a>
-      <a href="{{ url_for('list_parents') }}" class="btn btn-outline-primary btn-sm me-1">Parents</a>
-      <a href="{{ url_for('list_coaches') }}" class="btn btn-outline-primary btn-sm me-1">Coaches</a>
-      <a href="{{ url_for('list_teams') }}" class="btn btn-outline-primary btn-sm">Teams</a>
-    </div>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('welcome') }}">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('list_players') }}">Players</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('list_parents') }}">Parents</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('list_coaches') }}">Coaches</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('list_teams') }}">Teams</a>
+            </li>
+          </ul>
+          <ul class="navbar-nav ms-auto">
+            {% if session.get('access_token') %}
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                {% if user_info %}{{ user_info.given_name }}{% else %}User{% endif %}
+              </a>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="{{ url_for('logout') }}">Logout</a></li>
+              </ul>
+            </li>
+            {% endif %}
+          </ul>
+        </div>
   </div>
 </nav>
 <div class="container">

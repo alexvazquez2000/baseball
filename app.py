@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, send_from_directory, make_response, Response
+from flask import Flask, render_template, request, redirect, url_for, send_from_directory, make_response, Response, session
 from datetime import datetime
 from config import Config
 from models import db, Players, Parents, Coaches, Teams
@@ -6,6 +6,10 @@ import os
 from werkzeug.utils import secure_filename
 from flask_wtf.csrf import CSRFProtect
 from flask import jsonify
+import google_auth_oauthlib.flow
+import json
+import requests
+from functools import wraps
 #Local imports
 from thumbnail import Thumbnail
 
@@ -22,27 +26,97 @@ db.init_app(app)
 #csrf is being used only on the ajax calls
 csrf = CSRFProtect(app)
 
+# OAuth configuration
+try:
+    oauth_config = json.loads(os.environ.get('GOOGLE_OAUTH_SECRETS', '{}'))
+    if oauth_config:
+        oauth_flow = google_auth_oauthlib.flow.Flow.from_client_config(
+            oauth_config,
+            scopes=[
+                "https://www.googleapis.com/auth/userinfo.email",
+                "openid", 
+                "https://www.googleapis.com/auth/userinfo.profile",
+            ]
+        )
+except Exception as e:
+    print(f"OAuth configuration error: {e}")
+    oauth_flow = None
+
 ##To create DB
 #with app.app_context():
 #    db.create_all()
 
+# Authentication decorator
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'access_token' not in session:
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+# Get user info from Google
+def get_user_info(access_token):
+    response = requests.get("https://www.googleapis.com/oauth2/v3/userinfo", headers={
+       "Authorization": f"Bearer {access_token}"
+   })
+    if response.status_code == 200:
+        return response.json()
+    else:
+        print(f"Failed to fetch user info: {response.status_code} {response.text}")
+        return None
+
 # -- Welcome page: show teams in current season (e.g. "2025") --
 @app.route('/')
+@login_required
 def welcome():
     current_season = "2025-Spring"  # or dynamic if you want
     teams = Teams.query.filter_by(season=current_season).all()
-    return render_template('welcome.html', teams=teams)
+    user_info = None
+    if 'access_token' in session:
+        user_info = get_user_info(session['access_token'])
+    return render_template('welcome.html', teams=teams, user_info=user_info)
+
+# -- Authentication Routes --
+@app.route('/login')
+def login():
+    if oauth_flow is None:
+        return "OAuth not configured. Please set GOOGLE_OAUTH_SECRETS environment variable.", 500
+    
+    oauth_flow.redirect_uri = url_for('oauth2callback', _external=True).replace('http://', 'https://')
+    authorization_url, state = oauth_flow.authorization_url()
+    session['state'] = state
+    return redirect(authorization_url)
+
+@app.route('/oauth2callback')
+def oauth2callback():
+    if oauth_flow is None:
+        return "OAuth not configured.", 500
+    
+    if not session.get('state') == request.args.get('state'):
+        return 'Invalid state parameter', 400
+    
+    oauth_flow.fetch_token(authorization_response=request.url.replace('http:', 'https:'))
+    session['access_token'] = oauth_flow.credentials.token
+    return redirect("/")
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('login'))
 
 # -- Ajax --
 
 
 # -- Players --
 @app.route('/players')
+@login_required
 def list_players():
     players = Players.query.all()
     return render_template('players.html', players=players)
 
 @app.route('/player', methods=['GET', 'POST'])
+@login_required
 def edit_player():
     player = {}
     player_id = request.args.get('player_id')
@@ -77,11 +151,13 @@ def edit_player():
 # -- Parents --
 
 @app.route('/parents')
+@login_required
 def list_parents():
     parents = Parents.query.all()
     return render_template('parents.html', parents=parents)
 
 @app.route('/parent/add', methods=['GET', 'POST'])
+@login_required
 def add_parent():
     if request.method == 'POST':
         parent = Parents(
@@ -95,6 +171,7 @@ def add_parent():
     return render_template('add_parent.html')
 
 @app.route('/parent/<int:parent_id>/edit', methods=['GET', 'POST'])
+@login_required
 def edit_parent(parent_id):
     parent = Parents.query.get_or_404(parent_id)
     players = Players.query.all()
@@ -153,11 +230,13 @@ def remove_parent_ajax(player_id):
 # -- Coaches --
 
 @app.route('/coaches')
+@login_required
 def list_coaches():
     coaches = Coaches.query.all()
     return render_template('coaches.html', coaches=coaches)
 
 @app.route('/coach', methods=['GET', 'POST'])
+@login_required
 def edit_coach():
     coach = {}
     coach_id = request.args.get('id')
@@ -215,11 +294,13 @@ def get_thumbnail(coach_id):
 # -- Teams --
 
 @app.route('/teams')
+@login_required
 def list_teams():
     teams = Teams.query.all()
     return render_template('teams.html', teams=teams)
 
 @app.route('/team/add', methods=['GET', 'POST'])
+@login_required
 def add_team():
     coaches = Coaches.query.all()
     players = Players.query.all()
@@ -246,6 +327,7 @@ def add_team():
     return render_template('add_team.html', coaches=coaches, players=players)
 
 @app.route('/team/<int:team_id>/edit', methods=['GET', 'POST'])
+@login_required
 def edit_team(team_id):
     team = Teams.query.get_or_404(team_id)
     coaches = Coaches.query.all()
