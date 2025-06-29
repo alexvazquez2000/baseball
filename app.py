@@ -102,6 +102,12 @@ def oauth2callback():
 
 @app.route('/logout')
 def logout():
+    # Revoke the Google token if it exists
+    if 'access_token' in session:
+        access_token = session['access_token']
+        revoke_url = f'https://oauth2.googleapis.com/revoke?token={access_token}'
+        requests.post(revoke_url, headers={'content-type': 'application/x-www-form-urlencoded'})
+    
     session.clear()
     return redirect(url_for('login'))
 
