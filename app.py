@@ -82,7 +82,7 @@ def welcome():
 def login():
     if oauth_flow is None:
         return "OAuth not configured. Please set GOOGLE_OAUTH_SECRETS environment variable.", 500
-    
+
     oauth_flow.redirect_uri = url_for('oauth2callback', _external=True).replace('http://', 'https://')
     authorization_url, state = oauth_flow.authorization_url()
     session['state'] = state
@@ -397,5 +397,6 @@ def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True)
+    app.run(host='0.0.0.0', debug=True,ssl_context='adhoc')
+    #app.run(host='0.0.0.0', debug=True)
     #app.run()
