@@ -10,6 +10,7 @@ import google_auth_oauthlib.flow
 import json
 import requests
 from functools import wraps
+import facebook
 #Local imports
 from thumbnail import Thumbnail
 
@@ -42,6 +43,10 @@ except Exception as e:
     print(f"OAuth configuration error: {e}")
     oauth_flow = None
 
+# Facebook OAuth configuration
+FACEBOOK_APP_ID = os.environ.get('FACEBOOK_APP_ID')
+FACEBOOK_APP_SECRET = os.environ.get('FACEBOOK_APP_SECRET')
+
 ##To create DB
 #with app.app_context():
 #    db.create_all()
@@ -51,7 +56,7 @@ def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if 'access_token' not in session:
-            return redirect(url_for('login'))
+            return redirect(url_for('login_page'))
         return f(*args, **kwargs)
     return decorated_function
 
@@ -66,6 +71,16 @@ def get_user_info(access_token):
         print(f"Failed to fetch user info: {response.status_code} {response.text}")
         return None
 
+# Get user info from Facebook
+def get_facebook_user_info(access_token):
+    try:
+        graph = facebook.GraphAPI(access_token=access_token)
+        user_info = graph.get_object('me', fields='id,name,email,picture')
+        return user_info
+    except Exception as e:
+        print(f"Failed to fetch Facebook user info: {e}")
+        return None
+
 # -- Welcome page: show teams in current season (e.g. "2025") --
 @app.route('/')
 @login_required
@@ -74,12 +89,19 @@ def welcome():
     teams = Teams.query.filter_by(season=current_season).all()
     user_info = None
     if 'access_token' in session:
-        user_info = get_user_info(session['access_token'])
+        if session.get('auth_provider') == 'facebook':
+            user_info = get_facebook_user_info(session['access_token'])
+        else:
+            user_info = get_user_info(session['access_token'])
     return render_template('welcome.html', teams=teams, user_info=user_info)
 
 # -- Authentication Routes --
 @app.route('/login')
-def login():
+def login_page():
+    return render_template('login.html')
+
+@app.route('/login/google')
+def google_login():
     if oauth_flow is None:
         return "OAuth not configured. Please set GOOGLE_OAUTH_SECRETS environment variable.", 500
 
@@ -87,6 +109,15 @@ def login():
     authorization_url, state = oauth_flow.authorization_url()
     session['state'] = state
     return redirect(authorization_url)
+
+@app.route('/login/facebook')
+def facebook_login():
+    if not FACEBOOK_APP_ID or not FACEBOOK_APP_SECRET:
+        return "Facebook OAuth not configured. Please set FACEBOOK_APP_ID and FACEBOOK_APP_SECRET environment variables.", 500
+    
+    redirect_uri = url_for('facebook_callback', _external=True).replace('http://', 'https://')
+    facebook_auth_url = f"https://www.facebook.com/v18.0/dialog/oauth?client_id={FACEBOOK_APP_ID}&redirect_uri={redirect_uri}&scope=email"
+    return redirect(facebook_auth_url)
 
 @app.route('/oauth2callback')
 def oauth2callback():
@@ -98,18 +129,45 @@ def oauth2callback():
     
     oauth_flow.fetch_token(authorization_response=request.url.replace('http:', 'https:'))
     session['access_token'] = oauth_flow.credentials.token
+    session['auth_provider'] = 'google'
     return redirect("/")
+
+@app.route('/facebook/callback')
+def facebook_callback():
+    code = request.args.get('code')
+    if not code:
+        return 'Authorization failed', 400
+    
+    redirect_uri = url_for('facebook_callback', _external=True).replace('http://', 'https://')
+    token_url = f"https://graph.facebook.com/v18.0/oauth/access_token?client_id={FACEBOOK_APP_ID}&redirect_uri={redirect_uri}&client_secret={FACEBOOK_APP_SECRET}&code={code}"
+    
+    response = requests.get(token_url)
+    if response.status_code == 200:
+        token_data = response.json()
+        session['access_token'] = token_data['access_token']
+        session['auth_provider'] = 'facebook'
+        return redirect("/")
+    else:
+        return 'Failed to get access token', 400
 
 @app.route('/logout')
 def logout():
-    # Revoke the Google token if it exists
+    # Revoke tokens based on provider
     if 'access_token' in session:
         access_token = session['access_token']
-        revoke_url = f'https://oauth2.googleapis.com/revoke?token={access_token}'
-        requests.post(revoke_url, headers={'content-type': 'application/x-www-form-urlencoded'})
+        auth_provider = session.get('auth_provider', 'google')
+        
+        if auth_provider == 'facebook' and FACEBOOK_APP_ID and FACEBOOK_APP_SECRET:
+            # Revoke Facebook token
+            revoke_url = f'https://graph.facebook.com/me/permissions?access_token={access_token}'
+            requests.delete(revoke_url)
+        elif auth_provider == 'google':
+            # Revoke Google token
+            revoke_url = f'https://oauth2.googleapis.com/revoke?token={access_token}'
+            requests.post(revoke_url, headers={'content-type': 'application/x-www-form-urlencoded'})
     
     session.clear()
-    return redirect(url_for('login'))
+    return redirect(url_for('login_page'))
 
 # -- Ajax --
 
