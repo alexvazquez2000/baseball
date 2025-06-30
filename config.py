@@ -10,7 +10,7 @@ class Config:
       #print("found DB setting")
       pass
     else :
-      #print("did not found setting")
+      #did not found env setting, read from .env file
       load_dotenv()
       SQLALCHEMY_DATABASE_URI = os.getenv('DB_MYSQL')
       SECRET_KEY = os.getenv('FLASK_SECRET_KEY') or os.getenv('CSRF_SECRET')
