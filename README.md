@@ -72,3 +72,49 @@ If you don’t have tables yet, you can run:
 
 Add it temporarily in your app.py after defining your models or run from a separate script.
 
+#To Run Unit tests
+
+
+Run all tests:
+
+	python run_tests.py
+
+Run tests from a specific module:
+
+	python run_tests.py test_app
+	python run_tests.py test_forms
+	python run_tests.py test_config
+
+Or using the standard unittest discovery:
+
+    python -m unittest discover -v
+
+The script provides a convenient way to run all your tests with detailed output and proper exit codes for CI/CD integration if needed later.
+
+
+#Tests:
+
+- Main test suite covering:
+
+    Authentication and session management
+    All routes and endpoints
+    AJAX functionality
+    PDF generation
+    Error handling
+
+- Focused model tests covering:
+
+    Model creation and relationships
+    Many-to-many relationships between players/parents and teams
+    Complex relationship scenarios
+
+    - Test runner script for easy execution
+
+Key Features:
+
+    In-memory SQLite database for fast, isolated testing
+    Mock authentication to test protected routes
+    Comprehensive coverage of models, routes, and relationships
+    AJAX endpoint testing with JSON responses
+    Error handling tests for edge cases
+    Relationship testing for complex many-to-many associations
