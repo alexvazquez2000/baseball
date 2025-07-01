@@ -426,13 +426,16 @@ def generate_pdf():
     pdf.add_page()
     pdf.set_font("Helvetica", size=12)
     # Add content to the PDF
-    pdf.cell(text="Hello from Flask and fpdf2!")
-    pdf.ln(10) # Line break
-    pdf.cell(text="This is a dynamically generated PDF.")
+    pdf.cell(200, 10, txt="Hello from Flask and FPDF!", ln=1, align="C")
+    pdf.cell(200, 10, txt="This is a dynamically generated PDF.", ln=1, align="C")
+
     # PDF is ready
     # for usage on flask https://py-pdf.github.io/fpdf2/UsageInWebAPI.html
+
+    # Output the PDF as bytes
+    pdf_output = pdf.output(dest='S').encode('latin-1')
     # Create a Flask response and Output the PDF as bytes
-    response = make_response(bytes(pdf.output()))
+    response = make_response(pdf_output)
     # Set appropriate headers for PDF
     response.headers["Content-Type"] = "application/pdf"
     response.headers["Content-Disposition"] = "inline; filename=generated_document.pdf" 

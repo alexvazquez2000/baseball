@@ -8,6 +8,7 @@ from app import app, db
 from models import Players, Parents, Coaches, Teams
 from datetime import date
 import io
+import base64
 
 class BaseTestCase(unittest.TestCase):
     def setUp(self):
@@ -312,22 +313,30 @@ class TestCoachRoutes(BaseTestCase):
         """Test adding a coach with photo."""
         self.login_user()
         
+        # Example: Base64 encoded string of a 1x1 black pixel PNG image
+        encoded_image_string = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
+
         # Create fake image data
-        fake_photo = io.BytesIO(b"fake image data")
-        fake_photo.name = 'test.jpg'
+        #fake_photo = io.BytesIO(b"fake image data")
+        # Decode the base64 string back to bytes
+        decoded_image_bytes = base64.b64decode(encoded_image_string)
+        fake_photo = io.BytesIO(decoded_image_bytes)
+        
+        #fake_photo.name = 'test.jpg'
         
         response = self.app.post('/coach', data={
             'id': '',
             'name': 'Coach with Photo',
             'email': 'photo@example.com',
             'phone': '555-3333',
-            'photo': (fake_photo, 'test.jpg')
+            'photo': (fake_photo, 'test.png')
         }, content_type='multipart/form-data')
         
         self.assertEqual(response.status_code, 302)
         coach = Coaches.query.filter_by(name='Coach with Photo').first()
         self.assertIsNotNone(coach)
         self.assertIsNotNone(coach.photo)
+        self.assertIsNotNone(coach.thumbnail)
 
 class TestTeamRoutes(BaseTestCase):
     def test_list_teams_authenticated(self):
