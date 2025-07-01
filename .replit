@@ -3,7 +3,7 @@ run = "pip install -r requirements.txt"
 
 [nix]
 channel = "stable-24_05"
-packages = ["cacert", "freetype", "lcms2", "libimagequant", "libjpeg", "libmysqlclient", "libtiff", "libwebp", "libxcrypt", "openjpeg", "tcl", "tk", "zlib"]
+packages = ["cacert", "cargo", "freetype", "lcms2", "libffi", "libiconv", "libimagequant", "libjpeg", "libmysqlclient", "libtiff", "libwebp", "libxcrypt", "openjpeg", "openssl", "pkg-config", "rustc", "tcl", "tk", "zlib"]
 
 [deployment]
 run = ["sh", "-c", "pip install -r requirements.txt"]
