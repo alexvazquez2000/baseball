@@ -2,6 +2,7 @@
 {% block content %}
 <h2>Edit Parent</h2>
 <form method="post">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
   <div class="mb-3">
     <label for="name" class="form-label">Name</label>
     <input type="text" name="name" class="form-control" value="{{ parent.name }}" required />

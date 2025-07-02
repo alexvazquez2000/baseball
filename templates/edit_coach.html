@@ -2,7 +2,7 @@
 {% block content %}
 <h2>{{ 'Edit' if coach else 'Add' }} Coach</h2>
 <form method="post" enctype="multipart/form-data">
-	<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
   <input type="hidden" name="id" value="{{ coach.id or '' }}">
   <div class="mb-3">
     <label for="name" class="form-label">Name</label>
