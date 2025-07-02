@@ -81,6 +81,12 @@ def get_facebook_user_info(access_token):
         print(f"Failed to fetch Facebook user info: {e}")
         return None
 
+
+def inject_current_year():
+    return {'current_year': datetime.now().year}
+
+app.context_processor(inject_current_year)
+
 # -- Welcome page: show teams in current season (e.g. "2025") --
 @app.route('/')
 @login_required
