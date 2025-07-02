@@ -5,6 +5,7 @@ from unittest.mock import patch
 from config import Config
 
 class TestConfig(unittest.TestCase):
+    #@unittest.skip("DB_MYSQL is not being set, so config.py ends up calling load_dotenv() and these values are overwritten")
     def test_config_with_environment_variables(self):
         """Test configuration when environment variables are set."""
         with patch.dict(os.environ, {
@@ -12,6 +13,7 @@ class TestConfig(unittest.TestCase):
             'DB_MYSQL': 'mysql://test:test@localhost/testdb'
         }):
             config = Config()
+            #FIXME: the unittest.mock.patch os.environ is not available when Config() runs, so it is ignored
             self.assertEqual(config.SECRET_KEY, 'test-secret')
             self.assertEqual(config.SQLALCHEMY_DATABASE_URI, 'mysql://test:test@localhost/testdb')
             self.assertFalse(config.SQLALCHEMY_TRACK_MODIFICATIONS)
