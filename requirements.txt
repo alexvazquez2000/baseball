@@ -19,6 +19,7 @@ google-auth-oauthlib==1.2.2
 greenlet==3.2.3
 gunicorn==23.0.0
 idna==3.10
+iniconfig==2.1.0
 itsdangerous==2.2.0
 Jinja2==3.1.6
 load-dotenv==0.1.0
@@ -27,10 +28,13 @@ mysqlclient==2.2.7
 oauthlib==3.3.1
 packaging==25.0
 pillow==11.2.1
+pluggy==1.6.0
 pyasn1==0.6.1
 pyasn1_modules==0.4.2
 pycparser==2.22
+Pygments==2.19.2
 pyOpenSSL==25.1.0
+pytest==8.4.1
 python-dotenv==1.1.0
 requests==2.32.4
 requests-oauthlib==2.0.0
