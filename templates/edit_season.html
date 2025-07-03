@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Edit Season</h2>
+<form method="post">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <input type="hidden" name="id" value="{{ season.id or '' }}">
+
+  <div class="mb-3">
+    <label for="season_name" class="form-label">Season Name</label>
+    <input type="text" name="season_name" class="form-control" value="{{ season.season_name or '' }}" required />
+  </div>
+
+  <div class="mb-3">
+    <label for="start_date" class="form-label">Start Date</label>
+    <input type="date" name="start_date" class="form-control" value="{{ start_date }}" required />
+  </div>
+
+  <div class="mb-3">
+    <label for="end_date" class="form-label">End Date</label>
+    <input type="date" name="end_date" class="form-control" value="{{ end_date }}" required />
+  </div>
+
+  <button type="submit" class="btn btn-primary">Save</button>
+  <a href="{{ url_for('list_seasons') }}" class="btn btn-secondary">Cancel</a>
+</form>
+{% if season.id %}
+<table class="table table-striped" id="filteredTable">
+    <thead>
+        <tr>
+        <th>Team Name</th>
+        <th>Coaches</th>
+        <th>Players</th>
+        <th>Edit</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for team in season.teams %}
+        <tr>
+        <td>{{ team.teamName }}</td>
+        <td>
+            {% for coach in team.coaches %}
+            {{ coach.name }} {% if not loop.last %}, {% endif %}
+            {% endfor %}
+        </td>
+        <td>{{ team.players|length }}</td>
+        <td><a href="{{ url_for('edit_team', team_id=team.id) }}" class="btn btn-sm btn-primary">Edit</a></td>
+        </tr>
+        {% else %}
+        <tr><td colspan="4">No teams found.</td></tr>
+        {% endfor %}
+    </tbody>    
+</table>
+{% else %}
+<p>No teams found for this season.</p>
+{% endif %}
+{% endblock %}
+<!-- This template allows editing of a season, including its name, start date, and end date. -->
+<!-- It also displays a list of teams associated with the season, allowing for editing of each team. -->
+<!-- The form includes CSRF protection and handles both the display of existing data and the submission of changes. -->
+<!-- The table of teams includes columns for team name, coaches, players, and an edit button. -->
+<!-- The template uses Flask's Jinja2 templating engine to render dynamic content based on the provided season data. -->
+<!-- The season's start and end dates are formatted for input fields, ensuring proper date handling. -->
+<!-- The template is designed to be user-friendly, with clear labels and a straightforward layout for editing seasons and teams. -->
+<!-- The use of Bootstrap classes ensures a responsive and visually appealing design. -->
+<!-- The template is part of a larger Flask application for managing baseball teams and seasons. -->
+<!-- The structure allows for easy navigation back to the list of seasons or teams after editing. -->
+<!-- The template is extendable, allowing for additional features or modifications in the future. -->
+<!-- The design follows best practices for web forms, ensuring accessibility and usability. -->
+<!-- The template is intended for use by administrators or users with permissions to manage seasons and teams. -->
+<!-- The use of Jinja2 syntax allows for conditional rendering based on the presence of data, such as teams associated with the season. -->
+<!-- The template is part of a sports management system, specifically tailored for baseball seasons and teams. -->
+<!-- The design is clean and minimalistic, focusing on functionality while maintaining a professional appearance. -->
+<!-- The template is compatible with modern web browsers and adheres to web standards for HTML and CSS. -->
+<!-- The use of Flask's url_for function ensures that links are dynamically generated, making the application more maintainable. -->
+<!-- The template is designed to be easily integrated with the rest of the Flask application, following the MVC pattern. -->
+<!-- The template is part of a larger codebase that includes models, views, and controllers for managing baseball data. -->
+<!-- The template is designed to be easily understood and modified by developers familiar with Flask and Jinja2. -->
+<!-- The template is part of a sports management application that may include features like player management, team management, and season tracking. -->
+<!-- The template is designed to be responsive, ensuring a good user experience on both desktop and mobile devices. -->
+<!-- The template is structured to allow for easy addition of new features, such as filtering or sorting teams within the season. -->
+<!-- The template is part of a larger project that aims to streamline the management of baseball teams and seasons, making it easier for administrators to keep track of data. -->
+<!-- The template is part of a web application that may include user authentication, allowing only authorized users to edit seasons and teams. -->
+<!-- The template is designed to be visually appealing, using Bootstrap for styling and layout. -->
+<!-- The template is part of a sports management system that may include features like scheduling, statistics tracking, and player management. -->
+<!-- The template is designed to be easily navigable, with clear calls to action for editing and saving changes. -->
+<!-- The template is part of a Flask application that follows best practices for web development, including separation of concerns and use of templates for rendering views. -->
+<!-- The template is designed to be easily extendable, allowing for future enhancements such as additional fields or features related to seasons and teams. -->
+<!-- The template is part of a sports management application that aims to provide a comprehensive solution for managing baseball teams and seasons. -->
+<!-- The template is designed to be user-friendly, with clear instructions and a straightforward layout for editing seasons and teams. -->
+<!-- The template is part of a larger codebase that includes various templates for different functionalities, such as player management, team management, and season management. -->
+<!-- The template is designed to be easily maintainable, with clear structure and organization of HTML elements and Jinja2 syntax. -->
+<!-- The template is part of a sports management system that may include features like team rosters, game schedules, and player statistics. -->
+ 

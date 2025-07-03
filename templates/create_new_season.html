@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Create a new season</h2>
+<form method="post">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+  <div class="mb-3">
+    <label for="season_name" class="form-label">Season Name</label>
+    <input type="text" name="season_name" class="form-control" placeholder="ie. 2025 Spring"  required />
+  </div>
+
+  <div class="mb-3">
+    <label for="base_date" class="form-label">Baseball Date</label>
+    <input type="date" name="base_date" class="form-control" placeholder="2025-05-01" required />
+  </div>
+
+  <button type="submit" class="btn btn-primary">Create Season</button>
+  <a href="{{ url_for('list_seasons') }}" class="btn btn-secondary">Cancel</a>
+</form>
+
+{% endblock %}

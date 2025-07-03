@@ -363,6 +363,55 @@ def get_thumbnail(coach_id):
         return Response(coach.thumbnail, mimetype="image/jpeg")
     return '', 404
 
+# -- Seasons --
+@app.route('/seasons')
+@login_required
+def list_seasons():
+    seasons = Seasons.query.all()
+    return render_template('seasons.html', seasons=seasons)
+@app.route('/season/add', methods=['GET', 'POST'])
+@login_required
+def add_season():  
+    if request.method == 'POST':
+        season = Seasons(
+            name=request.form['name'],
+            start_date=datetime.strptime(request.form['start_date'], '%Y-%m-%d').date(),
+            end_date=datetime.strptime(request.form['end_date'], '%Y-%m-%d').date()
+        )
+        db.session.add(season)
+        db.session.commit()
+        return redirect(url_for('list_seasons'))
+    return render_template('add_season.html')
+@app.route('/season/<int:season_id>/edit', methods=['GET', 'POST'])
+@login_required
+def edit_season(season_id):
+    season = Seasons.query.get_or_404(season_id)
+    if request.method == 'POST':
+        season.name = request.form['name']
+        season.start_date = datetime.strptime(request.form['start_date'], '%Y-%m-%d').date()
+        season.end_date = datetime.strptime(request.form['end_date'], '%Y-%m-%d').date()
+        db.session.commit()
+        return redirect(url_for('list_seasons'))
+    return render_template('edit_season.html', season=season)
+# -- Create new season --
+@app.route('/create_new_season', methods=['GET', 'POST'])
+@login_required
+def create_new_season():
+    if request.method == 'POST':
+        # Get the current season
+        current_season = Seasons.query.order_by(Seasons.id.desc()).first()
+        if current_season:
+            # Create a new season based on the current one
+            new_season = Seasons(
+                name=f"{current_season.name} - New",
+                start_date=current_season.start_date,
+                end_date=current_season.end_date
+            )
+            db.session.add(new_season)
+            db.session.commit()
+            return redirect(url_for('list_seasons'))
+    return render_template('create_new_season.html')
+
 # -- Teams --
 
 @app.route('/teams')
@@ -424,6 +473,7 @@ def edit_team(team_id):
         db.session.commit()
         return redirect(url_for('list_teams'))
     return render_template('edit_team.html', team=team, coaches=coaches, players=players)
+
 
 # -- Experimental section
 @app.route('/generate-pdf')
