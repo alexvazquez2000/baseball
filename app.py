@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, send_from_directory, make_response, Response, session
 from datetime import datetime
 from config import Config
-from models import db, Players, Parents, Coaches, Teams
+from models import db, Players, Parents, Coaches, Teams, Seasons
 import os
 from werkzeug.utils import secure_filename
 from flask_wtf.csrf import CSRFProtect
@@ -48,8 +48,8 @@ FACEBOOK_APP_ID = os.environ.get('FACEBOOK_APP_ID')
 FACEBOOK_APP_SECRET = os.environ.get('FACEBOOK_APP_SECRET')
 
 ##To create DB
-#with app.app_context():
-#    db.create_all()
+with app.app_context():
+    db.create_all()
 
 # Authentication decorator
 def login_required(f):
@@ -91,8 +91,10 @@ app.context_processor(inject_current_year)
 @app.route('/')
 @login_required
 def welcome():
-    current_season = "2025-Spring"  # or dynamic if you want
+    #current_season = "2025-Spring"  # or dynamic if you want
+    current_season = Seasons.query.limit(1).first()
     teams = Teams.query.filter_by(season=current_season).all()
+    #teams = Teams.query.all()
     user_info = None
     if 'access_token' in session:
         if session.get('auth_provider') == 'facebook':
@@ -375,7 +377,7 @@ def add_team():
     coaches = Coaches.query.all()
     players = Players.query.all()
     if request.method == 'POST':
-        team = Team(
+        team = Teams(
             teamName=request.form['teamName'],
             season=request.form['season'],
         )

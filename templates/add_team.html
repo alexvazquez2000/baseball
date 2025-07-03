@@ -2,13 +2,14 @@
 {% block content %}
 <h2>Add Team</h2>
 <form method="post">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
   <div class="mb-3">
     <label for="name" class="form-label">Team Name</label>
     <input type="text" name="teamName" class="form-control" required />
   </div>
   <div class="mb-3">
-    <label for="season" class="form-label">Season</label>
-    <input type="text" name="season" class="form-control" placeholder="e.g. 2025" required />
+    <label for="season" class="form-label">Season (TODO: This needs to be a drop down box with valid seasons - put "1" )</label>
+    <input type="text" name="season" class="form-control" placeholder="1  - this will be a dropdown" required />
   </div>
 
   <div class="mb-3">

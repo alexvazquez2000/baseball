@@ -46,14 +46,12 @@ class Seasons(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     season_name = db.Column(db.String(100), nullable=False)
     base_date = db.Column(db.Date, nullable=False)
-    #teams = db.relationship('Teams', back_populates='season')
+    teams = db.relationship('Teams', back_populates='season')
 
 class Teams(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     teamName = db.Column(db.String(100), nullable=False)
-    season_id = db.Column(db.Integer, db.ForeignKey('season.id')) # Foreign key
-    # Define the many-to-one relationship with Department
-    # back_populates links back to the 'employees' relationship in Department
-    #Sseason = db.relationship('Seasons', db.ForeignKey('seasons.id'), back_populates='teams')
+    season_id = db.Column(db.Integer, db.ForeignKey('seasons.id')) # Foreign key
+    season = db.relationship('Seasons', back_populates='teams')
     coaches = db.relationship('Coaches', secondary=teams_coaches, back_populates='teams')
     players = db.relationship('Players', secondary=teams_players, back_populates='teams')

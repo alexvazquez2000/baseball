@@ -16,7 +16,7 @@
     {% for team in teams %}
     <tr>
       <td>{% if team.logo != "": %}{{team.logo}}{% endif %}{{ team.teamName }}</td>
-      <td>{{ team.season }}</td>
+      <td>{{ team.season.season_name }}</td>
       <td>
         {% for coach in team.coaches %}
           {{ coach.name }} {% if not loop.last %}, {% endif %}

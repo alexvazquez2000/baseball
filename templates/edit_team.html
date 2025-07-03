@@ -8,8 +8,8 @@
     <input type="text" name="teamName" class="form-control" value="{{ team.teamName }}" required />
   </div>
   <div class="mb-3">
-    <label for="season" class="form-label">Season</label>
-    <input type="text" name="season" class="form-control" value="{{ team.season_id }}" required />
+    <label for="season" class="form-label">Season (TODO: This is probably wrong - maybe it needs to be season_id)</label>
+    <input type="text" name="season" class="form-control" value="{{ team.season.season_name }}" disabled="disabled" required />
   </div>
 
   <div class="mb-3">
