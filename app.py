@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, send_from_directory, make_response, Response, session
 from datetime import datetime
 from config import Config
-from models import db, Players, Parents, Coaches, Teams, Seasons
+from models import db, Players, Parents, Coaches, Teams, Seasons, Levels
 import os
 from werkzeug.utils import secure_filename
 from flask_wtf.csrf import CSRFProtect
@@ -451,7 +451,6 @@ def create_new_season():
     return render_template('create_new_season.html', current_season=current_season)
 
 # -- Teams --
-
 @app.route('/teams')
 @login_required
 def list_teams():
@@ -513,6 +512,12 @@ def edit_team(team_id):
         return redirect(url_for('list_teams'))
     return render_template('edit_team.html', team=team, coaches=coaches, players=players)
 
+# -- Fees --
+@app.route('/fees')
+@login_required
+def fees():
+    levels = Levels.query.all()
+    return render_template('fees.html', levels=levels)
 
 # -- Experimental section
 @app.route('/generate-pdf')

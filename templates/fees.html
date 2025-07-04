@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block content %}
+<h3>Levels and fees</h3>
+
+<table class="table table-striped" id="filteredTable">
+  <thead>
+    <tr>
+      <th onclick="sortTable(0)">Level</th>
+      <th onclick="sortTable(1)">Target Age</th>
+      <th onclick="sortTable(2)">Registration</th>
+      <th onclick="sortTable(2)">Team Fee</th>
+      <th onclick="sortTable(2)">Uniform</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for level in levels %}
+    <tr>
+      <td>{{ level.level_name }}</td>
+      <td>{{ level.target_age }}</td>
+      <td>{{ level.registration }}</td>
+      <td>{{ level.team_fee }}</td>
+      <td>{{ level.uniform }}</td>
+    </tr>
+    {% else %}
+    <tr><td colspan="4">No fees found.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
