@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
-<h2>Create a new season</h2>
+<h2>Create a new season with teams from season '{{ current_season.season_name }}'</h2>
 <form method="post">
   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
