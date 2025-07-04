@@ -39,7 +39,7 @@
         <td>{{ team.teamName }}</td>
         <td>
             {% for coach in team.coaches %}
-            {{ coach.name }} {% if not loop.last %}, {% endif %}
+            {{ coach.first_name }} {{ coach.last_name }} {% if not loop.last %}, {% endif %}
             {% endfor %}
         </td>
         <td>{{ team.players|length }}</td>

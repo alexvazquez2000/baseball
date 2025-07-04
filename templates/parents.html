@@ -16,7 +16,7 @@
   <tbody>
     {% for parent in parents %}
     <tr>
-      <td>{{ parent.name }}</td>
+      <td>{{ parent.first_name }} {{ parent.last_name }}</td>
       <td>{{ parent.email or "" }}</td>
       <td>{{ parent.phone or "" }}</td>
       <td><a href="{{ url_for('edit_parent', parent_id=parent.id) }}" class="btn btn-sm btn-primary">Edit</a></td>

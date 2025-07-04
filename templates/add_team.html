@@ -16,7 +16,7 @@
     <label for="coaches" class="form-label">Coaches</label>
     <select name="coaches" class="form-select" multiple size="5">
       {% for coach in coaches %}
-        <option value="{{ coach.id }}">{{ coach.name }}</option>
+        <option value="{{ coach.id }}">{{ coach.first_name }} {{ coach.last_name }}</option>
       {% endfor %}
     </select>
     <small class="form-text text-muted">Hold Ctrl (Cmd on Mac) to select multiple.</small>

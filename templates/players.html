@@ -16,7 +16,7 @@
   <tbody>
     {% for player in players %}
     <tr>
-      <td>{{ player.name }}</td>
+      <td>{{ player.first_name }} {{ player.last_name }}</td>
       <td>{{ player.date_of_birth.strftime('%m-%d-%Y') }}</td>
       <td>{{ player.jersey_number }}</td>
       <td><a href="{{ url_for('edit_player', player_id=player.id) }}" class="btn btn-sm btn-primary">Edit</a></td>

@@ -20,7 +20,8 @@ teams_coaches = db.Table('teams_coaches',
 
 class Players(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64), nullable=False)
+    first_name = db.Column(db.String(100), nullable=False)
+    last_name = db.Column(db.String(100), nullable=False)
     date_of_birth = db.Column(db.Date, nullable=False)
     jersey_number = db.Column(db.Integer, nullable=False)
     parents = db.relationship('Parents', secondary=players_parents, back_populates='players')
@@ -28,14 +29,16 @@ class Players(db.Model):
 
 class Parents(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64), nullable=False)
+    first_name = db.Column(db.String(100), nullable=False)
+    last_name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(120))
     phone = db.Column(db.String(30))
     players = db.relationship('Players', secondary=players_parents, back_populates='parents')
 
 class Coaches(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
+    first_name = db.Column(db.String(100), nullable=False)
+    last_name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(100))
     phone = db.Column(db.String(20))
     photo = db.Column(db.LargeBinary)

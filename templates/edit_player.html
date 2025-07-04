@@ -5,8 +5,12 @@
   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
   <input type="hidden" name="id" value="{{ player.id or '' }}">
   <div class="mb-3">
-    <label for="name" class="form-label">Name</label>
-    <input type="text" name="name" class="form-control" value="{{ player.name or '' }}" required />
+    <label for="first_name" class="form-label">First Name</label>
+    <input type="text" name="first_name" class="form-control" value="{{ player.first_name or '' }}" required />
+  </div>
+  <div class="mb-3">
+    <label for="last_name" class="form-label">Last Name</label>
+    <input type="text" name="last_name" class="form-control" value="{{ player.last_name or '' }}" required />
   </div>
   <div class="mb-3">
     <label for="date_of_birth" class="form-label">Date of Birth</label>
@@ -34,7 +38,7 @@
   <tbody>
 {% for parent in player.parents %}
     <tr>
-      <td>{{ parent.name }}</td>
+      <td>{{ parent.first_name }} {{ parent.last_name }}</td>
       <td>{{ parent.email or "" }}</td>
       <td>{{ parent.phone or "" }}</td>
       <td><a href="{{ url_for('edit_parent', parent_id=parent.id) }}" class="btn btn-sm btn-primary">Edit</a></td>
@@ -56,7 +60,7 @@ There are 2 tables with parents.  I like the table above better than the list of
 <ul id="parent-list">
     {% for parent in player.parents %}
     <li data-parent-id="{{ parent.id }}">
-        {{ parent.name }} ({{ parent.phone }})
+        {{ parent.first_name }} {{ parent.last_name }} ({{ parent.phone }})
         <a href="#" class="remove-parent" style="color:red">[Remove]</a>
     </li>
     {% endfor %}
@@ -102,7 +106,7 @@ parentSearchInput.addEventListener("input", async (e) => {
 
     data.forEach(parent => {
         const li = document.createElement("li");
-        li.textContent = `${parent.name} (${parent.phone})`;
+        li.textContent = `${parent.first_name} ${parent.last_name} (${parent.phone})`;
         li.style.cursor = "pointer";
         li.addEventListener("click", async () => {
             const resp = await fetch("/player/{{ player.id }}/add_parent_ajax", {
@@ -118,7 +122,7 @@ parentSearchInput.addEventListener("input", async (e) => {
                 const parentItem = document.createElement("li");
                 parentItem.dataset.parentId = parent.id;
                 parentItem.innerHTML = `
-                    ${parent.name} (${parent.phone})
+                    ${parent.first_name} ${parent.last_name} (${parent.phone})
                     <a href="#" class="remove-parent" style="color:red">[Remove]</a>
                 `;
                 parentList.appendChild(parentItem);

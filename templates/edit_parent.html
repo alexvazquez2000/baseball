@@ -4,8 +4,12 @@
 <form method="post">
   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
   <div class="mb-3">
-    <label for="name" class="form-label">Name</label>
-    <input type="text" name="name" class="form-control" value="{{ parent.name }}" required />
+    <label for="name" class="form-label">First Name</label>
+    <input type="text" name="first_name" class="form-control" value="{{ parent.first_name }}" required />
+  </div>
+  <div class="mb-3">
+    <label for="name" class="form-label">Last Name</label>
+    <input type="text" name="last_name" class="form-control" value="{{ parent.last_name }}" required />
   </div>
   <div class="mb-3">
     <label for="email" class="form-label">Email</label>
@@ -20,7 +24,7 @@
     <select name="children" class="form-select" multiple size="5">
       {% for player in parent.players %}
         <option value="{{ player.id }}" {% if player in parent.players %}selected{% endif %}>
-          {{ player.name }}
+          {{ player.first_name }} {{ player.last_name }}
         </option>
       {% endfor %}
     </select>

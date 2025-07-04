@@ -18,7 +18,7 @@
     <select name="coaches" class="form-select" multiple size="5">
       {% for coach in team.coaches %}
         <option value="{{ coach.id }}" {% if coach in team.coaches %}selected{% endif %}>
-          {{ coach.name }}
+          {{ coach.first_name }} {{ coach.last_name }}
         </option>
       {% endfor %}
     </select>
@@ -30,7 +30,7 @@
     <select name="players" class="form-select" multiple size="5">
       {% for player in team.players %}
         <option value="{{ player.id }}" {% if player in team.players %}selected{% endif %}>
-          {{ player.name }}
+          {{ player.first_name }} {{ player.last_name }}
         </option>
       {% endfor %}
     </select>

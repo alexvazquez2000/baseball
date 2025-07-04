@@ -210,14 +210,16 @@ def edit_player():
         if player_id:
             #update existing entry
             player = Players.query.get_or_404(player_id)
-            player.name = request.form['name']
+            player.first_name = request.form['first_name']
+            player.last_name = request.form['last_name']
             player.date_of_birth = datetime.strptime(request.form['date_of_birth'], '%Y-%m-%d').date()
             player.jersey_number = int(request.form['jersey_number'])
         else :
             #add new player / player_id is empty
             dob = datetime.strptime(request.form['date_of_birth'], '%Y-%m-%d').date()
             player = Players(
-                name=request.form['name'],
+                first_name=request.form['first_name'],
+                last_name=request.form['name'],
                 date_of_birth=dob,
                 jersey_number=int(request.form['jersey_number'])
             )
@@ -245,7 +247,8 @@ def list_parents():
 def add_parent():
     if request.method == 'POST':
         parent = Parents(
-            name=request.form['name'],
+            first_name=request.form['first_name'],
+            last_name=request.form['last_name'],
             email=request.form['email'],
             phone=request.form['phone']
         )
@@ -260,7 +263,8 @@ def edit_parent(parent_id):
     parent = Parents.query.get_or_404(parent_id)
     players = Players.query.all()
     if request.method == 'POST':
-        parent.name = request.form['name']
+        parent.first_name = request.form['first_name']
+        parent.last_name = request.form['last_name']
         parent.email = request.form['email']
         parent.phone = request.form['phone']
         # Clear current children
@@ -282,8 +286,8 @@ def search_parents():
     q = request.args.get("q", "")
     results = []
     if q:
-        results = Parents.query.filter(Parents.name.ilike(f"%{q}%")).all()
-    data = [{"id": p.id, "name": p.name, "phone": p.phone} for p in results]
+        results = Parents.query.filter(Parents.first_name.ilike(f"%{q}%") or Parents.last_name.ilike(f"%{q}%")).all()
+    data = [{"id": p.id, "first_name": p.first_name, "last_name": p.last_name, "phone": p.phone} for p in results]
     return jsonify(data)
 
 @app.route("/player/<int:player_id>/add_parent_ajax", methods=["POST"])
@@ -337,7 +341,8 @@ def edit_coach():
         if coach_id:
             #update existing entry
             coach = Coaches.query.get_or_404(coach_id)
-            coach.name = request.form['name']
+            coach.first_name = request.form['first_name']
+            coach.last_name = request.form['last_name']
             coach.email = request.form['email']
             coach.phone = request.form['phone']
             if photo_data:
@@ -347,7 +352,8 @@ def edit_coach():
         else :
             #add new coach / coach_id is empty
             coach = Coaches(
-                name=request.form['name'],
+                first_name=request.form['first_name'],
+                last_name=request.form['last_name'],
                 email=request.form['email'],
                 phone=request.form['phone'],
                 photo=photo_data,
