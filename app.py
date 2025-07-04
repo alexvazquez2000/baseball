@@ -68,7 +68,7 @@ def get_user_info(access_token):
     if response.status_code == 200:
         return response.json()
     else:
-        print(f"Failed to fetch user info: {response.status_code} {response.text}")
+        print(f"Failed to fetch google user info: {response.status_code} {response.text}")
         return None
 
 # Get user info from Facebook
@@ -82,8 +82,22 @@ def get_facebook_user_info(access_token):
         return None
 
 
+def getCurrentSeason():
+    if 'current_season_id' in session:
+         current_season_id = session.get('current_season_id')
+         current_season_name = session.get('current_season_name')
+    else:
+         current_season = Seasons.query.order_by(Seasons.id.desc()).limit(1).first()
+         current_season_id = current_season.id
+         current_season_name = current_season.season_name
+    return (current_season_id, current_season_name)
+
 def inject_current_year():
-    return {'current_year': datetime.now().year}
+    (current_season_id, current_season_name) = getCurrentSeason()
+    return {'current_year': datetime.now().year,
+      'current_season_name': current_season_name,
+      'current_season_id': current_season_id,
+       }
 
 app.context_processor(inject_current_year)
 
@@ -91,16 +105,14 @@ app.context_processor(inject_current_year)
 @app.route('/')
 @login_required
 def welcome():
-    #current_season = "2025-Spring"  # or dynamic if you want
-    current_season = Seasons.query.limit(1).first()
-    teams = Teams.query.filter_by(season=current_season).all()
-    #teams = Teams.query.all()
     user_info = None
     if 'access_token' in session:
         if session.get('auth_provider') == 'facebook':
             user_info = get_facebook_user_info(session['access_token'])
         else:
             user_info = get_user_info(session['access_token'])
+    (current_season_id, current_season_name) = getCurrentSeason()
+    teams = Teams.query.filter_by(season_id=current_season_id).all()
     return render_template('welcome.html', teams=teams, user_info=user_info)
 
 # -- Authentication Routes --
@@ -156,7 +168,7 @@ def facebook_callback():
         session['auth_provider'] = 'facebook'
         return redirect("/")
     else:
-        return 'Failed to get access token', 400
+        return 'Failed to get Facebook access token', 400
 
 @app.route('/logout')
 def logout():
@@ -364,24 +376,19 @@ def get_thumbnail(coach_id):
     return '', 404
 
 # -- Seasons --
-@app.route('/seasons')
+@app.route('/change_season', methods=['GET', 'POST'])
 @login_required
-def list_seasons():
-    seasons = Seasons.query.all()
-    return render_template('seasons.html', seasons=seasons)
-@app.route('/season/add', methods=['GET', 'POST'])
-@login_required
-def add_season():  
+def change_season():  
     if request.method == 'POST':
-        season = Seasons(
-            name=request.form['name'],
-            start_date=datetime.strptime(request.form['start_date'], '%Y-%m-%d').date(),
-            end_date=datetime.strptime(request.form['end_date'], '%Y-%m-%d').date()
-        )
-        db.session.add(season)
-        db.session.commit()
-        return redirect(url_for('list_seasons'))
-    return render_template('add_season.html')
+        selected_season = request.form['selected_season']
+        current_season = Seasons.query.get_or_404(int(selected_season))
+        print (f"new season is {current_season.season_name}")
+        session['current_season_id'] = current_season.id
+        session['current_season_name'] = current_season.season_name
+        return redirect(url_for('list_teams'))
+    seasons = Seasons.query.all()
+    return render_template('change_season.html', seasons=seasons)
+
 @app.route('/season/<int:season_id>/edit', methods=['GET', 'POST'])
 @login_required
 def edit_season(season_id):
@@ -391,33 +398,59 @@ def edit_season(season_id):
         season.start_date = datetime.strptime(request.form['start_date'], '%Y-%m-%d').date()
         season.end_date = datetime.strptime(request.form['end_date'], '%Y-%m-%d').date()
         db.session.commit()
-        return redirect(url_for('list_seasons'))
+        return redirect(url_for('list_teams'))
     return render_template('edit_season.html', season=season)
+
 # -- Create new season --
 @app.route('/create_new_season', methods=['GET', 'POST'])
 @login_required
 def create_new_season():
+    (current_season_id, current_season_name) = getCurrentSeason()
     if request.method == 'POST':
         # Get the current season
         current_season = Seasons.query.order_by(Seasons.id.desc()).first()
         if current_season:
             # Create a new season based on the current one
-            new_season = Seasons(
-                name=f"{current_season.name} - New",
-                start_date=current_season.start_date,
-                end_date=current_season.end_date
+            newSeason = Seasons(
+                season_name=request.form['season_name'],
+                base_date = datetime.strptime(request.form['base_date'], '%Y-%m-%d').date()
             )
-            db.session.add(new_season)
+            db.session.add(newSeason)
+            # Commit to get the parent's ID if needed immediately, but parent object needs to be commited before teams can be created
             db.session.commit()
-            return redirect(url_for('list_seasons'))
-    return render_template('create_new_season.html')
+
+            #set session to new session
+            session['current_season_id'] = newSeason.id
+            session['current_season_name'] = newSeason.season_name
+
+            #now add the teams
+            copyteams = request.form.getlist('copyteams')
+            for copy_team_id in copyteams :
+                print (f" copy {copy_team_id } to new season")
+                old_team = Teams.query.get(int(copy_team_id))
+                if old_team:
+                    new_team = Teams(
+                       season = newSeason,
+                       teamName = f"{old_team.teamName} - New",
+                       coaches = old_team.coaches
+                       #TODO: Could copy players here but planning to also do the billing
+                    )
+                    newSeason.teams.append(new_team)
+                # else :
+                #     #TODO: Add a warning that we missed one of the teams
+            db.session.add(newSeason)
+            db.session.commit()
+            return redirect(url_for('list_teams'))
+    current_season = Seasons.query.get_or_404(current_season_id)
+    return render_template('create_new_season.html', current_season=current_season)
 
 # -- Teams --
 
 @app.route('/teams')
 @login_required
 def list_teams():
-    teams = Teams.query.all()
+    (current_season_id, current_season_name) = getCurrentSeason()
+    teams = Teams.query.filter_by(season_id=current_season_id).all()
     return render_template('teams.html', teams=teams)
 
 @app.route('/team/add', methods=['GET', 'POST'])
@@ -455,7 +488,7 @@ def edit_team(team_id):
     players = Players.query.all()
     if request.method == 'POST':
         team.teamName = request.form['teamName']
-        team.season = request.form['season']
+        #team.season is read-only on the page
         # Update coaches
         team.coaches.clear()
         coach_ids = request.form.getlist('coaches')

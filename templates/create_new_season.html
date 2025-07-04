@@ -14,8 +14,37 @@
     <input type="date" name="base_date" class="form-control" placeholder="2025-05-01" required />
   </div>
 
+<h3> The following teams will be copied. (TODO: Copying only coaches, should it copy also players?)</h3>
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>Selected</th>
+      <th>Team Name</th>
+      <th>Season</th>
+      <th>Coaches</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for team in current_season.teams %}
+    <tr>
+      <td><input type="checkbox" id="copyteams" name="copyteams" value="{{ team.id }}" checked></td>
+      <td>{{ team.teamName }}</td>
+      <td>{{ team.season.season_name }}</td>
+      <td>
+        {% for coach in team.coaches %}
+          {{ coach.name }} {% if not loop.last %}, {% endif %}
+        {% endfor %}
+      </td>
+    </tr>
+    {% else %}
+    <tr><td colspan="5">No teams found.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+
   <button type="submit" class="btn btn-primary">Create Season</button>
-  <a href="{{ url_for('list_seasons') }}" class="btn btn-secondary">Cancel</a>
+  <a href="{{ url_for('list_teams') }}" class="btn btn-secondary">Cancel</a>
 </form>
 
 {% endblock %}

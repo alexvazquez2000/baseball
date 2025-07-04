@@ -33,6 +33,9 @@
             </li>
           </ul>
           <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('change_season') }}">Season : {{ current_season_name }}</a>
+            </li>
             {% if session.get('access_token') %}
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">

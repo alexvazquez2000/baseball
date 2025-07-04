@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Change season</h2>
+
+<form method="POST">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    {% for season in seasons %}
+      <label>
+          <input type="radio" name="selected_season" value="{{ season.id }}" {% if season.season_name == current_season_name %}checked{% endif %}>
+          {{ season.season_name }}
+      </label><br>
+    {% endfor %}
+    <input type="submit" value="Change Season">
+</form>
+<br>
+
+{% endblock %}
