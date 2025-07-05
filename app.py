@@ -13,6 +13,7 @@ from functools import wraps
 import facebook
 #Local imports
 from thumbnail import Thumbnail
+from decimal import Decimal
 
 #for PDF
 #from flask import make_response
@@ -513,11 +514,45 @@ def edit_team(team_id):
     return render_template('edit_team.html', team=team, coaches=coaches, players=players)
 
 # -- Fees --
-@app.route('/fees')
+@app.route('/levels_fees')
 @login_required
-def fees():
+def levels_fees():
     levels = Levels.query.all()
-    return render_template('fees.html', levels=levels)
+    return render_template('levels_fees.html', levels=levels)
+
+@app.route('/level', methods=['GET', 'POST'])
+@login_required
+def edit_level():
+    level = {}
+    level_id = request.args.get('level_id')
+    if request.method == 'POST':
+        #get the ID from the post data if present
+        level_id = request.form['id'] 
+        if level_id:
+            #update existing entry
+            level = Levels.query.get_or_404(level_id)
+            level.level_name = request.form['level_name']
+            level.target_age = int(request.form['target_age'])
+            level.registration = Decimal(request.form['registration'])
+            level.team_fee = Decimal(request.form['team_fee'])
+            level.uniform = Decimal(request.form['uniform'])
+
+        else :
+            #add new level because level_id is empty
+            level = Levels(
+                level_name=request.form['level_name'],
+                target_age=int(request.form['target_age']),
+                registration=Decimal(request.form['registration']),
+                team_fee=Decimal(request.form['team_fee']),
+                uniform=Decimal(request.form['uniform'])
+            )
+            db.session.add(level)
+        db.session.commit()
+        return redirect(url_for('levels_fees'))
+
+    if level_id :
+        level = Levels.query.get_or_404(level_id)
+    return render_template('edit_level.html', level=level)
 
 # -- Experimental section
 @app.route('/generate-pdf')
