@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Receive Payment</h2>
+<form method="POST">
+    <div class="mb-3">
+        <label>Customer</label>
+        <select name="customer_id" class="form-control" required>
+            {% for customer in customers %}
+                <option value="{{ customer.id }}">{{ customer.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="mb-3">
+        <label>Amount</label>
+        <input type="number" step="0.01" name="amount" class="form-control" required>
+    </div>
+    <div class="mb-3">
+        <label>Date</label>
+        <input type="date" name="date" class="form-control" value="{{ today }}" required>
+    </div>
+    <button class="btn btn-success">Receive</button>
+</form>
+{% endblock %}

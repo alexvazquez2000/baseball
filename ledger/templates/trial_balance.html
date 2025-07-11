@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Trial Balance</h2>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Account</th>
+            <th>Type</th>
+            <th>Debit</th>
+            <th>Credit</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in rows %}
+        <tr>
+            <td>{{ row.name }}</td>
+            <td>{{ row.type }}</td>
+            <td>
+                {% if row.balance >= 0 %}
+                    ${{ "%.2f"|format(row.balance) }}
+                {% endif %}
+            </td>
+            <td>
+                {% if row.balance < 0 %}
+                    ${{ "%.2f"|format(-row.balance) }}
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

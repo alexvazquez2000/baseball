@@ -1,6 +1,8 @@
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 
+import enum
+
 db = SQLAlchemy()
 
 # Association tables for many-to-many relationships
@@ -76,12 +78,19 @@ class Customer(db.Model):
     name = db.Column(db.String(100), nullable=False)
     transactions = db.relationship('Transaction', backref='customer', lazy=True)
 
+class Account_Types(enum.Enum):
+    ASSET = 'asset'
+    LIABILITY = 'liability'
+    EQUITY = 'equity'
+    REVENUE = 'revenue'
+    EXPENSE ='expense'
+
 class Account(db.Model):
     __tablename__ = 'accounts'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     code = db.Column(db.String(20), nullable=False)
-    account_type = db.Column(db.Enum('asset', 'liability', 'equity', 'revenue', 'expense'), nullable=False)
+    account_type = db.Column(db.Enum(Account_Types, values_callable=lambda x: [e.value for e in x]), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 class Journal(db.Model):
@@ -96,6 +105,7 @@ class Transaction(db.Model):
     __tablename__ = 'transactions'
     id = db.Column(db.Integer, primary_key=True)
     customer_id = db.Column(db.Integer, db.ForeignKey('customer.id'))
+    #customer = db.relationship('Customer', backref='transactions')
     description = db.Column(db.String(255))
     reference = db.Column(db.String(50))
     transaction_date = db.Column(db.Date, nullable=False)

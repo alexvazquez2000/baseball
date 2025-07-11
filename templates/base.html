@@ -29,8 +29,28 @@
               <a class="nav-link" href="{{ url_for('list_teams') }}">Teams</a>
             </li>
             <li class="nav-item">
+            <!--  Settings -->
               <a class="nav-link" href="{{ url_for('levels_fees') }}">Levels and Fees</a>
             </li>
+            
+            <!--  Accounting -->
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('ledger.chart_of_accounts') }}">Chart of Accounts</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('ledger.make_sale') }}">Make Sale</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('ledger.receive_payment') }}">Receive Payment</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('ledger.open_invoices') }}">Open Invoices</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('ledger.trial_balance') }}">Trial Balance</a>
+            </li>
+            
+            
           </ul>
           <ul class="navbar-nav ms-auto">
             <li class="nav-item">

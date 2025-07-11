@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Chart of Accounts</h2>
+
+<table class="table table-striped" id="filteredTable">
+  <thead>
+    <tr>
+      <th onclick="sortTable(0)">Code</th>
+      <th onclick="sortTable(1)">Account Name</th>
+      <th onclick="sortTable(2)">Type</th>
+      <th>Created on</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for account in accounts %}
+    <tr>
+      <td>{{ account.code }}</td>
+      <td>{{ account.name or "" }}</td>
+      <td>{{ account.account_type.value}}</td>
+      <td>{{ account.created_at }}</td>
+    </tr>
+    {% else %}
+    <tr><td colspan="4">No accounts found.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<hr>
+<p>Standard accounting codes, also known as a chart of accounts, are a system of numbering and naming accounts used to classify and track financial transactions within an organization. These codes help ensure accurate financial reporting by categorizing transactions into assets, liabilities, equity, revenue, and expenses. While there isn't a universal standard, most organizations use a similar structure based on these categories. 
+Here's a breakdown of the common categories and example codes:</p>
+
+<p>1. Assets (typically numbered 1000-1999): These represent what a company owns, such as cash, accounts receivable, inventory, and property, plant, and equipment.<br>
+
+    Cash: 1000<br>
+    Accounts Receivable: 1100<br>
+    Inventory: 1200<br>
+    Equipment: 1400<br>
+    Land: 1500 <br>
+</p>
+
+<p>2. Liabilities (typically numbered 2000-2999): These represent what a company owes to others, such as accounts payable, loans, and deferred revenue.<br>
+
+    Accounts Payable: 2000<br>
+    Loans Payable: 2200<br>
+    Deferred Revenue: 2400<br>
+</p>
+
+<p>3. Equity (typically numbered 3000-3999): This represents the owner's stake in the company, including retained earnings, contributed capital, and other equity accounts.<br>
+
+    Retained Earnings: 3000<br>
+    Common Stock: 3200<br>
+    Additional Paid-In Capital: 3400<br> 
+</p>
+
+<p>4. Revenue (typically numbered 4000-4999): This represents income generated from the company's primary operations, such as sales revenue, service revenue, and interest income.<br> 
+
+    Sales Revenue: 4000<br>
+    Service Revenue: 4200<br>
+    Interest Income: 4400<br>
+</p>
+
+<p>5. Expenses (typically numbered 5000-5999): This represents the costs incurred in the process of generating revenue, such as cost of goods sold, salaries, rent, utilities, and depreciation.<br>
+
+    Cost of Goods Sold: 5000<br>
+    Salaries Expense: 5200<br>
+    Rent Expense: 5400<br>
+    Utilities Expense: 5600<br>
+    Depreciation Expense: 5800<br>
+</p>
+
+<p>These account codes are linked to specific General Ledger (G/L) accounts, which are used to allocate expenses to the appropriate cost centers, projects, or departments. 
+They are also used in conjunction with Concur Expense, a system that helps manage and track employee expenses, to ensure that expense data is correctly applied and accounted for in the financial records.</p>
+ 
+{% endblock %}
