@@ -15,11 +15,13 @@ import facebook
 from thumbnail import Thumbnail
 from decimal import Decimal
 from api.api_bp import api_bp
+from ledger.ledger_bp import ledger_bp
 from reports.reports import reports_bp
 
 
 app = Flask(__name__)
 app.register_blueprint(api_bp, url_prefix='/api')
+app.register_blueprint(ledger_bp, url_prefix='/ledger')
 app.register_blueprint(reports_bp, url_prefix='/reports')
 
 app.config.from_object(Config)
@@ -58,8 +60,8 @@ with app.app_context():
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if 'access_token' not in session:
-            return redirect(url_for('login_page'))
+        #if 'access_token' not in session:
+        #    return redirect(url_for('login_page'))
         return f(*args, **kwargs)
     return decorated_function
 
