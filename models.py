@@ -1,4 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
 
 db = SQLAlchemy()
 
@@ -69,3 +70,59 @@ class Levels(db.Model):
     team_fee = db.Column(db.DECIMAL(9, 2), nullable=False) 
     uniform = db.Column(db.DECIMAL(9, 2), nullable=False) 
 
+#For accounting
+class Customer(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    transactions = db.relationship('Transaction', backref='customer', lazy=True)
+
+class Account(db.Model):
+    __tablename__ = 'accounts'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    code = db.Column(db.String(20), nullable=False)
+    account_type = db.Column(db.Enum('asset', 'liability', 'equity', 'revenue', 'expense'), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+class Journal(db.Model):
+    __tablename__ = 'journals'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.Text)
+    allow_manual_entries = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+class Transaction(db.Model):
+    __tablename__ = 'transactions'
+    id = db.Column(db.Integer, primary_key=True)
+    customer_id = db.Column(db.Integer, db.ForeignKey('customer.id'))
+    description = db.Column(db.String(255))
+    reference = db.Column(db.String(50))
+    transaction_date = db.Column(db.Date, nullable=False)
+    journal_id = db.Column(db.Integer, db.ForeignKey('journal.id'), nullable=False)
+    #journal = db.relationship('Journal', backref='transactions')
+    entry_id = db.Column(db.Integer, db.ForeignKey('entry.id'), nullable=False)
+    #entries = db.relationship('Entry', backref='transaction', lazy=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+class Entry(db.Model):
+    __tablename__ = 'entries'
+    id = db.Column(db.Integer, primary_key=True)
+    transaction_id = db.Column(db.Integer, db.ForeignKey('transactions.id'), nullable=False)
+    transaction = db.relationship('Transaction', backref='entries')
+    account_id = db.Column(db.Integer, db.ForeignKey('accounts.id'), nullable=False)
+    account = db.relationship('Account', backref='entries')
+    amount = db.Column(db.Numeric(15, 2), nullable=False)
+    entry_type = db.Column(db.Enum('debit', 'credit'), nullable=False)
+    memo = db.Column(db.String(255))
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+class AuditLog(db.Model):
+    __tablename__ = 'audit_logs'
+    id = db.Column(db.Integer, primary_key=True)
+    table_name = db.Column(db.String(100), nullable=False)
+    record_id = db.Column(db.Integer, nullable=False)
+    action = db.Column(db.Enum('insert', 'update', 'delete'), nullable=False)
+    user_id = db.Column(db.Integer)
+    change_summary = db.Column(db.Text)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
