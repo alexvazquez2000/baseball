@@ -22,7 +22,7 @@
     <input type="number" name="jersey_number" class="form-control" value="{{ player.jersey_number or ''}}" required />
   </div>
   <button type="submit" class="btn btn-primary">Save</button>
-  <a href="{{ url_for('list_players') }}" class="btn btn-secondary">Cancel</a>
+  <a href="{{ url_for('players.list_players') }}" class="btn btn-secondary">Cancel</a>
 </form>
 
 {% if player.id %}
