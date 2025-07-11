@@ -1,6 +1,5 @@
-from flask import render_template, request, redirect, url_for, session
+from flask import Blueprint, render_template, request, redirect, url_for, session
 
-from flask import Blueprint
 from models import db, Customer, Account, Journal, Transaction, Entry, AuditLog
 
 ledger_bp = Blueprint('ledger', __name__, template_folder='templates')
