@@ -127,12 +127,18 @@ class Entry(db.Model):
     memo = db.Column(db.String(255))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
+class Action_Types(enum.Enum):
+    INSERT = 'insert'
+    UPDATE = 'update'
+    DELETE = 'delete'
+
 class AuditLog(db.Model):
     __tablename__ = 'audit_logs'
     id = db.Column(db.Integer, primary_key=True)
     table_name = db.Column(db.String(100), nullable=False)
     record_id = db.Column(db.Integer, nullable=False)
-    action = db.Column(db.Enum('insert', 'update', 'delete'), nullable=False)
+    action = db.Column(db.Enum(), nullable=False)
+    action = db.Column(db.Enum(Action_Types, values_callable=lambda x: [e.value for e in x]), nullable=False)
     user_id = db.Column(db.Integer)
     change_summary = db.Column(db.Text)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
