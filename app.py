@@ -5,7 +5,6 @@ from models import db, Players, Parents, Coaches, Teams, Seasons, Levels
 import os
 from werkzeug.utils import secure_filename
 from flask_wtf.csrf import CSRFProtect
-from flask import jsonify
 import google_auth_oauthlib.flow
 import json
 import requests
@@ -17,7 +16,6 @@ from decimal import Decimal
 from api.api_bp import api_bp
 from ledger.ledger_bp import ledger_bp
 from reports.reports import reports_bp
-
 
 app = Flask(__name__)
 app.register_blueprint(api_bp, url_prefix='/api')
@@ -193,9 +191,6 @@ def logout():
     session.clear()
     return redirect(url_for('login_page'))
 
-# -- Ajax --
-
-
 # -- Players --
 @app.route('/players')
 @login_required
@@ -282,42 +277,6 @@ def edit_parent(parent_id):
         db.session.commit()
         return redirect(url_for('list_parents'))
     return render_template('edit_parent.html', parent=parent, players=players)
-
-#Ajax
-@app.route("/parents/search")
-def search_parents():
-    """Search parents by name, returns JSON."""
-    q = request.args.get("q", "")
-    results = []
-    if q:
-        results = Parents.query.filter(Parents.first_name.ilike(f"%{q}%") or Parents.last_name.ilike(f"%{q}%")).all()
-    data = [{"id": p.id, "first_name": p.first_name, "last_name": p.last_name, "phone": p.phone} for p in results]
-    return jsonify(data)
-
-@app.route("/player/<int:player_id>/add_parent_ajax", methods=["POST"])
-def add_parent_ajax(player_id):
-    parent_id = request.json.get("parent_id")
-    player = Players.query.get(player_id)
-    parent = Parents.query.get(parent_id)
-
-    if parent and player and parent not in player.parents:
-        player.parents.append(parent)
-        db.session.commit()
-        return jsonify({"success": True})
-    return jsonify({"success": False}), 400
-
-#Ajax
-@app.route("/player/<int:player_id>/remove_parent_ajax", methods=["POST"])
-def remove_parent_ajax(player_id):
-    parent_id = request.json.get("parent_id")
-    player = Players.query.get(player_id)
-    parent = Parents.query.get(parent_id)
-
-    if parent and player and parent in player.parents:
-        player.parents.remove(parent)
-        db.session.commit()
-        return jsonify({"success": True})
-    return jsonify({"success": False}), 400
 
 # -- Coaches --
 
