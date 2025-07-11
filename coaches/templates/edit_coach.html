@@ -31,14 +31,14 @@ FOTO
     </label>
     <br>
     {% if coach and coach.photo %}
-        <img id="preview" src="{{ url_for('get_photo', coach_id=coach.id) }}" width="100">
+        <img id="preview" src="{{ url_for('coaches.get_photo', coach_id=coach.id) }}" width="100">
     {% else %}
         <img id="preview" style="display:none;" width="100">
     {% endif %}
   </div>
 
   <button type="submit" class="btn btn-primary">Save</button>
-  <a href="{{ url_for('list_coaches') }}" class="btn btn-secondary">Cancel</a>
+  <a href="{{ url_for('coaches.list_coaches') }}" class="btn btn-secondary">Cancel</a>
 </form>
 
 <script src="{{ url_for('static', filename='photo_capture.js') }}"></script>

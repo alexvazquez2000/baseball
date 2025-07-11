@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, send_from_directory, make_response, Response, session
+from flask import Flask, render_template, request, redirect, url_for, send_from_directory, make_response, session
 from datetime import datetime
 from config import Config
 from models import db, Players, Parents, Coaches, Teams, Seasons, Levels
@@ -10,15 +10,17 @@ import json
 import requests
 from functools import wraps
 import facebook
+
 #Local imports
-from thumbnail import Thumbnail
 from decimal import Decimal
 from api.api_bp import api_bp
 from ledger.ledger_bp import ledger_bp
+from coaches.coaches_bp import coaches_bp
 from reports.reports import reports_bp
 
 app = Flask(__name__)
 app.register_blueprint(api_bp, url_prefix='/api')
+app.register_blueprint(coaches_bp, url_prefix='/coaches')
 app.register_blueprint(ledger_bp, url_prefix='/ledger')
 app.register_blueprint(reports_bp, url_prefix='/reports')
 
@@ -278,71 +280,6 @@ def edit_parent(parent_id):
         return redirect(url_for('list_parents'))
     return render_template('edit_parent.html', parent=parent, players=players)
 
-# -- Coaches --
-
-@app.route('/coaches')
-@login_required
-def list_coaches():
-    coaches = Coaches.query.all()
-    return render_template('coaches.html', coaches=coaches)
-
-@app.route('/coach', methods=['GET', 'POST'])
-@login_required
-def edit_coach():
-    coach = {}
-    coach_id = request.args.get('id')
-    if request.method == 'POST':
-        # Handle uploaded or captured photo
-        photo_data = None
-        thumbnail_data = None
-        if "photo" in request.files and request.files["photo"].filename:
-            photo_data = request.files["photo"].read()
-            thumbnail_data = Thumbnail.create_thumbnail(photo_data)
-
-        #get the coach ID from the post data if present
-        coach_id = request.form['id'] 
-        if coach_id:
-            #update existing entry
-            coach = Coaches.query.get_or_404(coach_id)
-            coach.first_name = request.form['first_name']
-            coach.last_name = request.form['last_name']
-            coach.email = request.form['email']
-            coach.phone = request.form['phone']
-            if photo_data:
-                # Only overwrite if new photo uploaded
-                coach.photo = photo_data
-                coach.thumbnail=thumbnail_data
-        else :
-            #add new coach / coach_id is empty
-            coach = Coaches(
-                first_name=request.form['first_name'],
-                last_name=request.form['last_name'],
-                email=request.form['email'],
-                phone=request.form['phone'],
-                photo=photo_data,
-                thumbnail=thumbnail_data
-            )
-            db.session.add(coach)
-        db.session.commit()
-        return redirect(url_for('list_coaches'))
-
-    if coach_id :
-        coach = Coaches.query.get_or_404(coach_id)
-    return render_template('edit_coach.html', coach=coach)
-
-@app.route("/photo/<int:coach_id>")
-def get_photo(coach_id):
-    coach = Coaches.query.get_or_404(coach_id)
-    if coach and coach.photo:
-        return Response(coach.photo, mimetype="image/jpeg")
-    return '', 404
-
-@app.route("/photo/thumbnail/<int:coach_id>")
-def get_thumbnail(coach_id):
-    coach = Coaches.query.get_or_404(coach_id)
-    if coach and coach.thumbnail:
-        return Response(coach.thumbnail, mimetype="image/jpeg")
-    return '', 404
 
 # -- Seasons --
 @app.route('/change_season', methods=['GET', 'POST'])
