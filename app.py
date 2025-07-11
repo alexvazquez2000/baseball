@@ -14,12 +14,14 @@ import facebook
 #Local imports
 from thumbnail import Thumbnail
 from decimal import Decimal
+from api.api_bp import api_bp
+from reports.reports import reports_bp
 
-#for PDF
-#from flask import make_response
-from fpdf import FPDF
 
 app = Flask(__name__)
+app.register_blueprint(api_bp, url_prefix='/api')
+app.register_blueprint(reports_bp, url_prefix='/reports')
+
 app.config.from_object(Config)
 app.config['UPLOAD_FOLDER'] = 'uploads'
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
@@ -65,7 +67,7 @@ def login_required(f):
 def get_user_info(access_token):
     response = requests.get("https://www.googleapis.com/oauth2/v3/userinfo", headers={
        "Authorization": f"Bearer {access_token}"
-   })
+    })
     if response.status_code == 200:
         return response.json()
     else:
@@ -81,7 +83,6 @@ def get_facebook_user_info(access_token):
     except Exception as e:
         print(f"Failed to fetch Facebook user info: {e}")
         return None
-
 
 def getCurrentSeason():
     if 'current_season_id' in session:
@@ -554,30 +555,6 @@ def edit_level():
         level = Levels.query.get_or_404(level_id)
     return render_template('edit_level.html', level=level)
 
-# -- Experimental section
-@app.route('/generate-pdf')
-def generate_pdf():
-	# https://py-pdf.github.io/fpdf2/Tutorial.html#tuto-1-minimal-example
-    #Create a PDF object
-    pdf = FPDF()
-    pdf.add_page()
-    pdf.set_font("Helvetica", size=12)
-    # Add content to the PDF
-    pdf.cell(200, 10, txt="Hello from Flask and FPDF!", ln=1, align="C")
-    pdf.cell(200, 10, txt="This is a dynamically generated PDF.", ln=1, align="C")
-
-    # PDF is ready
-    # for usage on flask https://py-pdf.github.io/fpdf2/UsageInWebAPI.html
-
-    # Output the PDF as bytes
-    pdf_output = pdf.output(dest='S').encode('latin-1')
-    # Create a Flask response and Output the PDF as bytes
-    response = make_response(pdf_output)
-    # Set appropriate headers for PDF
-    response.headers["Content-Type"] = "application/pdf"
-    response.headers["Content-Disposition"] = "inline; filename=generated_document.pdf" 
-    return response
-
 # -- Extra navigation links on welcome page --
 
 @app.route('/parents_page')
@@ -601,6 +578,6 @@ def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True,ssl_context='adhoc')
-    #app.run(host='0.0.0.0', debug=True)
+    #app.run(host='0.0.0.0', debug=True,ssl_context='adhoc')
+    app.run(host='0.0.0.0', debug=True)
     #app.run()
