@@ -1,6 +1,7 @@
-/__pycache__/
+**/__pycache__/
 /build/
 /uploads/
 /venv/
 .env
+.pytest_cache
 /confidential.txt
