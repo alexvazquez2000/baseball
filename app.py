@@ -195,7 +195,7 @@ def logout():
 
 @app.route('/parents_page')
 def parents_page():
-    return redirect(url_for('list_parents'))
+    return redirect(url_for('parents.list_parents'))
 
 @app.route('/teams_page')
 def teams_page():

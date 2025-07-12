@@ -54,7 +54,7 @@ def edit_parent():
 #            if player:
 #                parent.players.append(player)
 #        db.session.commit()
-#        return redirect(url_for('list_parents'))
+#        return redirect(url_for('parents.list_parents'))
 #    return render_template('edit_parent.html', parent=parent, players=players)
 
 
