@@ -10,27 +10,33 @@
   </div>
   <div class="mb-3">
     <label for="target_age" class="form-label">target age</label>
-    <!-- zero is false, so it is not shown- if 0 is needed remove the OR '' -->
-    <input type="number" name="target_age" class="form-control" value="{{ level.target_age or ''}}" required />
+    <input type="number" name="target_age" class="form-control" value="{{ level.target_age }}" required />
   </div>
+  <!-- FIXME : number doesn't allow cents to be specified.  It only allows .00 right now -->
   <div class="mb-3">
     <label for="registration" class="form-label">Registration fee</label>
-    <!-- zero is false, so it is not shown- if 0 is needed remove the OR '' -->
     <input type="number" name="registration" class="form-control" value="{{ level.registration}}" required />
+    <div class="invalid-feedback">
+      Please enter a valid currency amount (e.g., $1,234.56).
+    </div>
   </div>
   <div class="mb-3">
     <label for="team_fee" class="form-label">Team fee</label>
-    <!-- zero is false, so it is not shown- if 0 is needed remove the OR '' -->
     <input type="number" name="team_fee" class="form-control" value="{{ level.team_fee}}" required />
+    <div class="invalid-feedback">
+      Please enter a valid currency amount (e.g., $1,234.56).
+    </div>
   </div>
   <div class="mb-3">
     <label for="uniform" class="form-label">Uniform cost</label>
-    <!-- zero is false, so it is not shown- if 0 is needed remove the OR '' -->
     <input type="number" name="uniform" class="form-control" value="{{ level.uniform}}" required />
+    <div class="invalid-feedback">
+      Please enter a valid currency amount (e.g., $1,234.56).
+    </div>
   </div>
 
   <button type="submit" class="btn btn-primary">Save</button>
-  <a href="{{ url_for('levels_fees') }}" class="btn btn-secondary">Cancel</a>
+  <a href="{{ url_for('seasons.levels_fees') }}" class="btn btn-secondary">Cancel</a>
 </form>
 
 

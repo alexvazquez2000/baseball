@@ -14,6 +14,21 @@
   </div>
 
   <div class="mb-3">
+    <label for="level" class="form-label">Group Level</label>
+    <select name="level_id" class="form-select" aria-label="Group Level">
+      {% for level in levels %}
+        <option value="{{ level.id }}" {% if team.level.id == level.id %}selected{% endif %}>
+          {{level.level_name }}
+        </option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <input type="submit" name="save" id="save" value="Save" class="btn btn-primary">
+  <a href="{{ url_for('seasons.list_teams') }}" class="btn btn-secondary">Cancel</a>
+</form>
+
+  <div class="mb-3">
     <label for="coaches" class="form-label">Coaches</label>
     <select name="coaches" class="form-select" multiple size="5">
       {% for coach in team.coaches %}
@@ -37,8 +52,4 @@
     <small class="form-text text-muted">Hold Ctrl (Cmd on Mac) to select multiple.</small>
   </div>
 
-  <input type="submit" name="save" id="save" value="Save" class="btn btn-primary">
-  <input type="submit" name="copy" id="copy" value="Copy" class="btn btn-secondary">
-  <a href="{{ url_for('seasons.list_teams') }}" class="btn btn-secondary">Cancel</a>
-</form>
 {% endblock %}

@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for
+from decimal import Decimal
 
 from extension import get_current_season
 
@@ -118,26 +119,32 @@ def edit_team(team_id):
     team = Teams.query.get_or_404(team_id)
     coaches = Coaches.query.all()
     players = Players.query.all()
+    levels = Levels.query.all()
     if request.method == 'POST':
         team.teamName = request.form['teamName']
         #team.season is read-only on the page
-        # Update coaches
-        team.coaches.clear()
-        coach_ids = request.form.getlist('coaches')
-        for cid in coach_ids:
-            coach = Coaches.query.get(int(cid))
-            if coach:
-                team.coaches.append(coach)
-        # Update players
-        team.players.clear()
-        player_ids = request.form.getlist('players')
-        for pid in player_ids:
-            player = Players.query.get(int(pid))
-            if player:
-                team.players.append(player)
+        level_id = request.form['level_id']
+        level = Levels.query.get(int(level_id))
+        team.level= level
+        
+        ## Update coaches
+        #team.coaches.clear()
+        #coach_ids = request.form.getlist('coaches')
+        #for cid in coach_ids:
+        #    coach = Coaches.query.get(int(cid))
+        #    if coach:
+        #        team.coaches.append(coach)
+        ## Update players
+        #team.players.clear()
+        #player_ids = request.form.getlist('players')
+        #for pid in player_ids:
+        #    player = Players.query.get(int(pid))
+        #    if player:
+        #        team.players.append(player)
         db.session.commit()
         return redirect(url_for('seasons.list_teams'))
-    return render_template('edit_team.html', team=team, coaches=coaches, players=players)
+    
+    return render_template('edit_team.html', team=team, coaches=coaches, players=players, levels=levels)
 
 # -- Fees --
 @seasons_bp.route('/levels_fees')

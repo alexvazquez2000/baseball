@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
 <h3>Levels and fees</h3>
-<a href="{{ url_for('edit_level') }}" class="btn btn-success mb-2">Add Level</a>
+<a href="{{ url_for('seasons.edit_level') }}" class="btn btn-success mb-2">Add Level</a>
 
 <table class="table table-striped" id="filteredTable">
   <thead>
@@ -22,7 +22,7 @@
       <td>{{ level.registration }}</td>
       <td>{{ level.team_fee }}</td>
       <td>{{ level.uniform }}</td>
-      <td><a href="{{ url_for('edit_level', level_id=level.id) }}" class="btn btn-sm btn-primary">Edit</a></td>
+      <td><a href="{{ url_for('seasons.edit_level', level_id=level.id) }}" class="btn btn-sm btn-primary">Edit</a></td>
     </tr>
     {% else %}
     <tr><td colspan="4">No fees found.</td></tr>
