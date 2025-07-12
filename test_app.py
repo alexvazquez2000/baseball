@@ -356,7 +356,7 @@ class TestTeamRoutes(BaseTestCase):
         self.assertIn(b'Test Team', response.data)
 
 class TestAjaxRoutes(BaseTestCase):
-    def test_add_parent_ajax(self):
+    def test_add_parent_to_player(self):
         """Test adding parent to player via AJAX."""
         self.login_user()
         
@@ -375,7 +375,7 @@ class TestAjaxRoutes(BaseTestCase):
         db.session.add(parent)
         db.session.commit()
         
-        response = self.app.post(f'/player/{player.id}/add_parent_ajax',
+        response = self.app.post(f'/player/{player.id}/add_parent_to_player',
                                json={'parent_id': parent.id},
                                content_type='application/json')
         

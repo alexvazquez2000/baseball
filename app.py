@@ -16,6 +16,7 @@ from decimal import Decimal
 from api.api_bp import api_bp
 from coaches.coaches_bp import coaches_bp
 from ledger.ledger_bp import ledger_bp
+from parents.parents_bp import parents_bp
 from players.players_bp import players_bp
 from reports.reports import reports_bp
 
@@ -23,6 +24,7 @@ app = Flask(__name__)
 app.register_blueprint(api_bp, url_prefix='/api')
 app.register_blueprint(coaches_bp, url_prefix='/coaches')
 app.register_blueprint(ledger_bp, url_prefix='/ledger')
+app.register_blueprint(parents_bp, url_prefix='/parents')
 app.register_blueprint(players_bp, url_prefix='/players')
 app.register_blueprint(reports_bp, url_prefix='/reports')
 
@@ -194,53 +196,6 @@ def logout():
     
     session.clear()
     return redirect(url_for('login_page'))
-
-
-# -- Parents --
-
-@app.route('/parents')
-@login_required
-def list_parents():
-    parents = Parents.query.all()
-    return render_template('parents.html', parents=parents)
-
-@app.route('/parent/add', methods=['GET', 'POST'])
-@login_required
-def add_parent():
-    if request.method == 'POST':
-        parent = Parents(
-            first_name=request.form['first_name'],
-            last_name=request.form['last_name'],
-            email=request.form['email'],
-            phone=request.form['phone']
-        )
-        db.session.add(parent)
-        db.session.commit()
-        return redirect(url_for('list_parents'))
-    return render_template('add_parent.html')
-
-@app.route('/parent/<int:parent_id>/edit', methods=['GET', 'POST'])
-@login_required
-def edit_parent(parent_id):
-    parent = Parents.query.get_or_404(parent_id)
-    players = Players.query.all()
-    if request.method == 'POST':
-        parent.first_name = request.form['first_name']
-        parent.last_name = request.form['last_name']
-        parent.email = request.form['email']
-        parent.phone = request.form['phone']
-        # Clear current children
-        parent.players.clear()
-        # Add selected children
-        child_ids = request.form.getlist('children')
-        for cid in child_ids:
-            player = Players.query.get(int(cid))
-            if player:
-                parent.players.append(player)
-        db.session.commit()
-        return redirect(url_for('list_parents'))
-    return render_template('edit_parent.html', parent=parent, players=players)
-
 
 # -- Seasons --
 @app.route('/change_season', methods=['GET', 'POST'])

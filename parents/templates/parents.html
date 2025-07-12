@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
 <h2>Parents</h2>
-<a href="{{ url_for('add_parent') }}" class="btn btn-success mb-2">Add Parent</a>
+<a href="{{ url_for('parents.edit_parent') }}" class="btn btn-success mb-2">Add Parent</a>
 <br>
 <input type="text" id="search" onkeyup="filterByName(0)" placeholder="Search for names..">
 <table class="table table-striped" id="filteredTable">
@@ -19,7 +19,7 @@
       <td>{{ parent.first_name }} {{ parent.last_name }}</td>
       <td>{{ parent.email or "" }}</td>
       <td>{{ parent.phone or "" }}</td>
-      <td><a href="{{ url_for('edit_parent', parent_id=parent.id) }}" class="btn btn-sm btn-primary">Edit</a></td>
+      <td><a href="{{ url_for('parents.edit_parent', parent_id=parent.id) }}" class="btn btn-sm btn-primary">Edit</a></td>
     </tr>
     {% else %}
     <tr><td colspan="4">No parents found.</td></tr>

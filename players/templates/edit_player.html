@@ -26,6 +26,8 @@
 </form>
 
 {% if player.id %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
 <table class="table table-striped" id="filteredTable">
   <thead>
     <tr>
@@ -41,7 +43,7 @@
       <td>{{ parent.first_name }} {{ parent.last_name }}</td>
       <td>{{ parent.email or "" }}</td>
       <td>{{ parent.phone or "" }}</td>
-      <td><a href="{{ url_for('edit_parent', parent_id=parent.id) }}" class="btn btn-sm btn-primary">Edit</a>&nbsp;
+      <td><a href="{{ url_for('parents.edit_parent', parent_id=parent.id) }}" class="btn btn-sm btn-primary">Edit</a>&nbsp;
       <a href="#" class="btn btn-sm btn-danger delete-button">Remove</a>
       </td>
     </tr>
@@ -56,7 +58,6 @@
 <input type="text" id="parent-search" placeholder="Search parent by name...">
 <ul id="search-results"></ul>
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script>
 const parentSearchInput = document.getElementById("parent-search");
 const resultsList = document.getElementById("search-results");
@@ -104,7 +105,7 @@ parentSearchInput.addEventListener("input", async (e) => {
         li.textContent = `${parent.first_name} ${parent.last_name} (${parent.phone})`;
         li.style.cursor = "pointer";
         li.addEventListener("click", async () => {
-            const resp = await fetch("/api/player/{{ player.id }}/add_parent_ajax", {
+            const resp = await fetch("/api/player/{{ player.id }}/add_parent_to_player", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -121,7 +122,7 @@ parentSearchInput.addEventListener("input", async (e) => {
                 $('#filteredTable tbody').append(
                     '<tr id="parentid-' + parentId + '"><td>' + name + '</td><td>' + email + '</td>'
                     + '<td>' + phone + '</td>'
-                    + '<td><a href="/parent/' + parentId + '/edit" class="btn btn-sm btn-primary">Edit</a>&nbsp;'
+                    + '<td><a href="/parents/parent?parent_id=' + parentId + '" class="btn btn-sm btn-primary">Edit</a>&nbsp;'
                     + '<a href="#" class="btn btn-sm btn-danger delete-button">Remove</a></td></tr>');
             } else {
                alert('Request failed: ' + textStatus)
