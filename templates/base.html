@@ -26,11 +26,11 @@
               <a class="nav-link" href="{{ url_for('coaches.list_coaches') }}">Coaches</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('list_teams') }}">Teams</a>
+              <a class="nav-link" href="{{ url_for('seasons.list_teams') }}">Teams</a>
             </li>
             <li class="nav-item">
             <!--  Settings -->
-              <a class="nav-link" href="{{ url_for('levels_fees') }}">Levels and Fees</a>
+              <a class="nav-link" href="{{ url_for('seasons.levels_fees') }}">Levels and Fees</a>
             </li>
             
             <li class="nav-item dropdown">
@@ -58,7 +58,7 @@
           </ul>
           <ul class="navbar-nav ms-auto">
             <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('change_season') }}">Season : {{ current_season_name }}</a>
+              <a class="nav-link" href="{{ url_for('seasons.change_season') }}">Season : {{ current_season_name }}</a>
             </li>
             {% if session.get('access_token') %}
             <li class="nav-item dropdown">
