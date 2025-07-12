@@ -52,6 +52,7 @@ class Seasons(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     season_name = db.Column(db.String(100), nullable=False)
     base_date = db.Column(db.Date, nullable=False)
+    
     teams = db.relationship('Teams', back_populates='season')
 
 class Teams(db.Model):
@@ -60,6 +61,8 @@ class Teams(db.Model):
     #many-to-one on season uses the next two rows
     season_id = db.Column(db.Integer, db.ForeignKey('seasons.id')) # Foreign key
     season = db.relationship('Seasons', back_populates='teams')
+    level_id = db.Column(db.Integer, db.ForeignKey('levels.id')) # Foreign key
+    level = db.relationship('Levels', back_populates='teams')
     coaches = db.relationship('Coaches', secondary=teams_coaches, back_populates='teams')
     players = db.relationship('Players', secondary=teams_players, back_populates='teams')
 
@@ -68,9 +71,11 @@ class Levels(db.Model):
     level_name = db.Column(db.String(100), nullable=False)
     target_age = db.Column(db.Integer, nullable=False)
     # Define a DECIMAL column for price with a total of 9 digits and 2 decimal places
-    registration = db.Column(db.DECIMAL(9, 2), nullable=False) 
-    team_fee = db.Column(db.DECIMAL(9, 2), nullable=False) 
-    uniform = db.Column(db.DECIMAL(9, 2), nullable=False) 
+    registration = db.Column(db.DECIMAL(9, 2), nullable=False)
+    team_fee = db.Column(db.DECIMAL(9, 2), nullable=False)
+    uniform = db.Column(db.DECIMAL(9, 2), nullable=False)
+    
+    teams = db.relationship('Teams', back_populates='level')
 
 #For accounting
 class Customer(db.Model):
