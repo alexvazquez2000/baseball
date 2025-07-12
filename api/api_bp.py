@@ -20,14 +20,13 @@ def search_parents():
     q = request.args.get("q", "")
     results = []
     if q:
-        #results = Parents.query.filter(Parents.first_name.ilike(f"%{q}%") or Parents.last_name.ilike(f"%{q}%")).all()
         results = Parents.query.filter(
           or_(
             Parents.first_name.ilike(f"%{q}%"),
             Parents.last_name.ilike(f"%{q}%")
           )
         ).all()
-    data = [{"id": p.id, "first_name": p.first_name, "last_name": p.last_name, "phone": p.phone} for p in results]
+    data = [{"id": p.id, "first_name": p.first_name, "last_name": p.last_name, "email": p.email, "phone": p.phone} for p in results]
     return jsonify(data)
 
 #Ajax
@@ -44,12 +43,11 @@ def add_parent_ajax(player_id):
     return jsonify({"success": False}), 400
 
 #Ajax
-@api_bp.route("/player/<int:player_id>/remove_parent_ajax", methods=["POST"])
-def remove_parent_ajax(player_id):
-    parent_id = request.json.get("parent_id")
+@api_bp.route("/player/<int:player_id>/remove_parent/<int:parent_id>", methods=["DELETE"])
+def remove_parent_ajax(player_id, parent_id):
+    print(f"Deleting child-parent player={player_id} / parent={parent_id}" )
     player = Players.query.get(player_id)
     parent = Parents.query.get(parent_id)
-
     if parent and player and parent in player.parents:
         player.parents.remove(parent)
         db.session.commit()

@@ -37,11 +37,13 @@
   </thead>
   <tbody>
 {% for parent in player.parents %}
-    <tr>
+    <tr id='parentid-{{ parent.id }}'>
       <td>{{ parent.first_name }} {{ parent.last_name }}</td>
       <td>{{ parent.email or "" }}</td>
       <td>{{ parent.phone or "" }}</td>
-      <td><a href="{{ url_for('edit_parent', parent_id=parent.id) }}" class="btn btn-sm btn-primary">Edit</a></td>
+      <td><a href="{{ url_for('edit_parent', parent_id=parent.id) }}" class="btn btn-sm btn-primary">Edit</a>&nbsp;
+      <a href="#" class="btn btn-sm btn-danger delete-button">Remove</a>
+      </td>
     </tr>
 
 {% else %}
@@ -49,49 +51,42 @@
 {% endfor %}
   </tbody>
 </table>
-TODO: This needs cleanup - the table above is not updated when the parents are added/remove.
-There are 2 tables with parents.  I like the table above better than the list of parents below<br>
 
 <h3>Add Parent</h3>
 <input type="text" id="parent-search" placeholder="Search parent by name...">
 <ul id="search-results"></ul>
 
-<h3>Parents</h3>
-<ul id="parent-list">
-    {% for parent in player.parents %}
-    <li data-parent-id="{{ parent.id }}">
-        {{ parent.first_name }} {{ parent.last_name }} ({{ parent.phone }})
-        <a href="#" class="remove-parent" style="color:red">[Remove]</a>
-    </li>
-    {% endfor %}
-</ul>
-
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script>
-const parentList = document.getElementById("parent-list");
 const parentSearchInput = document.getElementById("parent-search");
 const resultsList = document.getElementById("search-results");
 const csrfToken = "{{ csrf_token() }}";  // CSRF Token
 
-// Event listener for removing parent
-parentList.addEventListener("click", async (e) => {
-    if (e.target.classList.contains("remove-parent")) {
-        e.preventDefault();
-        const li = e.target.closest("li");
-        const parentId = li.dataset.parentId;
-
-        const resp = await fetch("/api/player/{{ player.id }}/remove_parent_ajax", {
-            method: "POST",
+$(document).ready(function() {
+    // Event delegation for dynamically removing parent
+    $(document).on('click', '.delete-button', function(event) {
+        //prevent the page from scrolling when clicking the delete button
+        event.preventDefault();
+        // Extract actual ID
+        var parentId = $(this).closest('tr').attr('id').replace('parentid-', '');
+        $.ajax({
+            url: "/api/player/{{ player.id }}/remove_parent/" + parentId,
+            type: 'DELETE',
             headers: {
                 "Content-Type": "application/json",
                 "X-CSRFToken": csrfToken
             },
-            body: JSON.stringify({ parent_id: parentId })
+            success: function(response) {
+                // If deletion successful on server, remove from DOM
+                $('#parentid-' + parentId).remove();
+                console.log('Row removed successfully!');
+            },
+            error: function(xhr, status, error) {
+                console.error('Error deleting row:', error);
+                alert('Failed to delete parent row. Please try again.');
+            }
         });
-        const result = await resp.json();
-        if (result.success) {
-            li.remove();
-        }
-    }
+    });
 });
 
 // Event listener for searching and adding parent
@@ -119,19 +114,25 @@ parentSearchInput.addEventListener("input", async (e) => {
             });
             const result = await resp.json();
             if (result.success) {
-                const parentItem = document.createElement("li");
-                parentItem.dataset.parentId = parent.id;
-                parentItem.innerHTML = `
-                    ${parent.first_name} ${parent.last_name} (${parent.phone})
-                    <a href="#" class="remove-parent" style="color:red">[Remove]</a>
-                `;
-                parentList.appendChild(parentItem);
+                var parentId = parent.id;
+                var name = parent.first_name + ' ' + parent.last_name;
+                var email = parent.email ?? '';
+                var phone = parent.phone ?? '';
+                $('#filteredTable tbody').append(
+                    '<tr id="parentid-' + parentId + '"><td>' + name + '</td><td>' + email + '</td>'
+                    + '<td>' + phone + '</td>'
+                    + '<td><a href="/parent/' + parentId + '/edit" class="btn btn-sm btn-primary">Edit</a>&nbsp;'
+                    + '<a href="#" class="btn btn-sm btn-danger delete-button">Remove</a></td></tr>');
+            } else {
+               alert('Request failed: ' + textStatus)
             }
         });
         resultsList.appendChild(li);
     });
 });
 </script>
+
+
 {% endif %} <!-- end if player id is empty -->
 
 

@@ -39,7 +39,8 @@ def edit_player():
             )
             db.session.add(player)
         db.session.commit()
-        return redirect(url_for('players.list_players'))
+        #TODO: stay on page to continue editing or redirect to list all players?
+        #return redirect(url_for('players.list_players'))
 
     dob = ''
     if player_id :
