@@ -14,6 +14,22 @@ def status():
     return {"status": "API is running"}, 200
 
 #Ajax
+@api_bp.route("/player/search")
+def search_players():
+    """Search players by name, returns JSON."""
+    q = request.args.get("q", "")
+    results = []
+    if q:
+        results = Players.query.filter(
+          or_(
+            Players.first_name.ilike(f"%{q}%"),
+            Players.last_name.ilike(f"%{q}%")
+          )
+        ).all()
+    data = [{"id": p.id, "first_name": p.first_name, "last_name": p.last_name, "jersey_number": p.jersey_number} for p in results]
+    return jsonify(data)
+
+#Ajax
 @api_bp.route("/parents/search")
 def search_parents():
     """Search parents by name, returns JSON."""
@@ -30,8 +46,9 @@ def search_parents():
     return jsonify(data)
 
 #Ajax
-@api_bp.route("/player/<int:player_id>/add_parent_ajax", methods=["POST"])
-def add_parent_ajax(player_id):
+@api_bp.route("/player/<int:player_id>/add_parent_to_player", methods=["POST"])
+def add_parent_to_player(player_id):
+    """ Add parent to a player """
     parent_id = request.json.get("parent_id")
     player = Players.query.get(player_id)
     parent = Parents.query.get(parent_id)
@@ -42,10 +59,23 @@ def add_parent_ajax(player_id):
         return jsonify({"success": True})
     return jsonify({"success": False}), 400
 
+@api_bp.route("/parent/<int:parent_id>/add_player_to_parent", methods=["POST"])
+def add_player_to_parent(parent_id):
+    """ Add player to a parent """
+    player_id = request.json.get("player_id")
+    player = Players.query.get(player_id)
+    parent = Parents.query.get(parent_id)
+
+    if parent and player and player not in parent.players:
+        parent.players.append(player)
+        db.session.commit()
+        return jsonify({"success": True})
+    return jsonify({"success": False}), 400
+
 #Ajax
 @api_bp.route("/player/<int:player_id>/remove_parent/<int:parent_id>", methods=["DELETE"])
 def remove_parent_ajax(player_id, parent_id):
-    print(f"Deleting child-parent player={player_id} / parent={parent_id}" )
+    #print(f"Deleting child-parent player={player_id} / parent={parent_id}" )
     player = Players.query.get(player_id)
     parent = Parents.query.get(parent_id)
     if parent and player and parent in player.parents:
