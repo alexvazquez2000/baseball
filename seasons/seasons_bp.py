@@ -1,4 +1,6 @@
-from flask import Blueprint, render_template, request, redirect, url_for
+from flask import Blueprint, render_template, request, redirect, url_for, session
+from datetime import datetime
+
 from decimal import Decimal
 
 from extension import get_current_season
@@ -65,7 +67,8 @@ def create_new_season():
                 if old_team:
                     new_team = Teams(
                        season = newSeason,
-                       teamName = f"{old_team.teamName} - New",
+                       teamName = old_team.teamName,
+                       level = old_team.level,
                        coaches = old_team.coaches
                        #TODO: Could copy players here but planning to also do the billing
                     )
@@ -86,65 +89,42 @@ def list_teams():
     teams = Teams.query.filter_by(season_id=current_season_id).all()
     return render_template('teams.html', teams=teams)
 
-@seasons_bp.route('/team/add', methods=['GET', 'POST'])
+@seasons_bp.route('/team', methods=['GET', 'POST'])
 #@login_required
-def add_team():
-    coaches = Coaches.query.all()
-    players = Players.query.all()
+def edit_team():
+    team = {}
+    team_id = request.args.get('team_id')
+    (current_season_id, current_season_name) = get_current_season()
     if request.method == 'POST':
-        team = Teams(
-            teamName=request.form['teamName'],
-            season=request.form['season'],
-        )
-        # Add coaches
-        coach_ids = request.form.getlist('coaches')
-        for cid in coach_ids:
-            coach = Coaches.query.get(int(cid))
-            if coach:
-                team.coaches.append(coach)
-        # Add players
-        player_ids = request.form.getlist('players')
-        for pid in player_ids:
-            player = Players.query.get(int(pid))
-            if player:
-                team.players.append(player)
-        db.session.add(team)
-        db.session.commit()
-        return redirect(url_for('seasons.list_teams'))
-    return render_template('add_team.html', coaches=coaches, players=players)
-
-@seasons_bp.route('/team/<int:team_id>/edit', methods=['GET', 'POST'])
-#@login_required
-def edit_team(team_id):
-    team = Teams.query.get_or_404(team_id)
-    coaches = Coaches.query.all()
-    players = Players.query.all()
-    levels = Levels.query.all()
-    if request.method == 'POST':
-        team.teamName = request.form['teamName']
-        #team.season is read-only on the page
+        #get the ID from the post data if present
+        team_id = request.form['id']
         level_id = request.form['level_id']
         level = Levels.query.get(int(level_id))
-        team.level= level
-        
-        ## Update coaches
-        #team.coaches.clear()
-        #coach_ids = request.form.getlist('coaches')
-        #for cid in coach_ids:
-        #    coach = Coaches.query.get(int(cid))
-        #    if coach:
-        #        team.coaches.append(coach)
-        ## Update players
-        #team.players.clear()
-        #player_ids = request.form.getlist('players')
-        #for pid in player_ids:
-        #    player = Players.query.get(int(pid))
-        #    if player:
-        #        team.players.append(player)
-        db.session.commit()
-        return redirect(url_for('seasons.list_teams'))
-    
-    return render_template('edit_team.html', team=team, coaches=coaches, players=players, levels=levels)
+        if team_id:
+            #update existing entry
+            team = Teams.query.get_or_404(team_id)
+            team.teamName = request.form['teamName']
+            #team.season is read-only on the page
+            team.level= level
+            db.session.commit()
+            #on update then we are done
+            return redirect(url_for('seasons.list_teams'))
+        else :
+            team = Teams(
+                teamName = request.form['teamName'],
+                season_id = current_season_id,
+                level = level
+            ) 
+            db.session.add(team)
+            db.session.commit()
+            #it is a new team, continue editing to add coaches and players
+    if team_id:
+        team = Teams.query.get_or_404(team_id)
+        current_season_id = team.season.id
+        current_season_name = team.season.season_name
+    levels = Levels.query.all()
+    return render_template('edit_team.html', team=team, levels=levels,
+      current_season_id=current_season_id, current_season_name=current_season_name )
 
 # -- Fees --
 @seasons_bp.route('/levels_fees')

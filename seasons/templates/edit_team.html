@@ -3,13 +3,14 @@
 <h2>Edit Team</h2>
 <form method="post">
   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <input type="hidden" name="id" value="{{ team.id or '' }}">
   <div class="mb-3">
     <label for="name" class="form-label">Team Name</label>
     <input type="text" name="teamName" class="form-control" value="{{ team.teamName }}" required />
   </div>
   <div class="mb-3">
     <label for="season_name" class="form-label">Season :
-        <input type="text" name="season_name" value="{{ team.season.season_name }}" disabled="disabled" />
+        <input type="text" name="season_name" value="{{ current_season_name }}" disabled="disabled" />
     </label>
   </div>
 
@@ -17,7 +18,7 @@
     <label for="level" class="form-label">Group Level</label>
     <select name="level_id" class="form-select" aria-label="Group Level">
       {% for level in levels %}
-        <option value="{{ level.id }}" {% if team.level.id == level.id %}selected{% endif %}>
+        <option value="{{ level.id }}" {% if team.level and team.level.id == level.id %}selected{% endif %}>
           {{level.level_name }}
         </option>
       {% endfor %}
@@ -27,6 +28,8 @@
   <input type="submit" name="save" id="save" value="Save" class="btn btn-primary">
   <a href="{{ url_for('seasons.list_teams') }}" class="btn btn-secondary">Cancel</a>
 </form>
+
+{% if team.id %}
 
   <div class="mb-3">
     <label for="coaches" class="form-label">Coaches</label>
@@ -51,5 +54,6 @@
     </select>
     <small class="form-text text-muted">Hold Ctrl (Cmd on Mac) to select multiple.</small>
   </div>
+{% endif %} <!-- end if parent id is empty -->
 
 {% endblock %}
