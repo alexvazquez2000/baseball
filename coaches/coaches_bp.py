@@ -17,7 +17,7 @@ def list_coaches():
 #@login_required
 def edit_coach():
     coach = {}
-    coach_id = request.args.get('id')
+    coach_id = request.args.get('coach_id')
     if request.method == 'POST':
         # Handle uploaded or captured photo
         photo_data = None
