@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from sqlalchemy import or_
 
-from models import db, Players, Parents
+from models import db, Players, Parents, Coaches, Teams
 
 api_bp = Blueprint('api', __name__)
 
@@ -46,6 +46,23 @@ def search_parents():
     return jsonify(data)
 
 #Ajax
+@api_bp.route("/coaches/search")
+def search_coaches():
+    """Search coaches by name, returns JSON."""
+    q = request.args.get("q", "")
+    results = []
+    if q:
+        results = Coaches.query.filter(
+          or_(
+            Coaches.first_name.ilike(f"%{q}%"),
+            Coaches.last_name.ilike(f"%{q}%")
+          )
+        ).all()
+    data = [{"id": p.id, "first_name": p.first_name, "last_name": p.last_name, "email": p.email, "phone": p.phone} for p in results]
+    return jsonify(data)
+
+
+#Ajax
 @api_bp.route("/player/<int:player_id>/add_parent_to_player", methods=["POST"])
 def add_parent_to_player(player_id):
     """ Add parent to a player """
@@ -80,6 +97,30 @@ def remove_parent_ajax(player_id, parent_id):
     parent = Parents.query.get(parent_id)
     if parent and player and parent in player.parents:
         player.parents.remove(parent)
+        db.session.commit()
+        return jsonify({"success": True})
+    return jsonify({"success": False}), 400
+
+@api_bp.route("/team/<int:team_id>/add_coach_to_team", methods=["POST"])
+def add_coach_to_team(team_id):
+    """ Add coach to a team """
+    coach_id = request.json.get("coach_id")
+    coach = Coaches.query.get(coach_id)
+    team = Teams.query.get(team_id)
+
+    if team and coach and coach not in team.coaches:
+        team.coaches.append(coach)
+        db.session.commit()
+        return jsonify({"success": True})
+    return jsonify({"success": False}), 400
+
+@api_bp.route("/team/<int:team_id>/remove_coach/<int:coach_id>", methods=["DELETE"])
+def remove_coach(team_id, coach_id):
+    """ remove coach from team """
+    coach = Coaches.query.get(coach_id)
+    team = Teams.query.get(team_id)
+    if coach and team and coach in team.coaches:
+        team.coaches.remove(coach)
         db.session.commit()
         return jsonify({"success": True})
     return jsonify({"success": False}), 400
