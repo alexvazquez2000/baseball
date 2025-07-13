@@ -4,6 +4,7 @@ from datetime import datetime
 from decimal import Decimal
 
 from extension import get_current_season
+from base_calendar import BaseCalendar
 
 from models import db, Players, Coaches, Teams, Seasons, Levels
 
@@ -122,6 +123,10 @@ def edit_team():
         team = Teams.query.get_or_404(team_id)
         current_season_id = team.season.id
         current_season_name = team.season.season_name
+        for player in team.players:
+            base_date = team.season.base_date.strftime('%Y-%m-%d')
+            player_dob = player.date_of_birth.strftime('%Y-%m-%d')
+            player.baseball_age = BaseCalendar.baseball_age(player_dob, base_date)
     levels = Levels.query.all()
     return render_template('edit_team.html', team=team, levels=levels,
       current_season_id=current_season_id, current_season_name=current_season_name )

@@ -139,15 +139,17 @@ coachSearchInput.addEventListener("input", async (e) => {
 
 
   <div class="mb-3">
-    <label for="players" class="form-label">Players</label>
+    <label for="players" class="form-label">Players - Baseball Age as of {{ team.season.base_date.strftime('%Y-%m-%d') }}</label>
     <select name="players" class="form-select" multiple size="5">
       {% for player in team.players %}
         <option value="{{ player.id }}" {% if player in team.players %}selected{% endif %}>
-          {{ player.first_name }} {{ player.last_name }}
+          {{ player.first_name }} {{ player.last_name }} {{ player.baseball_age }}
         </option>
       {% endfor %}
     </select>
   </div>
+
+
 {% endif %} <!-- end if coach id is empty -->
 
 {% endblock %}
