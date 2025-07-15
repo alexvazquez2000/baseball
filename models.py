@@ -54,10 +54,12 @@ class Seasons(db.Model):
     base_date = db.Column(db.Date, nullable=False)
     
     teams = db.relationship('Teams', back_populates='season')
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
 
 class Teams(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    teamName = db.Column(db.String(100), nullable=False)
+    team_name = db.Column(db.String(100), nullable=False)
     #many-to-one on season uses the next two rows
     season_id = db.Column(db.Integer, db.ForeignKey('seasons.id')) # Foreign key
     season = db.relationship('Seasons', back_populates='teams')

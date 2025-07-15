@@ -19,7 +19,7 @@
     {% for team in teams %}
     <tr>
       <td>{{ team.level.level_name }}</td>
-      <td>{% if team.logo != "": %}{{team.logo}}{% endif %}{{ team.teamName }}</td>
+      <td>{% if team.logo != "": %}{{team.logo}}{% endif %}{{ team.team_name }}</td>
       <td>{{ team.season.season_name }}</td>
       <td>
         {% for coach in team.coaches %}

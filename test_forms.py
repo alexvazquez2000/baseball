@@ -53,13 +53,13 @@ class TestForms(unittest.TestCase):
         """Test TeamForm validation."""
         with self.app.test_request_context():
             # Test valid form
-            form = TeamForm(data={'teamName': 'Test Team'})
+            form = TeamForm(data={'team_name': 'Test Team'})
             self.assertTrue(form.validate())
             
             # Test invalid form (missing team name)
-            form = TeamForm(data={'teamName': ''})
+            form = TeamForm(data={'team_name': ''})
             self.assertFalse(form.validate())
-            self.assertIn('This field is required.', form.teamName.errors)
+            self.assertIn('This field is required.', form.team_name.errors)
 
 if __name__ == '__main__':
     unittest.main()

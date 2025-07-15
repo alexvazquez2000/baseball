@@ -63,12 +63,12 @@ def create_new_season():
             #now add the teams
             copyteams = request.form.getlist('copyteams')
             for copy_team_id in copyteams :
-                print (f" copy {copy_team_id } to new season")
+                print (f" copy team {copy_team_id } {copy_team_name } to new season")
                 old_team = Teams.query.get(int(copy_team_id))
                 if old_team:
                     new_team = Teams(
                        season = newSeason,
-                       teamName = old_team.teamName,
+                       team_name = old_team.team_name,
                        level = old_team.level,
                        coaches = old_team.coaches
                        #TODO: Could copy players here but planning to also do the billing
@@ -104,7 +104,7 @@ def edit_team():
         if team_id:
             #update existing entry
             team = Teams.query.get_or_404(team_id)
-            team.teamName = request.form['teamName']
+            team.team_name = request.form['team_name']
             #team.season is read-only on the page
             team.level= level
             db.session.commit()
@@ -112,7 +112,7 @@ def edit_team():
             return redirect(url_for('seasons.list_teams'))
         else :
             team = Teams(
-                teamName = request.form['teamName'],
+                team_name = request.form['team_name'],
                 season_id = current_season_id,
                 level = level
             ) 

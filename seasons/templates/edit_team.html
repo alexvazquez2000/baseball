@@ -6,7 +6,7 @@
   <input type="hidden" name="id" value="{{ team.id or '' }}">
   <div class="mb-3">
     <label for="name" class="form-label">Team Name</label>
-    <input type="text" name="teamName" class="form-control" value="{{ team.teamName }}" required />
+    <input type="text" name="team_name" class="form-control" value="{{ team.team_name }}" required />
   </div>
   <div class="mb-3">
     <label for="season_name" class="form-label">Season :
@@ -138,16 +138,58 @@ coachSearchInput.addEventListener("input", async (e) => {
 
 
 
-  <div class="mb-3">
-    <label for="players" class="form-label">Players - Baseball Age as of {{ team.season.base_date.strftime('%Y-%m-%d') }}</label>
-    <select name="players" class="form-select" multiple size="5">
-      {% for player in team.players %}
-        <option value="{{ player.id }}" {% if player in team.players %}selected{% endif %}>
-          {{ player.first_name }} {{ player.last_name }} {{ player.baseball_age }}
-        </option>
-      {% endfor %}
-    </select>
-  </div>
+<h3>Players - Baseball Age as of {{ team.season.base_date.strftime('%Y-%m-%d') }}</h3>
+<table class="table table-striped" id="playersTable">
+  <thead>
+    <tr>
+      <th>Player Name</th>
+      <th>Jersey Number</th>
+      <th>Baseball Age</th>
+    </tr>
+  </thead>
+  <tbody>
+{% for player in team.players %}
+    <tr id='playerid-{{ player.id }}'>
+      <td>{{ player.first_name }} {{ player.last_name }}</td>
+      <td>{{ player.jersey_number or "" }}</td>
+      <td>{{ player.baseball_age }}</td>
+    </tr>
+
+{% else %}
+    <tr><td colspan="4">No players found.</td></tr>
+{% endfor %}
+  </tbody>
+</table>
+
+<h3>Add Player (child)</h3>
+<input type="text" id="player-search" placeholder="Search player by name...">
+<ul id="player-search-results"></ul>
+
+<script>
+const playerSearchInput = document.getElementById("player-search");
+const playerResultsList = document.getElementById("player-search-results");
+
+//Event listener for searching and adding player
+playerSearchInput.addEventListener("input", async (e) => {
+    const query = e.target.value.trim();
+    playerResultsList.innerHTML = ""; 
+
+    if (query.length < 2) return;
+
+    const resp = await fetch("/api/player/search?q=" + encodeURIComponent(query));
+    const data = await resp.json();
+
+    data.forEach(player => {
+        const li = document.createElement("li");
+        li.textContent = `${player.first_name} ${player.last_name} (${player.jersey_number})`;
+        li.style.cursor = "pointer";
+        //Add event listener
+        playerResultsList.appendChild(li);
+    });
+});
+
+
+</script>
 
 
 {% endif %} <!-- end if coach id is empty -->

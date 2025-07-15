@@ -12,7 +12,7 @@ class ChildForm(FlaskForm):
     submit = SubmitField('Add Child')
 
 class TeamForm(FlaskForm):
-    teamName = StringField('Team Name', validators=[DataRequired()])
+    team_name = StringField('Team Name', validators=[DataRequired()])
     children = SelectMultipleField('Children', coerce=int)
     submit = SubmitField('Create Team')
 

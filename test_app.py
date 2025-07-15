@@ -81,13 +81,13 @@ class TestModels(BaseTestCase):
     def test_team_creation(self):
         """Test creating a team."""
         team = Teams(
-            teamName="Rangers",
+            team_name="Rangers",
             season="2025-Spring"
         )
         db.session.add(team)
         db.session.commit()
         
-        self.assertEqual(team.teamName, "Rangers")
+        self.assertEqual(team.team_name, "Rangers")
         self.assertEqual(team.season, "2025-Spring")
         self.assertEqual(Teams.query.count(), 1)
 
@@ -115,7 +115,7 @@ class TestModels(BaseTestCase):
 
     def test_team_player_relationship(self):
         """Test many-to-many relationship between teams and players."""
-        team = Teams(teamName="Rangers", season="2025-Spring")
+        team = Teams(team_name="Rangers", season="2025-Spring")
         player = Players(
             name="John Doe",
             date_of_birth=date(2010, 5, 15),
@@ -345,7 +345,7 @@ class TestTeamRoutes(BaseTestCase):
         
         # Create test team
         team = Teams(
-            teamName="Test Team",
+            team_name="Test Team",
             season="2025-Spring"
         )
         db.session.add(team)
