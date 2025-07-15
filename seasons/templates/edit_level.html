@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
 <h2>Edit Level</h2>
-<form method="post">
+<form method="post" class="needs-validation" novalidate>
   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
   <input type="hidden" name="id" value="{{ level.id or '' }}">
   <div class="mb-3">
@@ -10,27 +10,26 @@
   </div>
   <div class="mb-3">
     <label for="target_age" class="form-label">target age</label>
-    <input type="number" name="target_age" class="form-control" value="{{ level.target_age }}" required />
+    <input type="text" name="target_age" class="form-control" value="{{ level.target_age }}" required />
   </div>
-  <!-- FIXME : number doesn't allow cents to be specified.  It only allows .00 right now -->
   <div class="mb-3">
     <label for="registration" class="form-label">Registration fee</label>
-    <input type="number" name="registration" class="form-control" value="{{ level.registration}}" required />
-    <div class="invalid-feedback">
+    <input type="text" id="registration" name="registration" class="form-control currency" value="{{ level.registration}}" required />
+    <div id="registration-feedback" class="invalid-feedback">
       Please enter a valid currency amount (e.g., $1,234.56).
     </div>
   </div>
   <div class="mb-3">
     <label for="team_fee" class="form-label">Team fee</label>
-    <input type="number" name="team_fee" class="form-control" value="{{ level.team_fee}}" required />
-    <div class="invalid-feedback">
+    <input type="text" id="team_fee" name="team_fee" class="form-control currency" value="{{ level.team_fee}}" required />
+    <div id="team-feedback" class="invalid-feedback">
       Please enter a valid currency amount (e.g., $1,234.56).
     </div>
   </div>
   <div class="mb-3">
     <label for="uniform" class="form-label">Uniform cost</label>
-    <input type="number" name="uniform" class="form-control" value="{{ level.uniform}}" required />
-    <div class="invalid-feedback">
+    <input type="text" name="uniform" class="form-control currency" value="{{ level.uniform}}" required />
+    <div id="uniform-feedback" class="invalid-feedback">
       Please enter a valid currency amount (e.g., $1,234.56).
     </div>
   </div>
@@ -39,5 +38,33 @@
   <a href="{{ url_for('seasons.levels_fees') }}" class="btn btn-secondary">Cancel</a>
 </form>
 
+<script>
+  // Using JavaScript for custom validation using the regex from search result
+  const form = document.querySelector('.needs-validation');
+  form.addEventListener('submit', function (event) {
+    if (!form.checkValidity()) {
+      event.preventDefault();
+      event.stopPropagation();
+    } else {
+        const moneyElements = document.querySelectorAll(".currency");
+        for (let currencyElement of moneyElements) {
+            console.log("validating " + currencyElement.textContent + " value='" + currencyElement.value + "'");
+            //Optional leading dollar sign
+            const regex = /(?=.*\d)^(\${0,1})(([1-9]\d{0,2}(,\d{3})*)|0)?(\.\d{1,2})?$/;
+            if (!regex.test(currencyElement.value)) {
+              event.preventDefault();
+              event.stopPropagation();
+              currencyElement.classList.add('is-invalid');
+              console.log(" value='" + currencyElement.value + "' is invalid");
+            } else {
+                currencyElement.classList.remove('is-invalid');
+                currencyElement.classList.add('is-valid');
+                console.log(" value='" + currencyElement.value + "' is OK");
+            }
+        }
+    }
+    form.classList.add('was-validated');
+  }, false);
+</script>
 
 {% endblock %}

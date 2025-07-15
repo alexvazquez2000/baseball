@@ -1,6 +1,9 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session
 from datetime import datetime
 
+#re for regular expression
+import re
+
 from decimal import Decimal
 
 from extension import get_current_season
@@ -138,6 +141,10 @@ def levels_fees():
     levels = Levels.query.all()
     return render_template('levels_fees.html', levels=levels)
 
+def clean_money(input_string):
+	""" Remove any non-char except digits and periods - negative numbers are not allowed """
+	return re.sub(r'[^0-9.]','',input_string)
+
 @seasons_bp.route('/level', methods=['GET', 'POST'])
 #@login_required
 def edit_level():
@@ -151,9 +158,9 @@ def edit_level():
             level = Levels.query.get_or_404(level_id)
             level.level_name = request.form['level_name']
             level.target_age = int(request.form['target_age'])
-            level.registration = Decimal(request.form['registration'])
-            level.team_fee = Decimal(request.form['team_fee'])
-            level.uniform = Decimal(request.form['uniform'])
+            level.registration = Decimal(clean_money(request.form['registration']) )
+            level.team_fee = Decimal(clean_money(request.form['team_fee']) )
+            level.uniform = Decimal(clean_money(request.form['uniform']) )
 
         else :
             #add new level because level_id is empty
