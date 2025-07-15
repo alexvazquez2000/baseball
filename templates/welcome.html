@@ -6,7 +6,7 @@
 <ul>
   {% for team in teams %}
     <li>
-      <a href="{{ url_for('seasons.edit_team', team_id=team.id) }}">{{ team.teamName }}</a> - Season: {{ team.season.season_name }}
+      <a href="{{ url_for('seasons.edit_team', team_id=team.id) }}">{{ team.team_name }}</a> - Season: {{ team.season.season_name }}
     </li>
   {% else %}
     <li>No teams found for the current season.</li>
