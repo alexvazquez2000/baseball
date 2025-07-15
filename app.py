@@ -33,6 +33,10 @@ app.register_blueprint(seasons_bp, url_prefix='/seasons')
 
 app.config.from_object(Config)
 app.config['UPLOAD_FOLDER'] = 'uploads'
+
+#To record all SQL Queries enable SQLALCHEMY_ECHO
+#app.config['SQLALCHEMY_ECHO'] = True
+
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 db.init_app(app)
 
