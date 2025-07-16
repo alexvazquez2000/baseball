@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, session
+from flask import Blueprint, render_template, request, make_response, redirect, url_for, session
 from datetime import datetime
 
 #re for regular expression
@@ -25,7 +25,12 @@ def change_season():
         print (f"new season is {current_season.season_name}")
         session['current_season_id'] = current_season.id
         session['current_season_name'] = current_season.season_name
-        return redirect(url_for('seasons.list_teams'))
+        #return redirect(url_for('seasons.list_teams'))
+        response = make_response(redirect(url_for('seasons.list_teams')))
+        #add a cookie for 30 days
+        #response.set_cookie('current_season_id', current_season_id, max_age=timedelta(days=30).total_seconds())
+        #response.set_cookie('current_season_name', current_season_name, max_age=timedelta(days=30).total_seconds())
+        return response
     seasons = Seasons.query.all()
     return render_template('change_season.html', seasons=seasons)
 
