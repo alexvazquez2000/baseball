@@ -1,4 +1,5 @@
 from flask import session
+from models import Seasons
 
 ## it gets called from seaons_bp and from app
 def get_current_season():
