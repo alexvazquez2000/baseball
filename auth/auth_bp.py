@@ -38,8 +38,11 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
-# Get user info from Google
 def get_user_info(access_token):
+    return None
+
+# Get user info from Google
+def get_google_user_info(access_token):
     response = requests.get("https://www.googleapis.com/oauth2/v3/userinfo", headers={
        "Authorization": f"Bearer {access_token}"
     })

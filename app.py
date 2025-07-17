@@ -9,7 +9,7 @@ from flask_wtf.csrf import CSRFProtect
 #Local imports
 from decimal import Decimal
 from api.api_bp import api_bp
-from auth.auth_bp import auth_bp, login_required, get_user_info, get_facebook_user_info
+from auth.auth_bp import auth_bp, login_required, get_user_info, get_google_user_info, get_facebook_user_info
 from coaches.coaches_bp import coaches_bp
 from ledger.ledger_bp import ledger_bp
 from parents.parents_bp import parents_bp
@@ -58,9 +58,12 @@ app.context_processor(inject_current_year)
 @login_required
 def welcome():
     user_info = None
+    #print (session.get('auth_provider'))
     if 'access_token' in session:
         if session.get('auth_provider') == 'facebook':
             user_info = get_facebook_user_info(session['access_token'])
+        elif session.get('auth_provider') == 'google':
+            user_info = get_google_user_info(session['access_token'])
         else:
             user_info = get_user_info(session['access_token'])
     (current_season_id, current_season_name) = get_current_season()
@@ -93,6 +96,6 @@ def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 if __name__ == '__main__':
-    #app.run(host='0.0.0.0', debug=True,ssl_context='adhoc')
-    app.run(host='0.0.0.0', debug=True)
+    app.run(host='0.0.0.0', debug=True,ssl_context='adhoc')
+    #app.run(host='0.0.0.0', debug=True)
     #app.run()
