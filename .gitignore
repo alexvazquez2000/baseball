@@ -5,3 +5,4 @@
 .env
 .pytest_cache
 /confidential.txt
+/flask_accounting_app_with_journal/
