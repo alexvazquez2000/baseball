@@ -1,19 +1,19 @@
 from flask import Blueprint, render_template, request, Response, redirect, url_for, session
 
 from models import db, Parents
-
+from auth.auth_bp import login_required
 
 parents_bp = Blueprint('parents', __name__, template_folder='templates')
 
 # -- Parents --
 @parents_bp.route('/')
-#@login_required
+@login_required
 def list_parents():
     parents = Parents.query.all()
     return render_template('parents.html', parents=parents)
 
 @parents_bp.route('/parent', methods=['GET', 'POST'])
-#@login_required
+@login_required
 def edit_parent():
     parent = {}
     parent_id = request.args.get('parent_id')
