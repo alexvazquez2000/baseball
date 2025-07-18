@@ -71,7 +71,6 @@ def create_new_season():
             #now add the teams
             copyteams = request.form.getlist('copyteams')
             for copy_team_id in copyteams :
-                print (f" copy team {copy_team_id } {copy_team_name } to new season")
                 old_team = Teams.query.get(int(copy_team_id))
                 if old_team:
                     new_team = Teams(
