@@ -9,7 +9,7 @@ from decimal import Decimal
 from extension import get_current_season
 from base_calendar import BaseCalendar
 
-from models import db, Players, Coaches, Teams, Seasons, Levels
+from models import db, Players, Coaches, Teams, Seasons, Levels, Users
 
 
 seasons_bp = Blueprint('seasons', __name__, template_folder='templates')

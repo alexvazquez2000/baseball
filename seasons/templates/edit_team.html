@@ -44,10 +44,10 @@
   <tbody>
 {% for coach in team.coaches %}
     <tr id='coach-{{ coach.id }}'>
-      <td>{{ coach.first_name }} {{ coach.last_name }}</td>
-      <td>{{ coach.email or "" }}</td>
-      <td>{{ coach.phone or "" }}</td>
-      <td><a href="{{ url_for('coaches.edit_coach', coach_id=coach.id) }}" class="btn btn-sm btn-primary">Edit</a>&nbsp;
+      <td>{{ coach.user.first_name }} {{ coach.user.last_name }}</td>
+      <td>{{ coach.user.email or "" }}</td>
+      <td>{{ coach.user.phone or "" }}</td>
+      <td><a href="{{ url_for('coaches.edit_coach', user_id=coach.user.id) }}" class="btn btn-sm btn-primary">Edit</a>&nbsp;
       <a href="#" class="btn btn-sm btn-danger delete-button">Remove</a>
       </td>
     </tr>
@@ -125,7 +125,7 @@ coachSearchInput.addEventListener("input", async (e) => {
                 $('#filteredTable tbody').append(
                     '<tr id="coach-' + coachId + '"><td>' + name + '</td><td>' + email + '</td>'
                     + '<td>' + phone + '</td>'
-                    + '<td><a href="/coaches/coach?coach_id=' + coachId + '" class="btn btn-sm btn-primary">Edit</a>&nbsp;'
+                    + '<td><a href="/coaches/coach?user_id=' + coachId + '" class="btn btn-sm btn-primary">Edit</a>&nbsp;'
                     + '<a href="#" class="btn btn-sm btn-danger delete-button">Remove</a></td></tr>');
             } else {
                alert('Request failed: ' + textStatus)

@@ -1,24 +1,24 @@
 {% extends 'base.html' %}
 {% block content %}
-<h2>{{ 'Edit' if coach else 'Add' }} Coach</h2>
+<h2>{{ 'Edit' if user else 'Add' }} Coach</h2>
 <form method="post" enctype="multipart/form-data">
   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-  <input type="hidden" name="id" value="{{ coach.id or '' }}">
+  <input type="hidden" name="id" value="{{ user.id or '' }}">
   <div class="mb-3">
     <label for="name" class="form-label">First Name</label>
-    <input type="text" name="first_name" class="form-control" value="{{ coach.first_name }}" required />
+    <input type="text" name="first_name" class="form-control" value="{{ user.first_name }}" required />
   </div>
   <div class="mb-3">
     <label for="name" class="form-label">Last Name</label>
-    <input type="text" name="last_name" class="form-control" value="{{ coach.last_name }}" required />
+    <input type="text" name="last_name" class="form-control" value="{{ user.last_name }}" required />
   </div>
   <div class="mb-3">
     <label for="email" class="form-label">Email</label>
-    <input type="email" name="email" class="form-control" value="{{ coach.email or '' }}" />
+    <input type="email" name="email" class="form-control" value="{{ user.email or '' }}" />
   </div>
   <div class="mb-3">
     <label for="phone" class="form-label">Phone</label>
-    <input type="text" name="phone" class="form-control" value="{{ coach.phone or '' }}" />
+    <input type="text" name="phone" class="form-control" value="{{ user.phone or '' }}" />
   </div>
 FOTO
   <div>
@@ -30,8 +30,8 @@ FOTO
         <input type="file" name="photo" accept="image/*" id="fileUpload">
     </label>
     <br>
-    {% if coach and coach.photo %}
-        <img id="preview" src="{{ url_for('coaches.get_photo', coach_id=coach.id) }}" width="100">
+    {% if user and user.coach and user.coach.photo %}
+        <img id="preview" src="{{ url_for('coaches.get_photo', coach_id=user.coach.id) }}" width="100">
     {% else %}
         <img id="preview" style="display:none;" width="100">
     {% endif %}

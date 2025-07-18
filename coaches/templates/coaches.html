@@ -17,13 +17,13 @@
   <tbody>
     {% for coach in coaches %}
     <tr>
-    <!-- TODO: thumbnails will be 128x128 is width=80 correct?-->
-      <td>{% if coach.photo %}<img src="{{ url_for('coaches.get_thumbnail', coach_id=coach.id) }}" width="80">{% endif %}</td>
+    <!-- thumbnails are 100x100 -->
+      <td>{% if coach.coach.photo %}<img src="{{ url_for('coaches.get_thumbnail', coach_id=coach.coach.id) }}" width="80">{% endif %}</td>
       <td>{{ coach.first_name }} {{ coach.last_name }}</td>
       <td>{{ coach.email or "" }}</td>
       <td>{{ coach.phone or "" }}</td>
       <td>
-        <a href="{{ url_for('coaches.edit_coach', coach_id=coach.id) }}" class="btn btn-sm btn-primary">Edit</a>
+        <a href="{{ url_for('coaches.edit_coach', user_id=coach.id) }}" class="btn btn-sm btn-primary">Edit</a>
       </td>
     </tr>
     {% else %}

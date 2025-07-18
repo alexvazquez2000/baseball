@@ -3,28 +3,28 @@
 <h2>Edit Parent</h2>
 <form method="post">
   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-  <input type="hidden" name="id" value="{{ parent.id or '' }}">
+  <input type="hidden" name="id" value="{{ user.id or '' }}">
   <div class="mb-3">
     <label for="name" class="form-label">First Name</label>
-    <input type="text" name="first_name" class="form-control" value="{{ parent.first_name }}" required />
+    <input type="text" name="first_name" class="form-control" value="{{ user.first_name }}" required />
   </div>
   <div class="mb-3">
     <label for="name" class="form-label">Last Name</label>
-    <input type="text" name="last_name" class="form-control" value="{{ parent.last_name }}" required />
+    <input type="text" name="last_name" class="form-control" value="{{ user.last_name }}" required />
   </div>
   <div class="mb-3">
     <label for="email" class="form-label">Email</label>
-    <input type="email" name="email" class="form-control" value="{{ parent.email or '' }}" />
+    <input type="email" name="email" class="form-control" value="{{ user.email or '' }}" />
   </div>
   <div class="mb-3">
     <label for="phone" class="form-label">Phone</label>
-    <input type="text" name="phone" class="form-control" value="{{ parent.phone or '' }}" />
+    <input type="text" name="phone" class="form-control" value="{{ user.phone or '' }}" />
   </div>
   <button type="submit" class="btn btn-primary">Save</button>
   <a href="{{ url_for('parents.list_parents') }}" class="btn btn-secondary">Cancel</a>
 </form>
 
-{% if parent.id %}
+{% if user.id %}
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
 <table class="table table-striped" id="filteredTable">
@@ -36,7 +36,7 @@
     </tr>
   </thead>
   <tbody>
-{% for player in parent.players %}
+{% for player in user.parent.players %}
     <tr id='playerid-{{ player.id }}'>
       <td>{{ player.first_name }} {{ player.last_name }}</td>
       <td>{{ player.jersey_number or "" }}</td>
@@ -68,7 +68,7 @@ $(document).ready(function() {
         // Extract actual ID
         var playerId = $(this).closest('tr').attr('id').replace('playerid-', '');
         $.ajax({
-            url: "/api/player/" +  playerId + "/remove_parent/{{parent.id}}",
+            url: "/api/player/" +  playerId + "/remove_parent/{{user.parent.id}}",
             type: 'DELETE',
             headers: {
                 "Content-Type": "application/json",
@@ -102,7 +102,7 @@ playerSearchInput.addEventListener("input", async (e) => {
         li.textContent = `${player.first_name} ${player.last_name} (${player.jersey_number})`;
         li.style.cursor = "pointer";
         li.addEventListener("click", async () => {
-            const resp = await fetch("/api/parent/{{parent.id }}/add_player_to_parent", {
+            const resp = await fetch("/api/parent/{{user.parent.id }}/add_player_to_parent", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -117,7 +117,7 @@ playerSearchInput.addEventListener("input", async (e) => {
                 var jersey_number = player.jersey_number ?? '';
                 $('#filteredTable tbody').append(
                     '<tr id="playerid-' + playerId + '"><td>' + name + '</td><td>' + jersey_number + '</td>'
-                    + '<td><a href="/players/' + playerId + '/edit" class="btn btn-sm btn-primary">Edit</a>&nbsp;'
+                    + '<td><a href="/players/player?player_id=' + playerId + '" class="btn btn-sm btn-primary">Edit</a>&nbsp;'
                     + '<a href="#" class="btn btn-sm btn-danger delete-button">Remove</a></td></tr>');
             } else {
                alert('Request failed: ' + textStatus)

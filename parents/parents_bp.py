@@ -17,34 +17,37 @@ def list_parents():
 @parents_bp.route('/parent', methods=['GET', 'POST'])
 @login_required
 def edit_parent():
-    parent = {}
-    parent_id = request.args.get('parent_id')
+    user = {}
+    user_id = request.args.get('user_id')
     if request.method == 'POST':
         #get the ID from the post data if present
-        parent_id = request.form['id'] 
-        if parent_id:
+        user_id = request.form['id'] 
+        if user_id:
             #update existing entry
-            parent = Parents.query.get_or_404(parent_id)
-            parent.first_name = request.form['first_name']
-            parent.last_name = request.form['last_name']
-            parent.email = request.form['email']
-            parent.phone = request.form['phone']
+            user = Users.query.get_or_404(user_id)
+            user.first_name = request.form['first_name']
+            user.last_name = request.form['last_name']
+            user.email = request.form['email']
+            user.phone = request.form['phone']
         else :
             #add new parent / parent_id is empty
-            parent = Parents(
+            user = Users(
                 first_name=request.form['first_name'],
                 last_name=request.form['last_name'],
                 email=request.form['email'],
-                phone=request.form['phone']
+                phone=request.form['phone'],
+                #TODO _ Make sure we have a parent - might need to save before adding
+                parent = Parents()
             )
-            db.session.add(parent)
+            db.session.add(user)
+        #FIXME: user.email must be unique, try/catch the error 
         db.session.commit()
         #TODO: stay on page to continue editing or redirect to list all parents?
         #return redirect(url_for('parents.list_parents'))
 
-    if parent_id :
-        parent = Parents.query.get_or_404(parent_id)
-    return render_template('edit_parent.html', parent=parent)
+    if user_id :
+        user = Users.query.get_or_404(user_id)
+    return render_template('edit_parent.html', user=user)
 
 
 #        # Clear current children

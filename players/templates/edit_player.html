@@ -40,10 +40,10 @@
   <tbody>
 {% for parent in player.parents %}
     <tr id='parentid-{{ parent.id }}'>
-      <td>{{ parent.first_name }} {{ parent.last_name }}</td>
-      <td>{{ parent.email or "" }}</td>
-      <td>{{ parent.phone or "" }}</td>
-      <td><a href="{{ url_for('parents.edit_parent', parent_id=parent.id) }}" class="btn btn-sm btn-primary">Edit</a>&nbsp;
+      <td>{{ parent.user.first_name }} {{ parent.user.last_name }}</td>
+      <td>{{ parent.user.email or "" }}</td>
+      <td>{{ parent.user.phone or "" }}</td>
+      <td><a href="{{ url_for('parents.edit_parent', user_id=parent.user.id) }}" class="btn btn-sm btn-primary">Edit</a>&nbsp;
       <a href="#" class="btn btn-sm btn-danger delete-button">Remove</a>
       </td>
     </tr>

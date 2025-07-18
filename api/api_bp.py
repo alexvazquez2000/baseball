@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from sqlalchemy import or_
 
-from models import db, Players, Parents, Coaches, Teams
+from models import db, Players, Parents, Coaches, Teams, Users
 
 api_bp = Blueprint('api', __name__)
 
@@ -36,14 +36,16 @@ def search_parents():
     q = request.args.get("q", "")
     results = []
     if q:
-        results = Parents.query.filter(
+        results = Users.query.filter(
           or_(
-            Parents.first_name.ilike(f"%{q}%"),
-            Parents.last_name.ilike(f"%{q}%")
+            Users.first_name.ilike(f"%{q}%"),
+            Users.last_name.ilike(f"%{q}%")
           )
         ).all()
     data = [{"id": p.id, "first_name": p.first_name, "last_name": p.last_name, "email": p.email, "phone": p.phone} for p in results]
     return jsonify(data)
+
+#FIXME: search_parents() is now identical to search_coaches()
 
 #Ajax
 @api_bp.route("/coaches/search")
@@ -52,10 +54,10 @@ def search_coaches():
     q = request.args.get("q", "")
     results = []
     if q:
-        results = Coaches.query.filter(
+        results = Users.query.filter(
           or_(
-            Coaches.first_name.ilike(f"%{q}%"),
-            Coaches.last_name.ilike(f"%{q}%")
+            Users.first_name.ilike(f"%{q}%"),
+            Users.last_name.ilike(f"%{q}%")
           )
         ).all()
     data = [{"id": p.id, "first_name": p.first_name, "last_name": p.last_name, "email": p.email, "phone": p.phone} for p in results]
