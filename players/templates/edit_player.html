@@ -27,7 +27,9 @@
 
 {% if player.id %}
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-
+<br>
+<hr>
+<h3>Parents</h3>
 <table class="table table-striped" id="filteredTable">
   <thead>
     <tr>
@@ -54,7 +56,7 @@
   </tbody>
 </table>
 
-<h3>Add Parent</h3>
+<h4>Add Parent</h4>
 <input type="text" id="parent-search" placeholder="Search parent by name...">
 <ul id="search-results"></ul>
 
@@ -133,7 +135,37 @@ parentSearchInput.addEventListener("input", async (e) => {
     });
 });
 </script>
+<!--  end of add parent to player -->
 
+<!-- teams -->
+<br>
+<hr>
+<h3>Teams</h3>
+<table class="table table-striped" id="teamsTable">
+  <thead>
+    <tr>
+      <th >Season</th>
+      <th >Team Name</th>
+      <th>Edit</th>
+    </tr>
+  </thead>
+  <tbody>
+{% for team in player.teams %}
+    <tr id='teamid-{{ team.id }}'>
+      <td>{{ team.season.season_name or "" }}</td>
+      <td>{{ team.team_name }}</td>
+      <td>
+      <!-- FIXME: Order uniform is not implemented --><a href="{{ url_for('seasons.edit_team', player_id=player.id, team_id=team.id) }}" class="btn btn-sm btn-primary">Order Uniform</a>&nbsp;
+          <a href="{{ url_for('seasons.edit_team', team_id=team.id) }}" class="btn btn-sm btn-primary">Edit Team</a>&nbsp;
+          <a href="#" class="btn btn-sm btn-danger delete-button disabled" >Remove</a>
+      </td>
+    </tr>
+
+{% else %}
+    <tr><td colspan="4">No parents found.</td></tr>
+{% endfor %}
+  </tbody>
+</table>
 
 {% endif %} <!-- end if player id is empty -->
 
