@@ -30,20 +30,38 @@ class Players(db.Model):
     parents = db.relationship('Parents', secondary=players_parents, back_populates='players')
     teams = db.relationship('Teams', secondary=teams_players, back_populates='players')
 
-class Parents(db.Model):
+class Users(db.Model):
+	#one to one on coach, and one to one to parents
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(100), nullable=False)
     last_name = db.Column(db.String(100), nullable=False)
-    email = db.Column(db.String(120))
     phone = db.Column(db.String(30))
+    #email will be the userid - not nullable
+    email = db.Column(db.String(120), unique=True)
+    passwd = db.Column(db.String(100), nullable=True)
+    #
+    # Foreign key to Address, allowing it to be nullable
+    parent_id =  db.Column(db.Integer, db.ForeignKey('parents.id'), nullable=True)
+    # Define the relationship to Parent
+    # uselist=False ensures a one-to-one relationship
+    # back_populates links it to the 'user' attribute in Parents
+    parent =  db.relationship("Parents", back_populates="user", uselist=False)
+    #
+    coach_id =  db.Column(db.Integer, db.ForeignKey('coaches.id'),  nullable=True)
+    # uselist=False ensures a one-to-one relationship
+    # back_populates links it to the 'user' attribute in Coaches
+    coach =  db.relationship("Coaches", back_populates="user", uselist=False)
+
+class Parents(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    # Define the back_populates relationship to Users  1-to-1 - this is the nullable side
+    user = db.relationship("Users", back_populates="parent", uselist=False)
     players = db.relationship('Players', secondary=players_parents, back_populates='parents')
 
 class Coaches(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    first_name = db.Column(db.String(100), nullable=False)
-    last_name = db.Column(db.String(100), nullable=False)
-    email = db.Column(db.String(100))
-    phone = db.Column(db.String(20))
+    # Define the back_populates relationship to Users  1-to-1 - this is the nullable side
+    user = db.relationship("Users", back_populates="coach", uselist=False)
     photo = db.Column(db.LargeBinary)
     thumbnail = db.Column(db.LargeBinary)
     teams = db.relationship('Teams', secondary=teams_coaches, back_populates='coaches')

@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, Response, redirect, url_for, session
 
-from models import db, Parents
+from models import db, Parents, Users
 from auth.auth_bp import login_required
 
 parents_bp = Blueprint('parents', __name__, template_folder='templates')
@@ -9,7 +9,9 @@ parents_bp = Blueprint('parents', __name__, template_folder='templates')
 @parents_bp.route('/')
 @login_required
 def list_parents():
-    parents = Parents.query.all()
+    #parents = Parents.query.all()
+    #filter(Users.parent.isnot(None)) doesn't work because isnot() is used only on columns of the DB.  Use parent_id
+    parents = Users.query.filter(Users.parent_id.isnot(None)).all()
     return render_template('parents.html', parents=parents)
 
 @parents_bp.route('/parent', methods=['GET', 'POST'])
