@@ -54,7 +54,7 @@ def search_coaches():
     q = request.args.get("q", "")
     results = []
     if q:
-        results = Users.query.filter(
+        results = Users.query.filter(Users.coach_id.isnot(None)).filter(
           or_(
             Users.first_name.ilike(f"%{q}%"),
             Users.last_name.ilike(f"%{q}%")
