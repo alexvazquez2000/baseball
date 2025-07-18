@@ -36,13 +36,13 @@ def search_parents():
     q = request.args.get("q", "")
     results = []
     if q:
-        results = Users.query.filter(
+        results = Users.query.filter(Users.parent_id.isnot(None)).filter(
           or_(
             Users.first_name.ilike(f"%{q}%"),
             Users.last_name.ilike(f"%{q}%")
           )
         ).all()
-    data = [{"id": p.id, "first_name": p.first_name, "last_name": p.last_name, "email": p.email, "phone": p.phone} for p in results]
+    data = [{"id": p.id, "parent_id": p.parent.id , "first_name": p.first_name, "last_name": p.last_name, "email": p.email, "phone": p.phone} for p in results]
     return jsonify(data)
 
 #Ajax

@@ -111,10 +111,11 @@ parentSearchInput.addEventListener("input", async (e) => {
                     "Content-Type": "application/json",
                     "X-CSRFToken": csrfToken
                 },
-                body: JSON.stringify({ parent_id: parent.id })
+                body: JSON.stringify({ parent_id: parent.parent_id })
             });
             const result = await resp.json();
             if (result.success) {
+                var userId = parent.id;
                 var parentId = parent.id;
                 var name = parent.first_name + ' ' + parent.last_name;
                 var email = parent.email ?? '';
@@ -122,7 +123,7 @@ parentSearchInput.addEventListener("input", async (e) => {
                 $('#filteredTable tbody').append(
                     '<tr id="parentid-' + parentId + '"><td>' + name + '</td><td>' + email + '</td>'
                     + '<td>' + phone + '</td>'
-                    + '<td><a href="/parents/parent?parent_id=' + parentId + '" class="btn btn-sm btn-primary">Edit</a>&nbsp;'
+                    + '<td><a href="/parents/parent?user_id=' + userId + '" class="btn btn-sm btn-primary">Edit</a>&nbsp;'
                     + '<a href="#" class="btn btn-sm btn-danger delete-button">Remove</a></td></tr>');
             } else {
                alert('Request failed: ' + textStatus)
