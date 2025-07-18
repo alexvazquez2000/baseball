@@ -45,8 +45,6 @@ def search_parents():
     data = [{"id": p.id, "first_name": p.first_name, "last_name": p.last_name, "email": p.email, "phone": p.phone} for p in results]
     return jsonify(data)
 
-#FIXME: search_parents() is now identical to search_coaches()
-
 #Ajax
 @api_bp.route("/coaches/search")
 def search_coaches():
@@ -60,7 +58,7 @@ def search_coaches():
             Users.last_name.ilike(f"%{q}%")
           )
         ).all()
-    data = [{"id": p.id, "first_name": p.first_name, "last_name": p.last_name, "email": p.email, "phone": p.phone} for p in results]
+    data = [{"id": p.id, "coach_id": p.coach.id , "first_name": p.first_name, "last_name": p.last_name, "email": p.email, "phone": p.phone} for p in results]
     return jsonify(data)
 
 

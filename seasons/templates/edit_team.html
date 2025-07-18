@@ -114,18 +114,19 @@ coachSearchInput.addEventListener("input", async (e) => {
                     "Content-Type": "application/json",
                     "X-CSRFToken": csrfToken
                 },
-                body: JSON.stringify({ coach_id: coach.id })
+                body: JSON.stringify({ coach_id: coach.coach_id })
             });
             const result = await resp.json();
             if (result.success) {
-                var coachId = coach.id;
+            	var userId = coach.id;
+                var coachId = coach.coach_id;
                 var name = coach.first_name + ' ' + coach.last_name;
                 var email = coach.email ?? '';
                 var phone = coach.phone ?? '';
                 $('#filteredTable tbody').append(
                     '<tr id="coach-' + coachId + '"><td>' + name + '</td><td>' + email + '</td>'
                     + '<td>' + phone + '</td>'
-                    + '<td><a href="/coaches/coach?user_id=' + coachId + '" class="btn btn-sm btn-primary">Edit</a>&nbsp;'
+                    + '<td><a href="/coaches/coach?user_id=' + userId + '" class="btn btn-sm btn-primary">Edit</a>&nbsp;'
                     + '<a href="#" class="btn btn-sm btn-danger delete-button">Remove</a></td></tr>');
             } else {
                alert('Request failed: ' + textStatus)
