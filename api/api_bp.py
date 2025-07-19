@@ -125,6 +125,39 @@ def remove_coach(team_id, coach_id):
         return jsonify({"success": True})
     return jsonify({"success": False}), 400
 
+@api_bp.route("/team/<int:team_id>/add_players", methods=["POST"])
+def add_players_to_team(team_id):
+    """ Add multiple players to a team """
+    # Get the JSON data from the request body
+    # get_json() will return a Python list if the JSON root is an array
+    data = request.get_json()
+    # Check if the received data is indeed a list (representing the JSON array)
+    if isinstance(data, list):
+        #print(f"Received JSON array: {data}")
+        team = Teams.query.get(team_id)
+        # Process the array elements
+        for item in data:
+            print(f"Item: {item}")
+            player_id = item.get('playerid')
+            player_name = item.get('player_name')
+            reg_fee = item.get('reg_fee')
+            team_fee = item.get('team_fee')
+            uniform = item.get('uniform')
+            player = Players.query.get_or_404(player_id)
+            if player:
+                if player in team.players:
+                    print(f"playerid {player_id} {player_name} was already on {team.id} {team.team_name}")
+                else:
+                    team.players.append(player)
+                    #TODO: Add fees to A/R
+            else:
+                print(f"playerid {player_id} {player_name} not found")
+        db.session.commit()
+        return jsonify({"message": "Array received successfully", "received_data": data}), 200
+    else:
+        print ("Recived bad data while adding players to team - Expected a JSON array")
+        return jsonify({"error": "Expected a JSON array"}), 400
+
 
 
 #Nothing is needed below this point

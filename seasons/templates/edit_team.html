@@ -122,9 +122,33 @@ $(document).ready(function() {
                 tableData.push(row);
             }
         });
-        $('#responseContainer').html('Data received: ' + JSON.stringify(tableData));
-        console.log('Success:',  JSON.stringify(tableData));
-        
+        console.log('Sending:',  JSON.stringify(tableData));
+        //We have all the json data, now make the call
+        $.ajax({
+            url: '/api/team/{{ team.id}}/add_players',
+            type: 'POST',
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": csrfToken
+            },
+            dataType: 'json',
+            data: JSON.stringify(tableData),
+            success: function(response) {
+                // This function runs if the AJAX call is successful
+                $('#responseContainer').html(response); // Display the response in the div
+                console.log('AJAX call successful:', response);
+            },
+            error: function(xhr, status, error) {
+                // This function runs if there's an error during the AJAX call
+                console.error('AJAX error:', status, error);
+                $('#responseContainer').html('<p>Error loading content.</p>');
+            },
+            complete: function() {
+                // This function runs after the request is complete, regardless of success or error
+                console.log('AJAX request complete.');
+            }
+        });
+
     });
     
 });
