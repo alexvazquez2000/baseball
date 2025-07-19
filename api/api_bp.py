@@ -1,7 +1,10 @@
 from flask import Blueprint, request, jsonify
 from sqlalchemy import or_
+from datetime import datetime
+from decimal import Decimal
 
 from models import db, Players, Parents, Coaches, Teams, Users
+from models import Account, Journal, Transaction, Entry
 
 api_bp = Blueprint('api', __name__)
 
@@ -128,28 +131,61 @@ def remove_coach(team_id, coach_id):
 @api_bp.route("/team/<int:team_id>/add_players", methods=["POST"])
 def add_players_to_team(team_id):
     """ Add multiple players to a team """
+    print(f"Adding players to a team ")
+    team = Teams.query.get(team_id)
+    print(f"Adding to {team.id} {team.team_name}")
     # Get the JSON data from the request body
     # get_json() will return a Python list if the JSON root is an array
     data = request.get_json()
     # Check if the received data is indeed a list (representing the JSON array)
     if isinstance(data, list):
-        #print(f"Received JSON array: {data}")
-        team = Teams.query.get(team_id)
+        print(f"Received JSON array: {data}")
+        sales_journal = Journal.find_by_name("Sales Journal")
+        ar_account=Account.find_by_name("Accounts Receivable")
+        sr_account=Account.find_by_name("Service Revenue")
+        print(f"ar = {ar_account.name} sr={sr_account.name} journal={sales_journal.name}")
+        
         # Process the array elements
         for item in data:
-            print(f"Item: {item}")
+            print(f"Item: {item} to {team.id} {team.team_name}")
             player_id = item.get('playerid')
             player_name = item.get('player_name')
-            reg_fee = item.get('reg_fee')
-            team_fee = item.get('team_fee')
-            uniform = item.get('uniform')
+            reg_fee = Decimal(item.get('reg_fee'))
+            team_fee = Decimal(item.get('team_fee'))
+            uniform = Decimal(item.get('uniform'))
             player = Players.query.get_or_404(player_id)
             if player:
                 if player in team.players:
                     print(f"playerid {player_id} {player_name} was already on {team.id} {team.team_name}")
                 else:
-                    team.players.append(player)
                     #TODO: Add fees to A/R
+                    customer_id = 0
+                    memo = f"Add player {player_name} to {team.team_name} season {team.season.season_name}",
+                    txn = Transaction(
+                        #customer_id=customer_id,
+                        description=memo,
+                        transaction_date=datetime.now().date(),
+                        journal_id=2) #sales_journal.id)
+                    db.session.add(txn)
+                    db.session.flush()
+                    db.session.add(
+                        Entry(
+                            transaction_id=txn.id,
+                            account_id=ar_account.id,
+                            amount=reg_fee,
+                            entry_type='debit',
+                            memo=f"Registration {memo}"))
+                    db.session.add(
+                        Entry(
+                            transaction_id=txn.id,
+                            account_id=sr_account.id,
+                            amount=reg_fee,
+                            entry_type='credit',
+                            memo=f"Service Revenue {memo}"))
+                    #finally add user to the team
+                    team.players.append(player)
+                    
+                    db.session.commit()
             else:
                 print(f"playerid {player_id} {player_name} not found")
         db.session.commit()
