@@ -48,7 +48,7 @@
       <td>{{ coach.user.email or "" }}</td>
       <td>{{ coach.user.phone or "" }}</td>
       <td><a href="{{ url_for('coaches.edit_coach', user_id=coach.user.id) }}" class="btn btn-sm btn-primary">Edit</a>&nbsp;
-      <a href="#" class="btn btn-sm btn-danger delete-button">Remove</a>
+      <a href="#" class="btn btn-sm btn-danger delete-coach-button">Remove</a>
       </td>
     </tr>
 {% else %}
@@ -57,6 +57,7 @@
   </tbody>
 </table>
 
+<hr>
 <h3>Add Coach</h3>
 <input type="text" id="coach-search" placeholder="Search coach by name...">
 <ul id="search-results"></ul>
@@ -68,7 +69,7 @@ const csrfToken = "{{ csrf_token() }}";  // CSRF Token
 
 $(document).ready(function() {
     // Event delegation for dynamically removing coach
-    $(document).on('click', '.delete-button', function(event) {
+    $(document).on('click', '.delete-coach-button', function(event) {
         //prevent the page from scrolling when clicking the delete button
         event.preventDefault();
         // Extract actual ID
@@ -91,6 +92,42 @@ $(document).ready(function() {
             }
         });
     });
+    
+    $(document).on('click', '.delete-new-player-button', function(event) {
+        //prevent the page from scrolling when clicking the delete button
+        event.preventDefault();
+        // Extract actual ID
+        var playerId = $(this).closest('tr').attr('id').replace('playerid-', '');
+        $('#playerid-' + playerId).remove();
+    });
+    
+    
+    $("#addNewPlayersButton").on('click', function(){
+        event.preventDefault();
+        var tableData = [];
+        //Get the table headers
+        var headers = [];
+        $('#newPlayersTable th').each(function() {
+            headers.push($(this).text());
+        });
+        $("#newPlayersTable tr").each(function() {
+            // 'this' refers to the current <tr> element
+            // Example: Get text content of the first cell in the current row
+            var firstCellText = $(this).find("td:first").text();
+            console.log(firstCellText);
+            var row = {};
+            $(this).find('td').each(function(cellIndex) {
+                // 'this' refers to the current <td> element in the loop
+                // Use header text as key and cell text as value
+                row[headers[cellIndex]] = $(this).text();
+            });
+            tableData.push(row);
+        });
+        $('#responseContainer').html('Data received: ' + JSON.stringify(tableData));
+        console.log('Success:',  JSON.stringify(tableData));
+        
+    });
+    
 });
 
 // Event listener for searching and adding coach
@@ -162,7 +199,27 @@ coachSearchInput.addEventListener("input", async (e) => {
   </tbody>
 </table>
 
-<h3>Add Player (child)</h3>
+
+<table class="table table-striped" id="newPlayersTable">
+  <thead>
+    <tr>
+      <th>Player Name</th>
+      <th>Jersey Number</th>
+      <th>Baseball Age</th>
+      <th>Registration fee</th>
+      <th>Uniform</th>
+      <th>Team Fee</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <!-- placeholder for added new users -->
+  </tbody>
+</table>
+<div id="responseContainer"></div>
+<a id="addNewPlayersButton" href="#" class="btn btn-success mb-2">Submit new team players</a>
+
+<h3>Add Player to team</h3>
 <input type="text" id="player-search" placeholder="Search player by name...">
 <ul id="player-search-results"></ul>
 
@@ -182,9 +239,32 @@ playerSearchInput.addEventListener("input", async (e) => {
 
     data.forEach(player => {
         const li = document.createElement("li");
-        li.textContent = `${player.first_name} ${player.last_name} (${player.jersey_number})`;
+        if ( $('#playerid-' + `${player.id}` ).length === 0) {
+            li.textContent = `${player.first_name} ${player.last_name} (${player.jersey_number})`;
+        } else {
+            //show players already on the team or that are already being added strikethrough
+            li.innerHTML = "<s>" + `${player.first_name} ${player.last_name} (${player.jersey_number})` + "</s>";
+        }
         li.style.cursor = "pointer";
-        //Add event listener
+        //event listener adds to new players table
+        li.addEventListener("click", async () => {
+            var playerId = player.id;
+            var name = player.first_name + ' ' + player.last_name;
+            var jersey_number = player.jersey_number ?? '';
+            if ( $('#playerid-' + playerId ).length === 0) {
+              $('#newPlayersTable tbody').append(
+                '<tr id="playerid-' + playerId + '">'
+                + '<td>' + name + '</td>'
+                + '<td>' + jersey_number + '</td>'
+                + '<td>TODO: add baseball age here</td>'
+                + '<td><input type="text" id="registration" class="form-control currency" value="{{ team.level.registration}}" </td>'
+                + '<td><input type="text" id="team_fee" class="form-control currency" value="{{ team.level.team_fee}}" </td>'
+                + '<td><input type="text" id="uniform" class="form-control currency" value="{{ team.level.uniform}}" </td>'
+                + '<td><a href="#" class="btn btn-sm btn-danger delete-new-player-button">Remove</a></td>'
+                + '</tr>');
+            }
+        });
+
         playerResultsList.appendChild(li);
     });
 });
