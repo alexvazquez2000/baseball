@@ -11,18 +11,18 @@
         </tr>
     </thead>
     <tbody>
-        {% for row in rows %}
+        {% for row in balances %}
         <tr>
             <td>{{ row.name }}</td>
-            <td>{{ row.type }}</td>
+            <td>{{ row.code }}</td>
             <td>
-                {% if row.balance >= 0 %}
-                    ${{ "%.2f"|format(row.balance) }}
+                {% if row.debits > 0 %}
+                    ${{ "%.2f"|format(row.debits) }}
                 {% endif %}
             </td>
             <td>
-                {% if row.balance < 0 %}
-                    ${{ "%.2f"|format(-row.balance) }}
+                {% if row.credits > 0 %}
+                    ${{ "%.2f"|format(row.credits) }}
                 {% endif %}
             </td>
         </tr>
