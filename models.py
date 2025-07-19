@@ -101,7 +101,7 @@ class Levels(db.Model):
 class Customer(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
-    transactions = db.relationship('Transaction', backref='customer', lazy=True)
+#    transactions = db.relationship('Transaction', backref='customer', lazy=True)
 
 class Account_Types(enum.Enum):
     ASSET = 'asset'
@@ -118,6 +118,11 @@ class Account(db.Model):
     account_type = db.Column(db.Enum(Account_Types, values_callable=lambda x: [e.value for e in x]), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
+    @staticmethod
+    def find_by_name(name):
+        """Static method to find a User by name."""
+        return Account.query.filter_by(name=name).first()
+
 class Journal(db.Model):
     __tablename__ = 'journals'
     id = db.Column(db.Integer, primary_key=True)
@@ -125,18 +130,23 @@ class Journal(db.Model):
     description = db.Column(db.Text)
     allow_manual_entries = db.Column(db.Boolean, default=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    @staticmethod
+    def find_by_name(name):
+        """Static method to find a User by name."""
+        return Journal.query.filter_by(name=name).first()
 
 class Transaction(db.Model):
     __tablename__ = 'transactions'
     id = db.Column(db.Integer, primary_key=True)
-    customer_id = db.Column(db.Integer, db.ForeignKey('customer.id'))
+    #customer_id = db.Column(db.Integer, db.ForeignKey('customer.id'))
     #customer = db.relationship('Customer', backref='transactions')
-    description = db.Column(db.String(255))
-    reference = db.Column(db.String(50))
+    description = db.Column(db.String(255), nullable=True)
+    reference = db.Column(db.String(50), nullable=True)
     transaction_date = db.Column(db.Date, nullable=False)
-    journal_id = db.Column(db.Integer, db.ForeignKey('journal.id'), nullable=False)
+    journal_id = db.Column(db.Integer, nullable=False) #, db.ForeignKey('journal.id')
     #journal = db.relationship('Journal', backref='transactions')
-    entry_id = db.Column(db.Integer, db.ForeignKey('entry.id'), nullable=False)
+    #entry_id = db.Column(db.Integer, db.ForeignKey('entry.id'), nullable=False)
     #entries = db.relationship('Entry', backref='transaction', lazy=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
