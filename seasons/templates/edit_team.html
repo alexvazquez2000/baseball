@@ -32,7 +32,7 @@
 {% if team.id %}
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
-<table class="table table-striped" id="filteredTable">
+<table class="table table-bordered table-striped" id="filteredTable">
   <thead>
     <tr>
       <th >Coach Name</th>
@@ -200,7 +200,7 @@ coachSearchInput.addEventListener("input", async (e) => {
 
 
 <h3>Players - Baseball Age as of {{ team.season.base_date.strftime('%Y-%m-%d') }}</h3>
-<table class="table table-striped" id="playersTable">
+<table class="table table-bordered table-striped" id="playersTable">
   <thead>
     <tr>
       <th>Player Name</th>
@@ -223,7 +223,7 @@ coachSearchInput.addEventListener("input", async (e) => {
 </table>
 
 
-<table class="table table-striped" id="newPlayersTable">
+<table class="table table-bordered table-striped" id="newPlayersTable">
   <thead>
     <tr>
       <th>Player Name</th>
