@@ -131,7 +131,6 @@ def remove_coach(team_id, coach_id):
 @api_bp.route("/team/<int:team_id>/add_players", methods=["POST"])
 def add_players_to_team(team_id):
     """ Add multiple players to a team """
-    print(f"Adding players to a team ")
     team = Teams.query.get(team_id)
     print(f"Adding to {team.id} {team.team_name}")
     # Get the JSON data from the request body
@@ -161,8 +160,6 @@ def add_players_to_team(team_id):
                 if player in team.players:
                     print(f"playerid {player_id} {player_name} was already on {team.id} {team.team_name}")
                 else:
-                    #TODO: Add fees to A/R
-                    customer_id = 0
                     memo = f"Add player {player_name} to {team.team_name} season {team.season.season_name}",
                     txn = Transaction(
                         user_id=parent.user.id,
@@ -171,20 +168,28 @@ def add_players_to_team(team_id):
                         journal_id=2) #sales_journal.id)
                     db.session.add(txn)
                     db.session.flush()
-                    db.session.add(
-                        Entry(
-                            transaction_id=txn.id,
-                            account_id=ar_account.id,
-                            amount=reg_fee,
-                            entry_type='debit',
-                            memo=f"Registration {memo}"))
-                    db.session.add(
-                        Entry(
-                            transaction_id=txn.id,
-                            account_id=sr_account.id,
-                            amount=reg_fee,
-                            entry_type='credit',
-                            memo=f"Service Revenue {memo}"))
+                    if reg_fee > 0.00:
+                        db.session.add(
+                            Entry(transaction_id=txn.id, account_id=ar_account.id,
+                                amount=reg_fee, entry_type='debit', memo=f"Registration - {memo}"))
+                        db.session.add(
+                            Entry(transaction_id=txn.id, account_id=sr_account.id,
+                                amount=reg_fee, entry_type='credit', memo=f"Registration - {memo}"))
+                    if team_fee > 0.00:
+                        db.session.add(
+                            Entry(transaction_id=txn.id, account_id=ar_account.id,
+                                amount=team_fee, entry_type='debit', memo=f"Team fee - {memo}"))
+                        db.session.add(
+                            Entry(transaction_id=txn.id, account_id=sr_account.id,
+                                amount=team_fee, entry_type='credit', memo=f"Team fee - {memo}"))
+                    if uniform > 0.00:
+                        db.session.add(
+                            Entry(transaction_id=txn.id, account_id=ar_account.id,
+                                amount=team_fee, entry_type='debit', memo=f"uniform - {memo}"))
+                        db.session.add(
+                            Entry(transaction_id=txn.id, account_id=sr_account.id,
+                                amount=team_fee, entry_type='credit', memo=f"uniform - {memo}"))
+                    
                     #finally add user to the team
                     team.players.append(player)
                     
