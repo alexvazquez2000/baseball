@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session
 
-from models import db, Customer, Account, Journal, Transaction, Entry, AuditLog
+from models import db, Customer, Account, Journal, Transaction, Entry, AuditLog, Users
 
 ledger_bp = Blueprint('ledger', __name__, template_folder='templates')
 # -- Accounting
@@ -38,7 +38,7 @@ def receive_payment():
         date_str = request.form['date']
         date_obj = datetime.strptime(date_str, '%Y-%m-%d').date()
 
-        txn = Transaction(customer_id=customer_id, description='Payment Received', transaction_date=date_obj, journal_id=3)
+        txn = Transaction( description='Payment Received', transaction_date=date_obj, journal_id=3)
         db.session.add(txn)
         db.session.flush()
 
@@ -51,11 +51,11 @@ def receive_payment():
 @ledger_bp.route('/open-invoices')
 def open_invoices():
     ar_entries = db.session.query(
-        Transaction.customer_id,
-        Customer.name,
+        Transaction.user_id,
+        Users.last_name,
         db.func.sum(db.case((Entry.entry_type == 'debit', Entry.amount), else_=0)).label('invoiced'),
         db.func.sum(db.case((Entry.entry_type == 'credit', Entry.amount), else_=0)).label('paid')
-    ).join(Entry).join(Customer).filter(Entry.account_id == 2).group_by(Transaction.customer_id).all()
+    ).join(Entry).join(Users).filter(Entry.account_id == 2).group_by(Transaction.user_id).all()
     return render_template('open_invoices.html', rows=ar_entries)
 
 @ledger_bp.route('/trial-balance')
