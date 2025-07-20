@@ -139,15 +139,13 @@ class Journal(db.Model):
 class Transaction(db.Model):
     __tablename__ = 'transactions'
     id = db.Column(db.Integer, primary_key=True)
-    #customer_id = db.Column(db.Integer, db.ForeignKey('customer.id'))
-    #customer = db.relationship('Customer', backref='transactions')
+    #many-to-one to user this is the many side
+    #Sales and charges are on coaches and parents, never on the players
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     description = db.Column(db.String(255), nullable=True)
     reference = db.Column(db.String(50), nullable=True)
     transaction_date = db.Column(db.Date, nullable=False)
     journal_id = db.Column(db.Integer, nullable=False) #, db.ForeignKey('journal.id')
-    #journal = db.relationship('Journal', backref='transactions')
-    #entry_id = db.Column(db.Integer, db.ForeignKey('entry.id'), nullable=False)
-    #entries = db.relationship('Entry', backref='transaction', lazy=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 class Entry(db.Model):

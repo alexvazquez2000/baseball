@@ -154,7 +154,10 @@ def add_players_to_team(team_id):
             team_fee = Decimal(item.get('team_fee'))
             uniform = Decimal(item.get('uniform'))
             player = Players.query.get_or_404(player_id)
-            if player:
+            parent = player.parents[0]
+            if not parent or not parent.user:
+                print(f"playerid {player_id} {player_name} doesn't have a parent with a valid user")
+            elif player:
                 if player in team.players:
                     print(f"playerid {player_id} {player_name} was already on {team.id} {team.team_name}")
                 else:
@@ -162,7 +165,7 @@ def add_players_to_team(team_id):
                     customer_id = 0
                     memo = f"Add player {player_name} to {team.team_name} season {team.season.season_name}",
                     txn = Transaction(
-                        #customer_id=customer_id,
+                        user_id=parent.user.id,
                         description=memo,
                         transaction_date=datetime.now().date(),
                         journal_id=2) #sales_journal.id)
