@@ -1,7 +1,13 @@
+from flask import current_app
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 
+from itsdangerous.url_safe import URLSafeTimedSerializer as Serializer
+from itsdangerous.exc import SignatureExpired, BadTimeSignature
+
+from flask_login import UserMixin
 import enum
+import os
 
 db = SQLAlchemy()
 
@@ -30,7 +36,7 @@ class Players(db.Model):
     parents = db.relationship('Parents', secondary=players_parents, back_populates='players')
     teams = db.relationship('Teams', secondary=teams_players, back_populates='players')
 
-class Users(db.Model):
+class Users(db.Model, UserMixin):
 	#one to one on coach, and one to one to parents
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(100), nullable=False)
@@ -51,6 +57,29 @@ class Users(db.Model):
     # uselist=False ensures a one-to-one relationship
     # back_populates links it to the 'user' attribute in Coaches
     coach =  db.relationship("Coaches", back_populates="user", uselist=False)
+
+    def get_reset_token(self):
+        print(f"Secrete is {current_app.config['SECRET_KEY'] }")
+        # Generate a 16-byte (128-bit) random salt
+        salt = os.urandom(16)
+        s = Serializer(secret_key=current_app.config['SECRET_KEY'], salt=salt)
+        return s.dumps({'user_id': self.email })
+
+    @staticmethod
+    def verify_reset_token(token):
+        s = Serializer(app.config['SECRET_KEY'])
+        try:
+            #3600 is one hour
+            user_id = s.loads(token, max_age=3600)['user_id']
+        except SignatureExpired:
+            #This exception is raised if the token's timestamp indicates that it has exceeded the max_age.
+            print("Token has expired on verify_reset_token.")
+            return None
+        except BadTimeSignature:
+            #This exception is raised if the token's signature is invalid or if the token has been tampered with.
+            print("Invalid or tampered token on verify_reset_token.")
+            return None
+        return User.query.get(user_id)
 
 class Parents(db.Model):
     id = db.Column(db.Integer, primary_key=True)

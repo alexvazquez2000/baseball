@@ -1,13 +1,22 @@
 
-from flask import Blueprint, render_template, request, redirect, url_for, session
+from flask import Blueprint, render_template, request, redirect, url_for, session, flash
+
+from flask_login import  login_user, current_user, logout_user, login_required
+#use '.forms' to read from forms.py in the current folder.  If it was in a deeper folder then use ..forms
+from .forms import (RegistrationForm, LoginForm, UpdateAccountForm,
+                             RequestResetForm, ResetPasswordForm)
 import google_auth_oauthlib.flow
 import json
 import requests
 import facebook
 import os
 from functools import wraps
+from flask_bcrypt import generate_password_hash, check_password_hash
+from flask_mail import Message
+from models import db, Users
 
 auth_bp = Blueprint('auth', __name__, template_folder='templates')
+
 
 # OAuth configuration
 try:
@@ -25,46 +34,21 @@ except Exception as e:
     print(f"OAuth configuration error: {e}")
     oauth_flow = None
 
-# Facebook OAuth configuration
-FACEBOOK_APP_ID = os.environ.get('FACEBOOK_APP_ID')
-FACEBOOK_APP_SECRET = os.environ.get('FACEBOOK_APP_SECRET')
-
-# Authentication decorator
-def login_required(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if 'access_token' not in session:
-            return redirect(url_for('auth.login_page'))
-        return f(*args, **kwargs)
-    return decorated_function
-
-def get_user_info(access_token):
-    return None
-
-# Get user info from Google
-def get_google_user_info(access_token):
-    response = requests.get("https://www.googleapis.com/oauth2/v3/userinfo", headers={
-       "Authorization": f"Bearer {access_token}"
-    })
-    if response.status_code == 200:
-        return response.json()
-    else:
-        print(f"Failed to fetch google user info: {response.status_code} {response.text}")
-        return None
-
-# Get user info from Facebook
-def get_facebook_user_info(access_token):
-    try:
-        graph = facebook.GraphAPI(access_token=access_token)
-        user_info = graph.get_object('me', fields='id,name,email,picture')
-        return user_info
-    except Exception as e:
-        print(f"Failed to fetch Facebook user info: {e}")
-        return None
-
-@auth_bp.route('/login')
+@auth_bp.route('/login', methods=['GET', 'POST'])
 def login_page():
-    return render_template('login.html')
+    if current_user.is_authenticated:
+        return redirect(url_for('welcome'))
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = Users.query.filter_by(email=form.email.data).first()
+        if user and check_password_hash(user.passwd, form.password.data):
+            login_user(user, remember=form.remember.data)
+            #TODO: validate that next page is valid.
+            next_page = request.args.get('next')
+            return redirect(next_page) if next_page else redirect(url_for('welcome'))
+        else:
+            flash('Login Unsuccessful. Please check email and password', 'danger')
+    return render_template('login.html', title='Login', form=form)
 
 @auth_bp.route('/login/google')
 def google_login():
@@ -116,6 +100,20 @@ def facebook_callback():
     else:
         return 'Failed to get Facebook access token', 400
 
+@auth_bp.route("/register", methods=['GET', 'POST'])
+def register():
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
+    form = RegistrationForm()
+    if form.validate_on_submit():
+        hashed_password = generate_password_hash(form.password.data).decode('utf-8')
+        user = Users(email=form.email.data, passwd=hashed_password)
+        db.session.add(user)
+        db.session.commit()
+        flash('Your account has been created! You are now able to log in', 'success')
+        return redirect(url_for('auth.login'))
+    return render_template('register.html', title='Register', form=form)
+
 @auth_bp.route('/logout')
 def logout():
     # Revoke tokens based on provider
@@ -131,6 +129,52 @@ def logout():
             # Revoke Google token
             revoke_url = f'https://oauth2.googleapis.com/revoke?token={access_token}'
             requests.post(revoke_url, headers={'content-type': 'application/x-www-form-urlencoded'})
+        else:
+            #it is a flask_login
+            logout_user()
     
     session.clear()
     return redirect(url_for('auth.login_page'))
+
+def send_reset_email(user):
+    token = user.get_reset_token()
+    msg = Message('Password Reset Request',
+                  sender='noreply@demo.com',
+                  recipients=[user.email])
+    msg.body = f'''To reset your password, visit the following link:
+{url_for('auth.reset_token', token=token, _external=True)}
+
+If you did not make this request then simply ignore this email and no changes will be made.
+'''
+    #mail.send(msg)
+
+
+@auth_bp.route("/reset_password", methods=['GET', 'POST'])
+def reset_request():
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
+    form = RequestResetForm()
+    if form.validate_on_submit():
+        user = Users.query.filter_by(email=form.email.data).first()
+        send_reset_email(user)
+        flash('An email has been sent with instructions to reset your password.', 'info')
+        return redirect(url_for('auth.login_page'))
+    return render_template('reset_request.html', title='Reset Password', form=form)
+
+
+@auth_bp.route("/reset_password/<token>", methods=['GET', 'POST'])
+def reset_token(token):
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
+    user = Users.verify_reset_token(token)
+    if user is None:
+        flash('That is an invalid or expired token', 'warning')
+        return redirect(url_for('reset_request'))
+    form = ResetPasswordForm()
+    if form.validate_on_submit():
+        hashed_password = generate_password_hash(form.password.data).decode('utf-8')
+        user.passwd = hashed_password
+        db.session.commit()
+        flash('Your password has been updated! You are now able to log in', 'success')
+        return redirect(url_for('auth.login_page'))
+    return render_template('reset_token.html', title='Reset Password', form=form)

@@ -1,10 +1,13 @@
 from flask import Flask, render_template, request, redirect, url_for, send_from_directory, make_response, session
 from datetime import datetime
 from config import Config
-from models import db, Players, Parents, Coaches, Teams, Seasons, Levels
+from models import db, Users, Players, Parents, Coaches, Teams, Seasons, Levels
 import os
 from werkzeug.utils import secure_filename
 from flask_wtf.csrf import CSRFProtect
+from flask_bcrypt import Bcrypt
+from flask_login import LoginManager
+from flask_mail import Mail
 
 #Local imports
 from decimal import Decimal
@@ -19,6 +22,31 @@ from seasons.seasons_bp import seasons_bp
 from extension import get_current_season
 
 app = Flask(__name__)
+
+app.config.from_object(Config)
+app.config['UPLOAD_FOLDER'] = 'uploads'
+
+bcrypt = Bcrypt(app)
+login_manager = LoginManager(app)
+login_manager.login_view = 'login'
+login_manager.login_message_category = 'info'
+#login_manager.user_loader is in auth_bp.py
+login_manager.init_app(app)
+
+#app.config['MAIL_SERVER'] = 'smtp.googlemail.com'
+#app.config['MAIL_PORT'] = 587
+#app.config['MAIL_USE_TLS'] = True
+#app.config['MAIL_USERNAME'] = os.environ.get('EMAIL_USER')
+#app.config['MAIL_PASSWORD'] = os.environ.get('EMAIL_PASS')
+
+app.config['MAIL_SERVER'] = 'mail.guardedhost.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = os.environ.get('EMAIL_USER')
+app.config['MAIL_PASSWORD'] = os.environ.get('EMAIL_PASS')
+
+mail = Mail(app)
+
 app.register_blueprint(api_bp, url_prefix='/api')
 app.register_blueprint(auth_bp, url_prefix='/auth')
 app.register_blueprint(coaches_bp, url_prefix='/coaches')
@@ -28,8 +56,6 @@ app.register_blueprint(players_bp, url_prefix='/players')
 app.register_blueprint(reports_bp, url_prefix='/reports')
 app.register_blueprint(seasons_bp, url_prefix='/seasons')
 
-app.config.from_object(Config)
-app.config['UPLOAD_FOLDER'] = 'uploads'
 
 #To record all SQL Queries enable SQLALCHEMY_ECHO
 #app.config['SQLALCHEMY_ECHO'] = True
@@ -44,6 +70,10 @@ csrf = CSRFProtect(app)
 with app.app_context():
     db.create_all()
 
+@login_manager.user_loader
+def load_user(user_id):
+    return Users.query.get(int(user_id))
+
 def inject_current_year():
     (current_season_id, current_season_name) = get_current_season()
     return {'current_year': datetime.now().year,
@@ -55,6 +85,7 @@ app.context_processor(inject_current_year)
 
 # -- Welcome page: show teams in current season (e.g. "2025") --
 @app.route('/')
+@app.route('/home')
 @login_required
 def welcome():
     user_info = None
