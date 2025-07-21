@@ -6,13 +6,13 @@ import os
 from werkzeug.utils import secure_filename
 from flask_wtf.csrf import CSRFProtect
 from flask_bcrypt import Bcrypt
-from flask_login import LoginManager
+from flask_login import LoginManager, login_required
 from flask_mail import Mail
 
 #Local imports
 from decimal import Decimal
 from api.api_bp import api_bp
-from auth.auth_bp import auth_bp, login_required, get_user_info, get_google_user_info, get_facebook_user_info
+from auth.auth_bp import auth_bp
 from coaches.coaches_bp import coaches_bp
 from ledger.ledger_bp import ledger_bp
 from parents.parents_bp import parents_bp
@@ -60,7 +60,6 @@ app.register_blueprint(seasons_bp, url_prefix='/seasons')
 #To record all SQL Queries enable SQLALCHEMY_ECHO
 #app.config['SQLALCHEMY_ECHO'] = True
 
-os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 db.init_app(app)
 
 #csrf is being used only on the ajax calls
@@ -90,18 +89,9 @@ app.context_processor(inject_current_year)
 def welcome():
     user_info = None
     #print (session.get('auth_provider'))
-    if 'access_token' in session:
-        if session.get('auth_provider') == 'facebook':
-            user_info = get_facebook_user_info(session['access_token'])
-        elif session.get('auth_provider') == 'google':
-            user_info = get_google_user_info(session['access_token'])
-        else:
-            user_info = get_user_info(session['access_token'])
     (current_season_id, current_season_name) = get_current_season()
     teams = Teams.query.filter_by(season_id=current_season_id).all()
     return render_template('welcome.html', teams=teams, user_info=user_info)
-
-
 
 
 # -- Extra navigation links on welcome page --

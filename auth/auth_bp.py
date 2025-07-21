@@ -5,10 +5,8 @@ from flask_login import  login_user, current_user, logout_user, login_required
 #use '.forms' to read from forms.py in the current folder.  If it was in a deeper folder then use ..forms
 from .forms import (RegistrationForm, LoginForm, UpdateAccountForm,
                              RequestResetForm, ResetPasswordForm)
-import google_auth_oauthlib.flow
 import json
 import requests
-import facebook
 import os
 from functools import wraps
 from flask_bcrypt import generate_password_hash, check_password_hash
@@ -16,23 +14,6 @@ from flask_mail import Message
 from models import db, Users
 
 auth_bp = Blueprint('auth', __name__, template_folder='templates')
-
-
-# OAuth configuration
-try:
-    oauth_config = json.loads(os.environ.get('GOOGLE_OAUTH_SECRETS', '{}'))
-    if oauth_config:
-        oauth_flow = google_auth_oauthlib.flow.Flow.from_client_config(
-            oauth_config,
-            scopes=[
-                "https://www.googleapis.com/auth/userinfo.email",
-                "openid", 
-                "https://www.googleapis.com/auth/userinfo.profile",
-            ]
-        )
-except Exception as e:
-    print(f"OAuth configuration error: {e}")
-    oauth_flow = None
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login_page():
@@ -50,56 +31,6 @@ def login_page():
             flash('Login Unsuccessful. Please check email and password', 'danger')
     return render_template('login.html', title='Login', form=form)
 
-@auth_bp.route('/login/google')
-def google_login():
-    if oauth_flow is None:
-        return "OAuth not configured. Please set GOOGLE_OAUTH_SECRETS environment variable.", 500
-
-    oauth_flow.redirect_uri = url_for('auth.oauth2callback', _external=True).replace('http://', 'https://')
-    authorization_url, state = oauth_flow.authorization_url()
-    session['state'] = state
-    return redirect(authorization_url)
-
-@auth_bp.route('/login/facebook')
-def facebook_login():
-    if not FACEBOOK_APP_ID or not FACEBOOK_APP_SECRET:
-        return "Facebook OAuth not configured. Please set FACEBOOK_APP_ID and FACEBOOK_APP_SECRET environment variables.", 500
-    
-    redirect_uri = url_for('auth.facebook_callback', _external=True).replace('http://', 'https://')
-    facebook_auth_url = f"https://www.facebook.com/v18.0/dialog/oauth?client_id={FACEBOOK_APP_ID}&redirect_uri={redirect_uri}&scope=email"
-    return redirect(facebook_auth_url)
-
-@auth_bp.route('/oauth2callback')
-def oauth2callback():
-    if oauth_flow is None:
-        return "OAuth not configured.", 500
-    
-    if not session.get('state') == request.args.get('state'):
-        return 'Invalid state parameter', 400
-    
-    oauth_flow.fetch_token(authorization_response=request.url.replace('http:', 'https:'))
-    session['access_token'] = oauth_flow.credentials.token
-    session['auth_provider'] = 'google'
-    return redirect("/")
-
-@auth_bp.route('/facebook/callback')
-def facebook_callback():
-    code = request.args.get('code')
-    if not code:
-        return 'Authorization failed', 400
-    
-    redirect_uri = url_for('auth.facebook_callback', _external=True).replace('http://', 'https://')
-    token_url = f"https://graph.facebook.com/v18.0/oauth/access_token?client_id={FACEBOOK_APP_ID}&redirect_uri={redirect_uri}&client_secret={FACEBOOK_APP_SECRET}&code={code}"
-    
-    response = requests.get(token_url)
-    if response.status_code == 200:
-        token_data = response.json()
-        session['access_token'] = token_data['access_token']
-        session['auth_provider'] = 'facebook'
-        return redirect("/")
-    else:
-        return 'Failed to get Facebook access token', 400
-
 @auth_bp.route("/register", methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
@@ -111,6 +42,7 @@ def register():
         db.session.add(user)
         db.session.commit()
         flash('Your account has been created! You are now able to log in', 'success')
+        #TODO: instead take them to a page to enter parent and player information
         return redirect(url_for('auth.login'))
     return render_template('register.html', title='Register', form=form)
 
