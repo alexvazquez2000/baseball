@@ -9,9 +9,10 @@ parents_bp = Blueprint('parents', __name__, template_folder='templates')
 @parents_bp.route('/')
 @login_required
 def list_parents():
-    #parents = Parents.query.all()
     #filter(Users.parent.isnot(None)) doesn't work because isnot() is used only on columns of the DB.  Use parent_id
-    parents = Users.query.filter(Users.parent_id.isnot(None)).all()
+    #parents = Users.query.filter(Users.parent_id.isnot(None)).all()
+    #Commented out the filter because we are missing rows if no players are added
+    parents = Users.query.all()
     return render_template('parents.html', parents=parents)
 
 @parents_bp.route('/parent', methods=['GET', 'POST'])
