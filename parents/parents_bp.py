@@ -12,8 +12,9 @@ def list_parents():
     #filter(Users.parent.isnot(None)) doesn't work because isnot() is used only on columns of the DB.  Use parent_id
     #parents = Users.query.filter(Users.parent_id.isnot(None)).all()
     #Commented out the filter because we are missing rows if no players are added
-    parents = Users.query.all()
-    return render_template('parents.html', parents=parents)
+    #users = Users.query.all()
+    users = db.session.scalars(db.select(Users)).all()
+    return render_template('parents.html', users=users)
 
 @parents_bp.route('/parent', methods=['GET', 'POST'])
 @login_required

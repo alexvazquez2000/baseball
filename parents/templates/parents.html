@@ -10,16 +10,20 @@
       <th onclick="sortTable(0)">Name</th>
       <th onclick="sortTable(1)">Email</th>
       <th onclick="sortTable(2)">Phone</th>
+      <th onclick="sortTable(3)">Players</th>
       <th>Edit</th>
     </tr>
   </thead>
   <tbody>
-    {% for parent in parents %}
+    {% for user in users %}
     <tr>
-      <td>{{ parent.first_name }} {{ parent.last_name }}</td>
-      <td>{{ parent.email or "" }}</td>
-      <td>{{ parent.phone or "" }}</td>
-      <td><a href="{{ url_for('parents.edit_parent', user_id=parent.id) }}" class="btn btn-sm btn-primary">Edit</a></td>
+      <td>{{ user.first_name }} {{ user.last_name }}</td>
+      <td>{{ user.email or "" }}</td>
+      <td>{{ user.phone or "" }}</td>
+      <td>{{ user.parent.players | length }}</td>
+      <td><a href="{{ url_for('parents.edit_parent', user_id=user.id) }}" class="btn btn-sm btn-primary">Edit</a>
+        {% if user.coach %}<a href="{{ url_for('coaches.edit_coach', user_id=user.id) }}" class="btn btn-sm btn-primary">Edit Coach</a>{% endif %}
+       </td>
     </tr>
     {% else %}
     <tr><td colspan="4">No parents found.</td></tr>
