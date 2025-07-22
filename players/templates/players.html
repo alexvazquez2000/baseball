@@ -10,6 +10,7 @@
       <th onclick="sortTable(0)">Name</th>
       <th onclick="sortTable(1)">DOB</th>
       <th onclick="sortTable(2)">Jersey Number</th>
+      <th onclick="sortTable(3)">Parents</th>
       <th>Edit</th>
     </tr>
   </thead>
@@ -19,6 +20,7 @@
       <td>{{ player.first_name }} {{ player.last_name }}</td>
       <td>{{ player.date_of_birth.strftime('%m-%d-%Y') }}</td>
       <td>{{ player.jersey_number }}</td>
+      <td>{{ player.parents | length }}</td>
       <td><a href="{{ url_for('players.edit_player', player_id=player.id) }}" class="btn btn-sm btn-primary">Edit</a></td>
     </tr>
     {% else %}
