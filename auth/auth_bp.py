@@ -48,23 +48,8 @@ def register():
 
 @auth_bp.route('/logout')
 def logout():
-    # Revoke tokens based on provider
-    if 'access_token' in session:
-        access_token = session['access_token']
-        auth_provider = session.get('auth_provider', 'google')
-        
-        if auth_provider == 'facebook' and FACEBOOK_APP_ID and FACEBOOK_APP_SECRET:
-            # Revoke Facebook token
-            revoke_url = f'https://graph.facebook.com/me/permissions?access_token={access_token}'
-            requests.delete(revoke_url)
-        elif auth_provider == 'google':
-            # Revoke Google token
-            revoke_url = f'https://oauth2.googleapis.com/revoke?token={access_token}'
-            requests.post(revoke_url, headers={'content-type': 'application/x-www-form-urlencoded'})
-        else:
-            #it is a flask_login
-            logout_user()
-    
+    #log them out with flask_login
+    logout_user()
     session.clear()
     return redirect(url_for('auth.login_page'))
 

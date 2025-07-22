@@ -28,7 +28,7 @@ app.config['UPLOAD_FOLDER'] = 'uploads'
 
 bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)
-login_manager.login_view = 'login'
+login_manager.login_view = 'auth.login_page'
 login_manager.login_message_category = 'info'
 #login_manager.user_loader is in auth_bp.py
 login_manager.init_app(app)
