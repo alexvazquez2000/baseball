@@ -60,15 +60,18 @@
             <li class="nav-item">
               <a class="nav-link" href="{{ url_for('seasons.change_season') }}">Season : {{ current_season_name }}</a>
             </li>
-            {% if session.get('access_token') %}
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
-                {% if user_info %}{{ user_info.given_name }}{% else %}User{% endif %}
-              </a>
-              <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}">Logout</a></li>
-              </ul>
-            </li>
+            {% if current_user.is_authenticated %}
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                  {{current_user.first_name}}
+                </a>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}">Logout</a></li>
+                </ul>
+              </li>
+             {% else %}
+                <a class="nav-item nav-link" href="{{ url_for('auth.login_page') }}">Login</a>
+                <a class="nav-item nav-link" href="{{ url_for('auth.register') }}">Register</a>
             {% endif %}
           </ul>
         </div>

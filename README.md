@@ -4,6 +4,10 @@
 
 	pip install -r requirements.txt
 
+#To freeze the requirements run the command:
+
+    pip freeze > requirements.txt
+
 # create venv environment
 
 	python -m venv venv
