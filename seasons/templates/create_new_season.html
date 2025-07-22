@@ -32,7 +32,7 @@
       <td>{{ team.season.season_name }}</td>
       <td>
         {% for coach in team.coaches %}
-          {{ coach.first_name }} {{ coach.last_name }} {% if not loop.last %}, {% endif %}
+          {{ coach.user.first_name }} {{ coach.user.last_name }} {% if not loop.last %}, {% endif %}
         {% endfor %}
       </td>
     </tr>
