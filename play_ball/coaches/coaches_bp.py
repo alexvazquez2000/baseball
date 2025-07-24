@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, Response, redirect, url_for, session, flash
-from models import db, Coaches, Users
+from play_ball.models import db, Coaches, Users
 
 #Local imports
 from thumbnail import Thumbnail

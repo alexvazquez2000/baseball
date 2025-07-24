@@ -3,8 +3,8 @@ from datetime import datetime
 
 from sqlalchemy import func
 
-from models import db, Players, Teams, teams_players
-from extension import get_current_season
+from play_ball.models import db, Players, Teams, teams_players
+from play_ball.extension import get_current_season
 
 
 players_bp = Blueprint('players', __name__, template_folder='templates')

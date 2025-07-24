@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, Response, redirect, url_for, session
 
-from models import db, Parents, Users
-from auth.auth_bp import login_required
+from play_ball.models import db, Parents, Users
+from play_ball.auth.auth_bp import login_required
 
 parents_bp = Blueprint('parents', __name__, template_folder='templates')
 

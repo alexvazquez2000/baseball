@@ -11,7 +11,7 @@ import os
 from functools import wraps
 from flask_bcrypt import generate_password_hash, check_password_hash
 from flask_mail import Message
-from models import db, Users
+from play_ball.models import db, Users
 
 #using flash-login to track the current user https://flask-login.readthedocs.io/en/latest/#flask_login.current_user
 auth_bp = Blueprint('auth', __name__, template_folder='templates')

@@ -3,8 +3,8 @@ from sqlalchemy import or_
 from datetime import datetime
 from decimal import Decimal
 
-from models import db, Players, Parents, Coaches, Teams, Users
-from models import Account, Journal, Transaction, Entry
+from play_ball.models import db, Players, Parents, Coaches, Teams, Users
+from play_ball.models import Account, Journal, Transaction, Entry
 
 api_bp = Blueprint('api', __name__)
 
