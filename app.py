@@ -71,7 +71,9 @@ with app.app_context():
 
 @login_manager.user_loader
 def load_user(user_id):
-    return Users.query.get(int(user_id))
+    #return Users.query.get(int(user_id))
+    #This is the only query using the new select style
+    return db.session.scalars(db.select(Users).where(Users.id == int(user_id))).first()
 
 def inject_current_year():
     (current_season_id, current_season_name) = get_current_season()
