@@ -1,5 +1,5 @@
 
-from flask import Blueprint, render_template, request, redirect, url_for, session, flash
+from flask import Blueprint, render_template, request, redirect, url_for, session, flash, current_app
 
 from flask_login import  login_user, current_user, logout_user, login_required
 #use '.forms' to read from forms.py in the current folder.  If it was in a deeper folder then use ..forms
@@ -13,6 +13,7 @@ from flask_bcrypt import generate_password_hash, check_password_hash
 from flask_mail import Message
 from models import db, Users
 
+#using flash-login to track the current user https://flask-login.readthedocs.io/en/latest/#flask_login.current_user
 auth_bp = Blueprint('auth', __name__, template_folder='templates')
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
@@ -63,7 +64,7 @@ def send_reset_email(user):
 
 If you did not make this request then simply ignore this email and no changes will be made.
 '''
-    #mail.send(msg)
+    #This is not working - will rearrange the code - current_app.mail.send(msg)
 
 
 @auth_bp.route("/reset_password", methods=['GET', 'POST'])
