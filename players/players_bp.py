@@ -1,7 +1,10 @@
 from flask import Blueprint, render_template, request, Response, redirect, url_for, session
 from datetime import datetime
 
-from models import db, Players
+from sqlalchemy import func
+
+from models import db, Players, Teams, teams_players
+from extension import get_current_season
 
 
 players_bp = Blueprint('players', __name__, template_folder='templates')
@@ -11,6 +14,10 @@ players_bp = Blueprint('players', __name__, template_folder='templates')
 #@login_required
 def list_players():
     players = Players.query.all()
+    (current_season_id, current_season_name) = get_current_season()
+    #players = db.session.query(Players, teams_players, func.count(teams_players.teams_id))
+    #players = db.session.query(Players, teams_players).outerjoin(Players.id==teams_players.players_id ).all
+    #.outerjoin(Teams, Teams.id==teams_players.teams_id).filter(Teams.season_id==current_season_id).all()
     return render_template('players.html', players=players)
 
 @players_bp.route('/player', methods=['GET', 'POST'])
