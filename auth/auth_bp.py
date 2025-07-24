@@ -1,5 +1,5 @@
 
-from flask import Blueprint, render_template, request, redirect, url_for, session, flash, current_app
+from flask import Blueprint, render_template, request, redirect, url_for, session, flash
 
 from flask_login import  login_user, current_user, logout_user, login_required
 #use '.forms' to read from forms.py in the current folder.  If it was in a deeper folder then use ..forms
@@ -64,7 +64,7 @@ def send_reset_email(user):
 
 If you did not make this request then simply ignore this email and no changes will be made.
 '''
-    #This is not working - will rearrange the code - current_app.mail.send(msg)
+    #TODO Uncomment this line using something like:   app.mail.send(msg)
 
 
 @auth_bp.route("/reset_password", methods=['GET', 'POST'])
