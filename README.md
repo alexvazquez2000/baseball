@@ -122,3 +122,17 @@ Key Features:
     AJAX endpoint testing with JSON responses
     Error handling tests for edge cases
     Relationship testing for complex many-to-many associations
+
+
+#New query formats for sqlalchemy 2.0.x
+
+    db.session.get(User, 1) to select using primary keys, successor to User.query.get(1). Returns User object.
+
+For a specific row
+
+    db.session.scalars(db.select(User).where(User.email == "name@example.com")).first() to select using other columns, successor to User.query.filter_by(email="name@example.com").first(). Returns 'User' object.
+
+To return all rows
+
+    db.session.scalars(db.select(User)).all() to get all Users, successor to User.query.all(). Returns list of User objects.
+
