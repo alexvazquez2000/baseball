@@ -25,7 +25,7 @@
 
 # Run locally with python
 
-	python app.py
+	python run.py
 
 # Run locally with gunicorn - but not on windows
 

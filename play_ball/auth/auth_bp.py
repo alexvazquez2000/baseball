@@ -12,6 +12,7 @@ from functools import wraps
 from flask_bcrypt import generate_password_hash, check_password_hash
 from flask_mail import Message
 from play_ball.models import db, Users
+from play_ball.app import mail
 
 #using flash-login to track the current user https://flask-login.readthedocs.io/en/latest/#flask_login.current_user
 auth_bp = Blueprint('auth', __name__, template_folder='templates')
@@ -64,7 +65,8 @@ def send_reset_email(user):
 
 If you did not make this request then simply ignore this email and no changes will be made.
 '''
-    #TODO Uncomment this line using something like:   app.mail.send(msg)
+    #FIXME: Emails are not working because omnis. ConnectionRefusedError: [WinError 10061] No connection could be made because the target machine actively refused it   
+    mail.send(msg)
 
 
 @auth_bp.route("/reset_password", methods=['GET', 'POST'])

@@ -38,7 +38,6 @@ def edit_parent():
                 last_name=request.form['last_name'],
                 email=request.form['email'],
                 phone=request.form['phone'],
-                #TODO _ Make sure we have a parent - might need to save before adding
                 parent = Parents()
             )
             db.session.add(user)
