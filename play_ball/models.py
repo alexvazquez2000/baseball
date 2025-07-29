@@ -46,6 +46,8 @@ class Users(db.Model, UserMixin):
     email = db.Column(db.String(120), unique=True)
     passwd = db.Column(db.String(100), nullable=True)
     #
+    admin = db.Column(db.Boolean, default=False)
+    #
     # Foreign key to Address, allowing it to be nullable
     parent_id =  db.Column(db.Integer, db.ForeignKey('parents.id'), nullable=True)
     # Define the relationship to Parent
