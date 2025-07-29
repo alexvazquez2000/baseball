@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, request, Response, redirect, url_for, session, flash
 from play_ball.models import db, Coaches, Users
+from play_ball.auth.auth_bp import login_required
 
 #Local imports
 from thumbnail import Thumbnail
@@ -8,13 +9,13 @@ coaches_bp = Blueprint('coaches', __name__, template_folder='templates')
 # -- Coaches --
 
 @coaches_bp.route('/')
-#@login_required
+@login_required
 def list_coaches():
     coaches = Users.query.filter(Users.coach_id.isnot(None)).all()
     return render_template('coaches.html', coaches=coaches)
 
 @coaches_bp.route('/coach', methods=['GET', 'POST'])
-#@login_required
+@login_required
 def edit_coach():
     user = {}
     user_id = request.args.get('user_id')
@@ -63,6 +64,7 @@ def edit_coach():
     return render_template('edit_coach.html', user=user)
 
 @coaches_bp.route("/photo/<int:coach_id>")
+@login_required
 def get_photo(coach_id):
     coach = Coaches.query.get_or_404(coach_id)
     if coach and coach.photo:
@@ -70,6 +72,7 @@ def get_photo(coach_id):
     return '', 404
 
 @coaches_bp.route("/photo/thumbnail/<int:coach_id>")
+@login_required
 def get_thumbnail(coach_id):
     coach = Coaches.query.get_or_404(coach_id)
     if coach and coach.thumbnail:

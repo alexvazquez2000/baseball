@@ -5,13 +5,13 @@ from sqlalchemy import func
 
 from play_ball.models import db, Players, Teams, teams_players
 from play_ball.extension import get_current_season
-
+from play_ball.auth.auth_bp import login_required
 
 players_bp = Blueprint('players', __name__, template_folder='templates')
 
 # -- Players --
 @players_bp.route('/')
-#@login_required
+@login_required
 def list_players():
     #now = datetime.now()
     #formatted_time = now.strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
@@ -41,7 +41,7 @@ def list_players():
     
     return rh
 @players_bp.route('/player', methods=['GET', 'POST'])
-#@login_required
+@login_required
 def edit_player():
     player = {}
     player_id = request.args.get('player_id')

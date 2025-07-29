@@ -2,10 +2,12 @@ from flask import Blueprint, make_response
 #for PDF
 #from flask import make_response
 from fpdf import FPDF
+from play_ball.auth.auth_bp import login_required
 
 reports_bp = Blueprint('pdf_reports', __name__)
 # -- Experimental section
 @reports_bp.route('/generate-pdf')
+@login_required
 def generate_pdf():
 	# https://py-pdf.github.io/fpdf2/Tutorial.html#tuto-1-minimal-example
     #Create a PDF object

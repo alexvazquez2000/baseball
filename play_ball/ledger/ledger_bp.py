@@ -1,15 +1,18 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session
 
 from play_ball.models import db, Customer, Account, Journal, Transaction, Entry, AuditLog, Users
+from play_ball.auth.auth_bp import login_required
 
 ledger_bp = Blueprint('ledger', __name__, template_folder='templates')
 # -- Accounting
 @ledger_bp.route('/chart_of_accounts', methods=['GET', 'POST'])
+@login_required
 def chart_of_accounts():
     accounts = Account.query.all()
     return render_template('chart_of_accounts.html', accounts=accounts)
 
 @ledger_bp.route('/sales', methods=['GET', 'POST'])
+@login_required
 def make_sale():
     customers = Customer.query.all()
     if request.method == 'POST':
@@ -30,6 +33,7 @@ def make_sale():
     return render_template('make_sale.html', customers=customers)
 
 @ledger_bp.route('/receive-payment', methods=['GET', 'POST'])
+@login_required
 def receive_payment():
     customers = Customer.query.all()
     if request.method == 'POST':
@@ -49,6 +53,7 @@ def receive_payment():
     return render_template('receive_payment.html', customers=customers)
 
 @ledger_bp.route('/open-invoices')
+@login_required
 def open_invoices():
     ar_entries = db.session.query(
         Transaction.user_id,
@@ -59,6 +64,7 @@ def open_invoices():
     return render_template('open_invoices.html', rows=ar_entries)
 
 @ledger_bp.route('/trial-balance')
+@login_required
 def trial_balance():
     balances = db.session.query(
         Account.name,

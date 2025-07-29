@@ -10,14 +10,14 @@ from play_ball.extension import get_current_season
 from play_ball.base_calendar import BaseCalendar
 
 from play_ball.models import db, Players, Coaches, Teams, Seasons, Levels, Users
-
+from play_ball.auth.auth_bp import login_required
 
 seasons_bp = Blueprint('seasons', __name__, template_folder='templates')
 
 # -- Seasons and teams --
 
 @seasons_bp.route('/change_season', methods=['GET', 'POST'])
-#@login_required
+@login_required
 def change_season():  
     if request.method == 'POST':
         selected_season = request.form['selected_season']
@@ -35,7 +35,7 @@ def change_season():
     return render_template('change_season.html', seasons=seasons)
 
 @seasons_bp.route('/season/<int:season_id>/edit', methods=['GET', 'POST'])
-#@login_required
+@login_required
 def edit_season(season_id):
     season = Seasons.query.get_or_404(season_id)
     if request.method == 'POST':
@@ -48,7 +48,7 @@ def edit_season(season_id):
 
 # -- Create new season --
 @seasons_bp.route('/create_new_season', methods=['GET', 'POST'])
-#@login_required
+@login_required
 def create_new_season():
     (current_season_id, current_season_name) = get_current_season()
     if request.method == 'POST':
@@ -91,14 +91,14 @@ def create_new_season():
 
 # -- Teams --
 @seasons_bp.route('/teams')
-#@login_required
+@login_required
 def list_teams():
     (current_season_id, current_season_name) = get_current_season()
     teams = Teams.query.filter_by(season_id=current_season_id).all()
     return render_template('teams.html', teams=teams)
 
 @seasons_bp.route('/team', methods=['GET', 'POST'])
-#@login_required
+@login_required
 def edit_team():
     team = {}
     team_id = request.args.get('team_id')
@@ -140,7 +140,7 @@ def edit_team():
 
 # -- Fees --
 @seasons_bp.route('/levels_fees')
-#@login_required
+@login_required
 def levels_fees():
     levels = Levels.query.all()
     return render_template('levels_fees.html', levels=levels)
@@ -150,7 +150,7 @@ def clean_money(input_string):
 	return re.sub(r'[^0-9.]','',input_string)
 
 @seasons_bp.route('/level', methods=['GET', 'POST'])
-#@login_required
+@login_required
 def edit_level():
     level = {}
     level_id = request.args.get('level_id')
