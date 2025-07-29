@@ -45,7 +45,7 @@ def register():
         db.session.commit()
         flash('Your account has been created! You are now able to log in', 'success')
         #TODO: instead take them to a page to enter parent and player information
-        return redirect(url_for('auth.login'))
+        return redirect(url_for('auth.login_page'))
     return render_template('register.html', title='Register', form=form)
 
 @auth_bp.route('/logout')
