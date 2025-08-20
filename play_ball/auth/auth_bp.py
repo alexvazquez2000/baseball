@@ -51,8 +51,8 @@ def register():
 @auth_bp.route('/logout')
 def logout():
     #log them out with flask_login
+    #this includes session.clear() - don't run clear() again or the remember me option doesn't behave correctly
     logout_user()
-    session.clear()
     return redirect(url_for('auth.login_page'))
 
 def send_reset_email(user):
