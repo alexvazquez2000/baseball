@@ -102,8 +102,10 @@ $(document).ready(function() {
     });
     
     
-    $("#addNewPlayersButton").on('click', function(){
+    $("#submitNewPlayersButton").on('click', function(){
         event.preventDefault();
+        //remove the previous error if it exists
+        $("#addNewPlayerError").remove();
         var tableData = [];
         $("#newPlayersTable tr").each(function() {
             // 'this' refers to the current <tr> element
@@ -122,7 +124,7 @@ $(document).ready(function() {
                 tableData.push(row);
             }
         });
-        console.log('Sending:',  JSON.stringify(tableData));
+        //console.log('Sending:',  JSON.stringify(tableData));
         //We have all the json data, now make the call
         $.ajax({
             url: '/api/team/{{ team.id}}/add_players',
@@ -133,15 +135,21 @@ $(document).ready(function() {
             },
             dataType: 'json',
             data: JSON.stringify(tableData),
-            success: function(response) {
+            success: function(rawResponse) {
                 // This function runs if the AJAX call is successful
-                $('#responseContainer').html(response); // Display the response in the div
-                console.log('AJAX call successful:', response);
+                $('#responseContainer').html(rawResponse);
+                // Display the response in the div
+                console.log('AJAX call successful:', rawResponse);
+                console.log("**" + rawResponse.response_data);
+                
+                var responseJson = JSON.parse(rawResponse.response_data);
+                console.log(responseJson);
             },
             error: function(xhr, status, error) {
                 // This function runs if there's an error during the AJAX call
                 console.error('AJAX error:', status, error);
-                $('#responseContainer').html('<p>Error loading content.</p>');
+                $('#responseContainer').html('<div id="addNewPlayerError" class="alert alert-danger" role="alert">'
+                        + 'Error loading content - Add_players failed.</div>');
             },
             complete: function() {
                 // This function runs after the request is complete, regardless of success or error
@@ -240,7 +248,7 @@ coachSearchInput.addEventListener("input", async (e) => {
   </tbody>
 </table>
 <div id="responseContainer"></div>
-<a id="addNewPlayersButton" href="#" class="btn btn-success mb-2">Submit new team players</a>
+<a id="submitNewPlayersButton" href="#" class="btn btn-success mb-2">Submit new team players</a>
 
 <h3>Add Player to team</h3>
 <input type="text" id="player-search" placeholder="Search player by name...">
@@ -250,10 +258,13 @@ coachSearchInput.addEventListener("input", async (e) => {
 const playerSearchInput = document.getElementById("player-search");
 const playerResultsList = document.getElementById("player-search-results");
 
-//Event listener for searching and adding player
+//Event listener for searching and adding player to the temp table
 playerSearchInput.addEventListener("input", async (e) => {
     const query = e.target.value.trim();
     playerResultsList.innerHTML = ""; 
+
+    //remove the previous error if it exists
+    $("#addNewPlayerError").remove();
 
     if (query.length < 2) return;
 
