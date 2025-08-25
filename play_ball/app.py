@@ -12,14 +12,12 @@ from decimal import Decimal
 
 from play_ball.extension import get_current_season
 
-
 bcrypt = Bcrypt()
 login_manager = LoginManager()
 login_manager.login_view = 'auth.login_page'
 login_manager.login_message_category = 'info'
 mail = Mail()
 
-  
 app = Flask(__name__)
 
 app.config.from_object(Config)
@@ -66,8 +64,6 @@ app.register_blueprint(seasons_bp, url_prefix='/seasons')
 
 #To record all SQL Queries enable SQLALCHEMY_ECHO
 #app.config['SQLALCHEMY_ECHO'] = True
-
-
 
 ##To create DB
 #with app.app_context():
