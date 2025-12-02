@@ -28,6 +28,7 @@ login_manager.init_app(app)
 mail.init_app(app)
 
 #csrf is being used only on the ajax calls
+#FIXME: Temp removed CSRF to get the data from react.js
 csrf = CSRFProtect(app)
 
 #app.config['MAIL_SERVER'] = 'smtp.googlemail.com'
