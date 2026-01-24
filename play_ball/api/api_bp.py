@@ -233,7 +233,7 @@ def get_parents_out():
         } for p in results]
     return jsonify(data), 200
 
-@api.route('/parents', methods=['GET'])
+@api_bp.route('/parents', methods=['GET'])
 def get_parents():
     page = request.args.get('page', 1, type=int)
     per_page = request.args.get('per_page', 10, type=int)
