@@ -17,4 +17,6 @@
 			<fileset dir="${sourceDir}" excludes="**/*.gitignore, **/*.java"/>
 		</copy>
 	</target>
+
+	
 </project>
